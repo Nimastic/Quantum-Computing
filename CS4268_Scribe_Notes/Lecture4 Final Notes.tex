@@ -1,0 +1,351 @@
+\noindent
+\textbf{CS4268 AY2025-26 Sem 2}
+\\
+\noindent
+Lecturer: Divesh Aggarwal
+\hfill
+Lecture 4                      %%% FILL IN LECTURE NUMBER HERE
+\hfill
+Date: February 5, 2026          %%% FILL IN LECTURE DATE HERE
+
+
+\noindent
+\rule{\textwidth}{1pt}
+
+\medskip
+
+\section{The No-Cloning Theorem and Quantum Teleportation}
+Every single week during the lecture, a few of you open this overleaf file and copy the scribe template over to your own file to work on it. Some of you use ChatGPT to help refine your scribes (which is okay, just be honest with it). The numerous ctrl-C's/ctrl-V's involved in these undertakings were in all likelihood barely noticed. But they of course were instances of copying/cloning (classical) information, which is ubiquitous. Unfortunately, the same cannot be done with \textit{quantum} information.
+
+\subsection{No Quantum Clones}
+
+\begin{theorem}
+    There does not exist a unitary $U$ which upon arbitrary input states $\ket{\psi}$ outputs $\ket{\psi}\ket{\psi}$. More precisely, a unitary such that
+    \begin{align*}
+        U\ket{\psi}\ket{\text{anc}} = \ket{\psi}\ket{\psi} \quad\forall \ket{\psi}
+    \end{align*}
+    does not exist. Here $\ket{\text{anc}}$ denotes \textit{any arbitrary} ancillary state which has the same dimension as $\ket{\psi}$.
+\end{theorem}
+\begin{proof}
+    We present two proofs.
+    
+    Proof 1: Suppose there exists such a unitary $U$. Pick an arbitrary state $\ket{\psi}=a\ket{0}+b\ket{1}$ where $a,b$ are complex amplitudes. Running $U$ on $\ket{\psi}$ yields
+    \begin{align*}
+        U(a\ket{0}+b\ket{1})\ket{\text{anc}} = a^2\ket{00}+ab\ket{01}+ab\ket{10}+b^2\ket{11}.
+    \end{align*}
+    But at the same time we also have $U\ket{0}\ket{\text{anc}}=\ket{00}$ and $U\ket{1}\ket{\text{anc}}=\ket{11}$. By linearity we thus have 
+    \begin{align*}
+        U(a\ket{0}+b\ket{1})\ket{\text{anc}} = a\ket{00}+b\ket{11}.
+    \end{align*}
+    Matching the two given expressions for $U\ket{\psi}\ket{\text{anc}}$ we see that they are compatible only when $(a,b)=(0,1)$ or $(1,0)$, contradicting the arbitrariness of $\ket{\psi}$.
+
+    Proof 2: Pick two arbitrary states $\ket{\psi}, \ket{\phi}$ and run $U$ on them. This gives $U\ket{\psi}\ket{\text{anc}} = \ket{\psi}\ket{\psi}$ and $U\ket{\phi}\ket{\text{anc}} = \ket{\phi}\ket{\phi}$. Taking their inner products and noting the unitarity of $U$ we see that $\langle \psi|\phi \rangle = \langle \psi|\phi \rangle^2 \implies \langle \psi|\phi \rangle=0/1$. That is, the two states must either be the same or mutually orthogonal, once again contradicting the assumed arbitrariness.
+\end{proof}
+
+\subsection{Quantum Teleportation}
+
+Consider the following scenario: suppose we have 2 friends, Alice and Bob, and they live far away from one another. Alice has in her possession some unknown qubit \(\ket{\psi} := \alpha \ket{0} + \beta \ket{1}\) and she wants to send it to Bob. How can she do it? 
+
+\paragraph{A Preliminary Puzzle}
+ Before we start off showing how it can be done, let us start off with a simpler puzzle. Suppose Alice and Bob are sitting in the lab, and Alice wants to send some unknown qubit \(\ket{\psi}\) to Bob. Obviously, she cannot walk up to Bob to give it to him but what they do have is a shared network for both of them to perform unitary operations (see \Cref{fig:unknown_quantum_teleporter}).
+
+ \begin{figure}[!ht]
+    \centering
+    \begin{quantikz}
+    \lstick[2]{$\substack{\ket{\psi} := \alpha \ket{0} + \beta \ket{1}\\\\\otimes \\\\\ket
+    0}$} & \gate[2]{?} & \rstick[2]{$\substack{\ket{\cdot}\\\\\otimes \\\\\ket
+    \psi}$}\\
+     & & 
+    \end{quantikz}
+    \caption{Some unknown quantum teleporter}
+    \label{fig:unknown_quantum_teleporter}
+\end{figure}
+
+Note that from \Cref{fig:unknown_quantum_teleporter}, we want these states to be un-entangled so that Alice cannot ``destroy" the qubit via a measurement.
+
+What Alice can do is to apply a CNOT operation with a control qubit \(\ket{0}\) followed by a Hadamard operation as follows in \Cref{fig:cnot_hadamard}:
+
+\begin{figure}[!ht]
+    \centering
+    \begin{quantikz}
+    \lstick{\(\alpha\ket{0} + \beta\ket{1}\)} & \ctrl{1} \slice{t=1}& \gate[1]{H} \slice{t=2} &\\
+    \lstick{\(\ket{0}\)} & \targ{} & &
+    \end{quantikz}
+    \caption{Alice's CNOT and Hadamard Operation}
+    \label{fig:cnot_hadamard}
+\end{figure}
+
+The intuition here is this: suppose Alice measures her qubit, the quantum state of the qubit is going to collapse to \(\ket{0}\) or \(\ket{1}\), which is clearly not what we want. By introducing the CNOT gate, the state is now entangled. One can realise that neither qubit in the entangled state contains the full information of the original qubit. Therefore at \(t = 1\), the state of the quantum system, \(\ket{\psi_1}\) is: \begin{equation}
+    \ket{\psi_1} = (\alpha \ket{0} + \beta \ket{1}) \otimes \ket{0} = \alpha \ket{00} + \beta\ket{11}
+\end{equation}
+
+Now, we want to remove the entanglement of the quantum state. Alice \textit{could have} measured her qubit but that is not going to be helpful because with probability \(|\alpha|^2\), her qubit is going to be \(\ket{0}\) but then due to the entanglement, Bob's qubit is going to be \(\ket{0}\) with the same probability. The same explanation applies for the state \(\ket{1}\) with probability \(|\beta|^2\). Applying the Hadamard operation on \text{only Alice's qubit} can remove that entanglement. We can see that at \(t = 2\), the state of the quantum system \(\ket{\psi_2}\) is \begin{equation}
+    \begin{aligned}
+        \ket{\psi_1} &\rightarrow \ket{\psi_2}\\
+        &= \alpha \ket{+0} + \beta \ket{-1}\\
+        &= \frac{\alpha}{\sqrt{2}}\ket{00} + \frac{\alpha}{\sqrt{2}}
+        \ket{10} + \frac{\beta}{\sqrt{2}}\ket{01} - \frac{\beta}{\sqrt{2}}
+        \ket{11}
+    \end{aligned}
+\end{equation}
+
+Now, when Alice does a partial measurement on her own qubit, the quantum state will collapse to \begin{equation}
+    \begin{cases}
+    \alpha \ket{00} + \beta \ket{01} &w.p \;\;\frac{|\alpha|^2 + |\beta|^2}{2} = \frac{1}{2}\\
+    \alpha \ket{10} - \beta \ket{11} &w.p \;\; \frac{1}{2}
+\end{cases}
+\end{equation} where the first case occurs when Alice observes \(\ket{0}\) whereas the second case occurs when Alice observes \(\ket{1}\). Denote the bit (not qubit anymore for Alice) that Alice observes to be \(b\).
+
+Alice then sends \(b\) to Bob (perhaps by telling Bob due to their close proximity in the lab). If \(b = 0\), as mentioned above, the quantum state must have collapsed to \(\alpha \ket{00} + \beta \ket{01}\). Bob's qubit would have been \(\alpha \ket{0} + \beta \ket{1}\), which is exactly \(\ket{\psi}\)! However, if \(b = 1\), then the quantum state must have collapsed to \(\alpha \ket{10} - \beta \ket{11}\). Bob's qubit is \(\alpha \ket 0 - \beta\ket{1}\). Bob simply has to perform a unitary operation, \(U = \begin{bmatrix}
+    1 & 0\\ 0 & -1
+\end{bmatrix}\) to obtain \(\ket{\psi}\)!
+
+\paragraph{Quantum Teleportation with an EPR Pair}
+
+Now suppose that Alice and Bob are not near one another anymore but instead are really far apart! However, before Bob left Alice, both of them share an EPR pair. That is, each of them \textit{share a qubit} of the EPR pair. 
+
+The first step is for Alice to entangle \(\ket{\psi}\) with her own EPR pair using the CNOT and Hadamard operation as before. Bob's qubit (the EPR pair) remains untouched. The step involved in shown in \Cref{fig:epr_pair_quantum_teleporter_start}
+
+ \begin{figure}[!ht]
+    \centering
+    \begin{quantikz}
+    \lstick{\(\alpha\ket{0} + \beta\ket{1}\)} \slice{t=0}& \ctrl{1} \slice{t=1}& \gate[1]{H} \slice{t=2} &\\
+    \lstick[2]{\(\frac{1}{\sqrt{2}}\ket{00} + \frac{1}{\sqrt{2}}\ket{11}\)} & \targ{} & &\\
+     & & &
+    \end{quantikz}
+    \caption{Entanglement of Alice's EPR pair with her qubit \(\ket{\psi} = \alpha\ket{0} + \beta\ket{1}\)}
+    \label{fig:epr_pair_quantum_teleporter_start}
+\end{figure}
+
+Let us go through the states for each of the time steps. At the beginning, \(t = 0\), the joint state of the quantum circuit is given by \(\ket{\psi_0}\): \begin{equation}
+    \ket{\psi_0} = \frac{\alpha}{\sqrt{2}}\ket{000} + \frac{\alpha}{\sqrt{2}}\ket{011} + \frac{\beta}{\sqrt{2}}\ket{100} + \frac{\beta}{\sqrt{2}}\ket{111}
+\end{equation}
+
+At \(t = 1\), Alice has entangled her qubit with her own EPR pair to get a new joint state, \(\ket{\psi_1}\): 
+    \begin{equation}
+    \ket{\psi_1} = \frac{\alpha}{\sqrt{2}}\ket{000} + \frac{\alpha}{\sqrt{2}}\ket{011} + \frac{\beta}{\sqrt{2}}\ket{110} + \frac{\beta}{\sqrt{2}}\ket{101}
+\end{equation}
+
+At \(t = 2\), Alice has passed her qubit through a Hadamard gate which now results in \(\ket{\psi_2}\)
+
+\begin{equation}
+    \begin{aligned}
+        \ket{\psi_1} &= \frac{\alpha}{\sqrt{2}}\ket{000} + \frac{\alpha}{\sqrt{2}}\ket{011} + \frac{\beta}{\sqrt{2}}\ket{110} + \frac{\beta}{\sqrt{2}}\ket{101}\\
+        &\downarrow\\
+        \ket{\psi_2}&= \frac{\alpha}{\sqrt{2}}\ket{+00} + \frac{\alpha}{\sqrt{2}}\ket{+11} + \frac{\beta}{\sqrt{2}}\ket{-10} + \frac{\beta}{\sqrt{2}}\ket{-01}\\
+        &=\frac{\alpha}{\sqrt{2}} \left(\frac{1}{\sqrt{2}}\left(\ket{000} + \ket{100}\right)\right) + \frac{\alpha}{\sqrt{2}} \left(\frac{1}{\sqrt{2}}\left(\ket{011} + \ket{111}\right)\right) \\
+        &\hspace{1cm}+ \frac{\beta}{\sqrt{2}}\left(\frac{1}{\sqrt{2}}(\ket{010} - \ket{1 10})\right) + \frac{\beta}{\sqrt{2}}\left(\frac{1}{\sqrt{2}}(\ket{001} - \ket{101})\right)\\
+        &=\frac{\alpha}{2}\left(\ket{000} + \ket{100} + \ket{011} + \ket{111}\right) + \frac{\beta}{2}(\ket{010} + \ket{001} - \ket{110} - \ket{101})
+    \end{aligned}
+\end{equation}
+
+The next crucial step for Alice is to do a partial measurement on the 2 qubits and \textit{communicate her observations, \(b_0b_1\), to Bob}. The measurement should result in an observation of one of 4 possible states: \(\ket{00}, \ket{01}, \ket{10}, \ket{11}\). The effect of the measurements are detailed in \Cref{tab:epr_quantum_teleport_aft_measurement}.
+
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|c|c|c|}\hline
+         Alice's observation, \(b_1b_0\) & State Collapses to & Bob's State \\\hline
+         00 & \(\alpha \ket{000} + \beta\ket{001}\) & \(\ket{\psi}=\alpha\ket{0} + \beta\ket{1}\)\\
+         01 & \(\alpha \ket{011} + \beta\ket{010}\) & \(\alpha\ket{1} + \beta\ket{0}\)\\
+         10 & \(\alpha\ket{100} - \beta\ket{101}\) & \(\alpha \ket{0} - \beta\ket{1}\) \\
+         11& \(\alpha \ket{111} - \beta\ket{110}\) & \(\alpha\ket{1} - \beta\ket{0}\)\\\hline
+    \end{tabular}
+    \caption{Alice's observation and the effects of her measurement on the quantum circuit and hence, Bob's state.}
+    \label{tab:epr_quantum_teleport_aft_measurement}
+\end{table}
+
+Now let's turn to Bob. Suppose he receives Alice's 2-bit observation. He can then perform the following unitary operations according to the observed \(b_0b_1\) \textit{to directly recover} \(\ket{\psi}\). The unitary operation \(U\), which Bob has to perform, is as follows (note the order of operations): \[
+U = \begin{cases}
+    I  = \begin{pmatrix}
+        1 & 0\\0 & 1
+    \end{pmatrix} \;(\text{equivalently: do nothing})&\text{if}\; b_0b_1 = 00\\
+    X = \begin{pmatrix}
+        0 & 1\\1 & 0
+    \end{pmatrix} &\text{if}\;b_0b_1 = 01\\
+    Z = \begin{pmatrix}
+        1 & 0 \\0 & -1
+    \end{pmatrix}&\text{if}\;b_0b_1 = 10\\
+    ZX  =\begin{pmatrix}
+        1 & 0 \\0 & -1
+    \end{pmatrix}\begin{pmatrix}
+        0 & 1\\1 & 0
+    \end{pmatrix} = \begin{pmatrix}
+        0 & 1 \\-1 & 0
+    \end{pmatrix} &\text{if}\;b_0b_1 = 11
+\end{cases}
+\]
+
+We finally give the full diagram of the quantum circuit in \Cref{fig:epr_pair_quantum_teleporter_full}.
+
+\begin{figure}[!ht]
+\centering
+\begin{quantikz}
+\lstick{$\ket{\psi} = \alpha\ket{0}+\beta\ket{1}$} & \qw      & \ctrl{1} & \gate{H} &  & \meter{\ket{b_0}} & \cw & \cw & \cwbend{2} \\
+\lstick[2]{$\frac{1}{\sqrt2}\ket{00}+\frac{1}{\sqrt2}\ket{11}$}    &  & \targ{}  & & \meter{\ket{b_1}}   & \cw & \cw & \cwbend{1} \\
+  & \qw      & \qw      & \qw      & \qw    & &  & \gate{X^{b_1}}   & \gate{Z^{b_0}} & \qw & \rstick{$\ket{\psi}$}
+\end{quantikz}
+\caption{Quantum Teleportation Circuit with EPR Pair.}
+\label{fig:epr_pair_quantum_teleporter_full}
+\end{figure}
+
+\begin{remark}
+    It might seem as if the teleported \(\ket{\psi}\) is being cloned, which violates the Non-Cloning theorem. This is in fact not the case because Alice has lost her own qubit! The No-Cloning theorem is henceforth not violated. A useful sanity check is to realise that all the operations that we have done so far are linear.
+\end{remark}
+
+In conclusion, quantum teleportation demonstrates how quantum information can be transferred between distant locations without physically sending the particle that carries the state. By combining entanglement, measurement, and a bit of classical communication overhead, the protocol faithfully and securely reconstructs an unknown quantum state at a remote site (while necessarily destroying the original). This process highlights the power of entanglement as a resource and forms a foundational building block for quantum communication, quantum networks, and future quantum internet technologies.
+
+\textbf{\underline{Summary}}
+
+\textbf{Idea}: Alice has a state $\ket{\psi}$ (whose amplitudes she doesn't even know). Through the quantum teleportation protocol she can send it to Bob using a shared $\ket{EPR}$ and two bits of classical communication.
+
+\textbf{Protocol}: Starting from $\ket{\psi}\ket{EPR}$, Alice applies $H\circ CNOT$ on her two qubits to obtain
+\begin{align*}
+    \frac{1}{2}[&\ket{00}(\alpha\ket{0}+\beta\ket{1}) + \ket{01}(\alpha\ket{1}+\beta\ket{0})\\
+    + &\ket{10}(\alpha\ket{0}-\beta\ket{1}) + \ket{11}(\alpha\ket{1}-\beta\ket{0})].
+\end{align*}
+Alice then measures her two qubits and obtains the results $(b_0,b_1)$. Alice sends her results (comprising two bits of information) to Bob, who acts accordingly (apply $Z^{b_0}X^{b_1}$ on his qubit) to recover $\ket{\psi}$.
+
+
+\section[\texorpdfstring{Classical Computation $\bm{\subseteq}$ Quantum Computation}{}]{Classical Computation $\bm{\subseteq}$ Quantum Computation} 
+
+Quantum computers are arguably most interesting because of their potential in solving complex problems much faster than classical computers -- if this were not the case then they would remain mostly a theoretical curiosity. Whether quantum $>$ classical -- which can be captured mathematically rigorously via complexity statements like $BPP \subsetneq BQP$ or $NP \subsetneq QMA$ -- remains to be established, with most in the community in the `yes' camp. In this section we show that whatever a classical computer can do a quantum computer can as well, thus demonstrating that at the very least, quantum $\geq$ classical.
+
+Because we have been talking about quantum computing in terms of gates and circuits, we begin by recasting classical computation in terms of (classical) gates and circuits as well, in contrast to the perhaps more well-known Turing machines formalism. 
+
+\subsection{The Circuit Model of Computation}
+
+The circuit model of computation is a fundamental framework in theoretical computer science which most resembles the silicon chips making up modern computers. This model describes how computations are performed using \textbf{circuits}, which are logical gates arranged in a network (specifically, a directed acyclic graph). The two most commonly used measures of complexity of a circuit $C$ are its \textbf{size} $|C|$, which counts the number of \textit{fundamental} gates in the circuit, and its \textbf{depth} $\text{dep}(C)$, which takes into account parallelism and counts the number of layers of (fundamental) gates comprising the circuit. These measures are each interesting in their own right and which one to use as figure of merit depends on context. Right now we shall mostly use the size $|C|$. By `fundamental' above we refer to the gates belonging to any universal gate set. Recall that a universal gate set is one whose elements can be used to construct any Boolean function. The canonical example is $\{\text{AND, OR, NOT}\}$, but simpler sets also exist, such as $\{\text{AND, NOT}\}$ (OR can be constructed by de Morgan), or simply $\{\text{NAND}\}$.
+
+A classic result by Cook and Karp states that any Turing machine $M$ that computes an $n$-bit Boolean function in time $T(n)$ can be converted into a circuit family $\{C_n\}$ of size $O(T(n) \log T(n))$ which computes the same Boolean function. Roughly speaking this means that the circuit model of computation is just as powerful as the Turing machine model of computation since this only incurs a log overhead. For more details see Chapter 6 of \cite{arora2009computational}.
+
+We can further extend the above model to also allow for \emph{probabilistic circuits} by introducing a FLIP gate, which outputs $0$ or $1$ with probability $1/2$ each.
+\begin{definition}
+A probabilistic circuit $C$ computes 
+\[
+f : \{0,1\}^n \rightarrow \{0,1\}
+\]
+if for all inputs $x$,
+\[
+\Pr[C(x) = f(x)] \geq \frac{2}{3}.
+\]
+\end{definition}
+The threshold $2/3$ was arbitrary, it could have been any number strictly greater than half. We can boost the threshold arbitrary close to 1 by parallel repetition.
+
+\subsection{Reversible Computing}
+
+Recall that quantum gates are unitary, which means they are invertible/reversible. That is, given the output of a gate I can determine the input. This immediately presents a difficult if we want to convert classical gates to quantum gates -- the gates such as AND or OR are clearly not reversible (the NOT gate on the other hand is reversible). For example, if we receive the output 0 from an AND gate, we cannot ascertain whether the input was $(0,0)$, $(0,1)$, or $(1,0)$. 
+
+To overcome this, we embed irreversible classical gates into reversible quantum gates by introducing additional input qubits called \textbf{ancillas} and allowing additional output qubits called \textbf{garbage}. Being able to simulate a universal set of logic gates with quantum gates then means we can simulate any classical computation quantumly. Of course we also have to make sure the overhead involved in these embeddings are not too high.
+
+Below we present two three-qubit quantum gates which are universal for \textit{classical} computing -- the Toffoli (CCNOT) and Fredkin (CSWAP) gates. Alone they are not universal for quantum computing, but with an additional Hadamard they are. More precisely, this means that any arbitrary $n$-qubit unitary can be approximated arbitrarily closely using the $\{\text{CCNOT}, H\}$ or the $\{\text{CSWAP}, H\}$ gate sets.
+
+\textbf{Fredkin:}\hfill
+
+Consider the Fredkin/CSWAP gate on defined on basis states $\ket{a}$, $\ket{b}$ and $\ket{c}$ as such:
+\begin{center}
+    \begin{quantikz}
+        \lstick{$\ket{a}$} & \ctrl{2} & \rstick{$\ket{a}$} \\
+        \lstick{$\ket{b}$} & \swap{1} & \rstick{$\ket{b(1-a) + ca}$} \\
+        \lstick{$\ket{c}$} & \swap{-1} & \rstick{$\ket{c(1-a) + ba}$}
+    \end{quantikz}
+\end{center}
+
+As a matrix this is
+$$ \text{CSWAP} = \begin{bmatrix}
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
+\end{bmatrix}. $$
+
+We can simulate AND:
+\begin{center}
+    \begin{quantikz}
+        \lstick{$\ket{a}$} & \ctrl{2} & \rstick{$\ket{a}$} \\
+        \lstick{$\ket{b}$} & \swap{1} &  \\
+        \lstick{$\ket{0}$} & \swap{-1} & \rstick{$\ket{a \land b}$} 
+    \end{quantikz}
+\end{center}
+OR:
+\begin{center}
+    \begin{quantikz}
+        \lstick{$\ket{a}$} & \ctrl{2} & \rstick{$\ket{a}$} \\
+        \lstick{$\ket{1}$} & \swap{1} &  \\
+        \lstick{$\ket{b}$} & \swap{-1} & \rstick{$\ket{a \lor b}$} 
+    \end{quantikz}
+\end{center}
+and NOT and COPY:
+\begin{center}
+    \begin{quantikz}
+        \lstick{$\ket{a}$} & \ctrl{2} & \rstick{$\ket{a}$} \\
+        \lstick{$\ket{0}$} & \swap{1} & \rstick{$\ket{a}$} \\
+        \lstick{$\ket{1}$} & \swap{-1} & \rstick{$\ket{\lnot a}$} 
+    \end{quantikz}
+\end{center}
+Thus, the Fredkin gate is universal for classical computation.
+
+\textbf{Toffoli:}\hfill
+
+Consider the Toffoli/CCNOT gate defined on basis states $\ket{a}$, $\ket{b}$ and $\ket{c}$ as such:
+\begin{center}
+    \begin{quantikz}
+        \lstick{$\ket{a}$} & \ctrl{2} & \rstick{$\ket{a}$} \\
+        \lstick{$\ket{b}$} & \ctrl{1} & \rstick{$\ket{b}$} \\
+        \lstick{$\ket{c}$} & \targ{} & \rstick{$\ket{c \oplus (a \land b)}$} 
+    \end{quantikz}
+\end{center}
+
+As a matrix this is
+$$ \text{CCNOT} = \begin{bmatrix}
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0
+\end{bmatrix}. $$
+
+
+We can use also use it to simulate AND:
+\begin{center}
+    \begin{quantikz}
+        \lstick{$\ket{a}$} & \ctrl{2} & \rstick{$\ket{a}$} \\
+        \lstick{$\ket{b}$} & \ctrl{1} & \rstick{$\ket{b}$} \\
+        \lstick{$\ket{1}$} & \targ{} & \rstick{$\ket{a \land b}$} 
+    \end{quantikz}
+\end{center}
+NOT:
+\begin{center}
+    \begin{quantikz}
+        \lstick{$\ket{1}$} & \ctrl{2} & \rstick{$\ket{1}$} \\
+        \lstick{$\ket{1}$} & \ctrl{1} & \rstick{$\ket{1}$} \\
+        \lstick{$\ket{a}$} & \targ{} & \rstick{$\ket{\lnot a}$} 
+    \end{quantikz}
+\end{center}
+and COPY:
+\begin{center}
+    \begin{quantikz}
+        \lstick{$\ket{a}$} & \ctrl{2} & \rstick{$\ket{a}$} \\
+        \lstick{$\ket{1}$} & \ctrl{1} & \rstick{$\ket{1}$} \\
+        \lstick{$\ket{0}$} & \targ{} & \rstick{$\ket{a}$} 
+    \end{quantikz}
+\end{center}
+We can use Toffoli to simulate OR as well, since $a \lor b = \lnot (\lnot a \land \lnot b)$. Thus, the Toffoli gate is also universal for classical computation.
+
+Either way, since we can use quantum gates to simulate a universal set of classical gates, any classical computation that can be done with classical gates can also be done with quantum gates. To summarize the above, we have:
+\begin{result}
+    Given a function $f: \{0,1\}^n \rightarrow \{0,1\}^m$. Suppose we have a classical Boolean circuit $C_f$ implementing $f$ which requires $k$ elementary gates. We can convert these gates into an $O(k)$-sized reversible circuit $R_f$ comprising Toffoli/Fredkin gates, this also uses $O(k)$ ancillas. By copying $f(x)$ over to $y$ using CNOTs, then uncomputing, we get the reversible circuit:
+    \begin{align*}
+        O_f\ket{x}\ket{y} = \ket{x}\ket{y \oplus f(x)}
+    \end{align*}
+    where we have omitted the ancillas. Roughly speaking, $O_f = R_f^{-1}CNOT^{\otimes n}R_f$, where $R_f$ is a reversible implementation of $C_f$.
+\end{result}
+Uncomputing here just means applying $R_f^{-1}$, i.e. the inverse of $R_f$, see next section for details.
+

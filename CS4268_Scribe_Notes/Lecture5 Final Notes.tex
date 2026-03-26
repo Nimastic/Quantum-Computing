@@ -1,0 +1,148 @@
+\noindent
+\textbf{CS4268 AY2025-26 Sem 2}
+\\
+\noindent
+Lecturer: Divesh Aggarwal
+\hfill
+Lecture 5                      %%% FILL IN LECTURE NUMBER HERE
+\hfill
+Date: February 12, 2026          %%% FILL IN LECTURE DATE HERE
+
+
+\noindent
+\rule{\textwidth}{1pt}
+
+\medskip
+
+\section{Basic Primitives in Quantum Computing}
+
+In this section we introduce several fundamental techniques that will be used repeatedly throughout this text. They are uncomputation (which allows us to remove garbage and reuse ancilla qubits), the phase-kickback method (which encodes function values into phases), and the Hadamard-Walsh transform, which is a fancy name for the parallel implementation of
+Hadamard gates.
+
+\subsection{Uncomputation}
+
+As discussed previously, a quantum implementation of a classical function
+typically produces additional intermediate data, usually referred to as
+garbage. Since quantum circuits are reversible, this garbage cannot be
+simply discarded. However, we would like to reuse ancillas which requires them to be reverted back to their original state.
+
+Let $F : \{0,1\}^n \rightarrow \{0,1\}$ and suppose we have a quantum circuit
+$Q_F$ which, on input $\ket{x}$ and some ancilla qubits, produces
+$\ket{F(x)}$ together with some garbage.
+
+The standard technique to remove garbage is the
+\textit{compute--copy--uncompute} sequence. We first compute $F(x)$,
+then copy the result into a clean qubit using a CNOT, and finally apply the
+inverse circuit $Q_F^{-1}$ to undo the computation and restore the ancillas. This process is commonly called \textbf{uncomputation}.
+\[
+\begin{quantikz}[row sep=0.7cm, column sep=0.7cm]
+\lstick{$\ket{x}$} 
+    & \gate[wires=2]{Q_F}
+    & \ctrl{2} 
+    & \gate[wires=2]{Q_F^{-1}} 
+    & \rstick{$\ket{x}$} \qw \\
+%
+\lstick{$\ket{\text{ancillas}}$} 
+    & \qw 
+    & \qw 
+    & \qw 
+    & \rstick{$\ket{\text{ancillas}}$} \qw \\
+%
+\lstick{$\ket{0}$} 
+    & \qw 
+    & \targ{} 
+    & \qw 
+    & \rstick{$\ket{F(x)}$} \qw
+\end{quantikz}
+\]
+
+After applying $Q_F^{-1}$ the garbage is removed and the ancillas are restored to their original state. We denote this entire implementation by $Q_F^* := Q_F^{-1} \circ \text{CNOT} \circ Q_F $.
+
+More generally, for $F : \{0,1\}^n \rightarrow \{0,1\}^m$ and $y \in \{0,1\}^m$, the circuit $Q_F^*$ implements
+\[
+\begin{quantikz}
+    \lstick{$\ket{x}$} & \gate[wires=2]{Q_F^*} & \rstick{$\ket{x}$} \\
+    \lstick{$\ket{y}$} & \qw & \rstick{$\ket{y \oplus F(x)}$}
+\end{quantikz}
+\]
+This form is essential because it avoids unwanted entanglement between the
+output and the ancillas and allows the ancilla qubits to be reused.
+
+\subsection{The Phase-Kickback Method}
+
+In many quantum algorithms we work with Boolean functions $F : \{0,1\}^n \rightarrow \{0,1\}$. It is often convenient to use the equivalent phase representation
+\[
+f(x) = (-1)^{F(x)} \in \{-1,1\}.
+\]
+
+A key technique for obtaining this phase representation is the \textbf{phase-kickback} trick. Consider the  aforementioned $Q_F^*$. If we apply $Q_F^*$ to $\ket{x}$ and $\ket{-}$ we obtain $\frac{1}{\sqrt{2}} (\ket{F(x)} - \ket{\neg F(x)})$ as the second output which by closer inspection is the same as
+\[
+(-1)^{F(x)} \ket{x}\ket{-}.
+\]
+Thus the value of $F(x)$ is not stored in the target qubit; instead it appears
+as a phase factor on $\ket{x}$. This is the phase kickback effect.
+
+Using standard gates, we can prepare $\ket{-}$ from $\ket{0}$ by applying a
+NOT gate followed by a Hadamard. This yields the circuit
+
+\[
+\begin{quantikz}
+    \lstick{$\ket{x}$} & \qw & \qw & \gate[wires=2]{Q_F^*} &\qw & \qw & \rstick{$(-1)^{F(x)}\ket{x}$} \\
+    \lstick{$\ket{0}$} & \gate{NOT} & \gate{H} & \qw & 
+    \gate{H} & \gate{NOT} &
+    \rstick{$\ket{0}$}
+\end{quantikz}
+\]
+
+We denote this entire quantum circuit by $Q_F^{\pm}$.
+
+\paragraph{Why do we do this?} Quantum algorithms exploit interference. Relative phases between basis states affect interference patterns. By encoding $F(x)$ as a phase rather than as a separate output bit, we allow the function values to influence interference directly.
+
+\subsection{The Hadamard-Walsh Transform}
+
+The operator $H^{\otimes n}$ denotes the parallel application of Hadamard gates to $n$ qubits. This transformation, also known as the
+\textbf{Hadamard--Walsh transform}, maps
+\[
+\ket{0^n} \mapsto
+\frac{1}{\sqrt{N}} \sum_{x \in \{0,1\}^n} \ket{x},
+\qquad N = 2^n,
+\]
+creating a uniform superposition over all bit strings.
+More generally,
+\[
+H^{\otimes n}\ket{x}
+=
+\frac{1}{\sqrt{N}}
+\sum_{y \in \{0,1\}^n}
+(-1)^{x \cdot y}\ket{y},
+\]
+where $x \cdot y$ is the bitwise inner product modulo $2$.
+
+\paragraph{Example.}
+To build intuition, consider the case $\ket{b_1,b_2}$.
+Applying $H^{\otimes 2}$ gives
+\[
+\frac{1}{2}\Bigl(
+\ket{00}
++ (-1)^{b_2}\ket{01}
++ (-1)^{b_1}\ket{10}
++ (-1)^{b_1+b_2}\ket{11}
+\Bigr).
+\]
+Thus the output is a uniform superposition over all basis states, and the
+input bits $b_1,b_2$ only determine the \emph{sign pattern} of the
+amplitudes. The phases are given by the parities
+$b_1x_1 + b_2x_2 \pmod{2}$.
+
+In general, the application of $H^{\otimes n}$ maps a computational basis
+state $\ket{x}$ to a vector with entries $\pm 1/\sqrt{2^n}$, where the
+$s$-th coordinate is given by
+\[
+\frac{1}{\sqrt{2^n}}(-1)^{\sum_{i=1}^n x_i s_i \bmod 2}.
+\]
+where $s \in \{0,1\}^n$ labels the computational basis states.
+
+
+These vectors form the so-called $\chi$-basis (the Fourier basis over
+$\mathbb{Z}_2^n$). From this perspective, the Hadamard--Walsh transform is
+simply the change of basis from the computational basis to the $\chi$-basis.

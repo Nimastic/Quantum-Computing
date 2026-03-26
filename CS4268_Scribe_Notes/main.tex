@@ -1,0 +1,189 @@
+\documentclass[11pt]{article}
+\pdfoutput=1
+
+\usepackage{./preamble}
+
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext}
+\usepackage{fullpage}
+\usepackage{verbatim}
+\usepackage[english]{babel}
+\usepackage{tocloft}
+\usepackage[x11names]{xcolor}
+
+% Math.
+\usepackage{amsmath,amsthm,amssymb,amscd,amsfonts,mathtools,mathrsfs,braket,bbm,enumerate,graphicx,bm,tcolorbox,physics}
+
+% Remove period after theorem statement.
+\newtheoremstyle{definition_no_period}
+  {\parskip}    % ABOVESPACE
+  {\parskip}    % BELOWSPACE
+  {\normalfont} % BODYFONT
+  {}            % INDENT (empty value is the same as 0pt)
+  {\bfseries}   % HEADFONT
+  {}            % HEADPUNCT
+  {0.5em}       % HEADSPACE
+  {}            % CUSTOM-HEAD-SPEC
+
+\numberwithin{equation}{section}
+%\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{quantikz2}
+\usepackage{algorithm,algpseudocode}
+%\renewcommand{\thealgorithm}{}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\allowdisplaybreaks
+
+% Paragraph formatting.
+\usepackage{parskip}
+% For making parskip and theorem environments compatible.
+\makeatletter
+\def\thm@space@setup{%
+  \thm@preskip=\parskip \thm@postskip=0pt
+}
+\makeatother
+
+% Reference formatting.
+\usepackage[pagebackref=true, colorlinks=true, linktoc=all, linkcolor=Blue3, citecolor=Turquoise3, urlcolor=Turquoise3]{hyperref}
+\renewcommand*{\backrefalt}[4]{%
+  \ifcase #1 \relax %
+    \or \{#2\}%
+    \else \{#2\}%
+  \fi%
+}
+\renewcommand*{\backreftwosep}{, }
+\renewcommand*{\backreflastsep}{, }
+\usepackage[capitalise,nameinlink]{cleveref}
+
+% For table of contents.
+\makeatletter
+%\@addtoreset{section}{part}
+\makeatother
+\newlength\mylen
+\renewcommand\thepart{\Roman{part}}
+\renewcommand\cftpartpresnum{Part~}
+\settowidth\mylen{\bfseries\cftpartpresnum\cftpartaftersnum}
+\addtolength\cftpartnumwidth{\mylen}
+%\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+% For authorship formatting.
+\usepackage{authblk}
+\renewcommand*{\Authsep}{\qquad}
+\renewcommand*{\Authands}{\qquad}
+\usepackage[para]{footmisc}
+\newcommand*{\email}[1]{\href{mailto:#1}{\nolinkurl{#1}} }
+
+
+% Theorem formatting. Have to use hooks after cleveref update.
+\theoremstyle{definition_no_period}
+% definitions
+\newtheorem{definition}{Definition}[section]
+% results
+\newtheorem{result}{Result}[section]
+\newtheorem{theorem}[result]{Theorem}\AddToHook{env/theorem/begin}{\crefalias{result}{theorem}}
+\newtheorem{proposition}[result]{Proposition}\AddToHook{env/proposition/begin}{\crefalias{result}{proposition}}
+\newtheorem{lemma}[result]{Lemma}\AddToHook{env/lemma/begin}{\crefalias{result}{lemma}}
+\newtheorem{corollary}[result]{Corollary}\AddToHook{env/corollary/begin}{\crefalias{result}{corollary}}
+\newtheorem{fact}[result]{Fact}\AddToHook{env/fact/begin}{\crefalias{result}{fact}}
+\newtheorem{claim}[result]{Claim}\AddToHook{env/claim/begin}{\crefalias{result}{claim}}
+% remarks
+\newtheorem{remark}{Remark}[section]
+\newtheorem{example}[remark]{Example}\AddToHook{env/example/begin}{\crefalias{remark}{example}}
+\theoremstyle{plain}
+% problems
+\newtheorem{problem}{Problem}[section]
+\newtheorem{conjecture}[problem]{Conjecture}\AddToHook{env/conjecture/begin}{\crefalias{problem}{conjecture}}
+\newtheorem{task}[problem]{Task}\AddToHook{env/task/begin}{\crefalias{problem}{task}}
+
+
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator{\poly}{poly}
+\renewcommand{\tr}{\operatorname{Tr}}
+\DeclareMathOperator{\re}{Re}
+\DeclareMathOperator{\im}{Im}
+\DeclareMathOperator{\img}{im}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\dist}{dist}
+\renewcommand{\P}{\operatorname{\mathbf{P}}}
+\DeclareMathOperator{\pr}{Pr}
+
+
+
+\newcommand{\kk}[1]{{\color{red} KK: #1}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\title{CS4268 Scribe Notes}
+% \author[1,2]{Everyone}
+% \affil[1]{Centre for Quantum Technologies, NUS}
+% \affil[2]{Department of Computer Science, NUS}
+
+\begin{document}
+%\maketitle
+\begin{titlepage}
+\vspace*{\fill}
+\begin{center}
+
+{\Large \textbf{CS4268 Lecture Notes}}\\
+\vspace{1cm}
+AY2025/26 Semester 2\\
+\vspace{1cm}
+CQT and SOC, NUS
+\end{center}
+\vspace*{\fill}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%change 'scribe templates' to 'final notes' later on for all such entries
+\input{Lecture1 Final Notes} 
+\newpage
+
+\input{Lecture2 Final Notes}
+\newpage
+
+\input{Lecture3 Final Notes}
+\newpage
+
+\input{Lecture4 Final Notes}
+\newpage
+
+\input{Lecture5 Final Notes}
+\newpage
+
+\input{Lecture6 Final Notes}
+\newpage
+
+\input{Lecture7 Final Notes}
+\newpage
+
+\input{Lecture8 Final Notes}
+\newpage
+
+\input{Lecture9 Scribe Template}
+\newpage
+
+\input{Lecture10 Scribe Template}
+\newpage
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{alpha}
+\bibliography{main}
+
+\end{document}

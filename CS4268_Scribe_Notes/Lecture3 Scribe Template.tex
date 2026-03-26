@@ -1,0 +1,142 @@
+% \documentclass[11pt]{article}
+
+% %%%% CUSTOM PREAMBLE
+% \usepackage{./preamble}
+
+% %% ADD MISC DEFINITIONS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %\addtolength{\topmargin}{-1cm}
+% %\addtolength{\textheight}{2cm}
+
+% \begin{document}
+
+%\maketitle
+
+\newpage
+ %%*****************************************************
+\noindent
+\textbf{CS4268 AY2025-26 Sem 2}
+\\
+\noindent
+Lecturer: Divesh Aggarwal
+\hfill
+Lecture 3                      %%% FILL IN LECTURE NUMBER HERE
+\hfill
+Date: January 29, 2026          %%% FILL IN LECTURE DATE HERE
+
+
+\noindent
+\rule{\textwidth}{1pt}
+
+\medskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% BODY OF SCRIBE NOTES GOES HERE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%Write lecture topic above.
+\textbf{Instructions}\\
+\begin{itemize}
+    \item Try to leave the preamble unchanged, only make changes to \texttt{main.tex} and  \texttt{references.bib}. Add images to the \texttt{images} folder. 
+    \item Share one (zipped) directory preserving the directory structure on Canvas. 
+    \item Prepare organized notes by elaborating on the broad items provided in different sections below based on the lecture material completing any missing details from lectures.
+    \item Feel free to modify structure and/or order of contents as you see fit; the below is just a guideline.
+\end{itemize} 
+
+\section{Composite Systems}
+We have discussed how to describe a single quantum system via the notion of quantum states residing in a Hilbert space, how they can be transformed and how information is extracted from the system via measurements. Now we discuss how to characterize \textit{composite} systems. Given two (or more) quantum systems, each with its own Hilbert space, how do we describe them collectively as a whole? In particular, if we only effect changes on a component of this composite system, how can we describe this mathematically as an operation on the entire system? 
+
+This is achieved via the notion of \textit{tensor products}.
+
+\subsection{Tensor Product}
+Let us consider a system comprising simply two qudits. This system is mathematically described by what we call the tensor product of the Hilbert spaces of the individual qudits:
+\begin{definition}[Tensor Product of Hilbert Spaces]
+    Given two qudit Hilbert spaces $\mathcal{H}_1 = \mathbb{C}^{d_1}$, $\mathcal{H}_2 = \mathbb{C}^{d_2}$ spanned respectively by the basis vectors \textcolor{red}{add: what are these?}, the \textbf{tensor product} of $\mathcal{H}_1$ and $\mathcal{H}_2$ is \textcolor{red}{add definition in terms of span of the $d_1 \times d_2$ basis vectors}.
+
+    Each state $\ket{\psi}$ residing in $\mathcal{H}_1 \otimes \mathcal{H}_2$ is a legitimate characterization of the entire system.
+
+    \textcolor{red}{add column vector representation of basis vectors}
+\end{definition}
+
+\begin{example}
+    Add examples for the tensor products $\ket{0} \otimes \ket{0}$, $\ket{0} \otimes \ket{+}$, $\ket{+} \otimes \ket{0}$, $\ket{+} \otimes \ket{-}$ in terms of column representations.
+
+    More generally, suppose Alice has qubit $\ket{A} = \alpha_0\ket{0} + \alpha_1\ket{1}$ and Bob has qubit $\ket{B} = \beta_0\ket{0} + \beta_1\ket{1}$. Then their joint state is \textcolor{red}{add. also add column representation.}
+
+    \textcolor{red}{Add:} verify that the composite coefficients are indeed probability amplitudes
+\end{example}
+
+\textcolor{red}{add extension of tensor product to general $n>2$ sized systems.}
+
+\begin{definition}[Tensor Product of Matrices]
+    add definition for matrix tensor products in terms of matrix components.
+\end{definition}
+
+We seem to have two different (but of course superficially very similar) notions of tensor products, one for vectors and one for matrices, but note that technically the set of matrices itself is a (abstract) vector space, thus there really is no difference on an abstract level. Won't worry about that here -- concretely just think of tensor products as `concatenation plus linearity'. For a more precise definition see \href{https://en.wikipedia.org/wiki/Tensor_product}{tensor products}.
+
+\begin{proposition}
+    add all the properties of matrix tensor products
+\end{proposition}
+
+Why matrix tensor products are useful? Recall that matrices appear a lot in quantum, as operations on the quantum states (unitaries, measurements etc). Matrix tensor products characterize the \textit{joint} application of these operations on the entire system.
+
+Add material on single gate operations (i.e. an operation applied to just a component of the entire system). Given this single gate, how to express it as a gate acting on the entire system?
+
+Think of the identity $I$ operator as the `do nothing' operation.
+
+\textcolor{red}{Add all the material on the CNOT gate and the production of the epr/bell state from the relevant quantum circuit.}
+
+The next example is intended to be a hands-on exercise to help you gain familiarity with tensor product manipulation.
+\begin{example}[Applying single and composite quantum gates]
+    \textcolor{red}{Add:} elaborate on the example involving the long sequence of gates, both single and composite. Explain in detail at each stage what the current quantum states are. 
+\end{example}
+
+\subsection{Quantum Entanglement}
+Look at the Bell state again. We might think: what is the appropriate $\ket{\psi}$ and $\ket{\phi}$ such that $\ket{\Phi^+} = \ket{\psi} \otimes \ket{\phi}$? That is, what are the individual states of the qubits that collectively are described as the Bell state $\ket{\Phi^+}$ on the entire system?
+
+\textcolor{red}{Add answer and proof (by contradiction, essentially)}
+
+We say that $\ket{\Phi^+}$ is an ?? state. (Quantum) Entanglement is a \textit{core} feature of quantum mechanics and quantum computing, but mathematically it simply expresses the non-separability of the system state.
+
+(We \textit{can} actually talk about the individual states, via the concept of partial trace. More on that later in the course.)
+
+\begin{definition}
+    Add mathematical definition on what it means for a state to be entangled/non-entangled.
+\end{definition}
+
+
+\subsection{Partial Measurements}
+
+So far we have seen how to describe composite systems and the operations on them, generally speaking. Performing measurements is also a type of operation. In this section we briefly explore the notion of partial measurements, i.e. making measurements only on a subsystem of the whole system.
+
+\textcolor{red}{Add:} describe the setup of general superposition of $\ket{0/1}\otimes \ket{0/1}$ basis states. Intuitively, if alice/bob makes a measurement, what would you expect? what are the post measurement states? what are the prob amplitudes involved and what do they mean physically?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \bibliographystyle{alpha}
+% \bibliography{main.bib}
+% \end{document}
+

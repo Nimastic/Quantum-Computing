@@ -1,0 +1,71 @@
+\noindent
+\textbf{CS4268 AY2025-26 Sem 2}
+\\
+\noindent
+Lecturer: Divesh Aggarwal
+\hfill
+Lecture 6                      %%% FILL IN LECTURE NUMBER HERE
+\hfill
+Date: February 19, 2026          %%% FILL IN LECTURE DATE HERE
+
+
+\noindent
+\rule{\textwidth}{1pt}
+
+\medskip
+
+\section{Deutsch-Jozsa and Bernstein-Vazirani}
+
+First consider the baby version, `Deutsch'. `Deutsch-Jozsa' is a generalization of Deutsch to $n$-input bit functions.
+
+\subsection{Deutsch Algorithm}
+\begin{enumerate}
+    \item \textbf{Task:} The task is to determine whether a one-bit function $f: \{0,1\} \rightarrow \{0,1\}$ is constant or balanced. This function $f$ is implemented through the oracle $Q_F^*\ket{x,y} = \ket{x,y \oplus f(x)}$. Because it acts bijectively on the basis states, it is a permutation and hence also a unitary.
+    
+    \item \textbf{Protocol:} We start from the initialized state $\ket{01}$. We then apply the sequence $Q_F^* \circ H \otimes H$ to get (up to a global phase) the state $\ket{\pm}\ket{-}$, where it is $+$ if $f(0)=f(1)$ and $-$ if $f(0) \neq f(1)$. We discard the second qubit and apply a Hadamard to the first. This yields $\ket{0} \iff f(0)=f(1) \iff f(0)\oplus f(1) = 0$ (meaning the function is constant), or $\ket{1} \iff f(0)\neq f(1) \iff f(0)\oplus f(1) = 1$ (meaning the function is balanced). This entire process only requires one single $Q_F^*$ call.
+    
+    \begin{center}
+    \begin{quantikz}
+    \lstick{$\ket{0}$} & \gate{H} & \gate[wires=2]{Q_F^*} & \gate{H} & \meter{} \\
+    \lstick{$\ket{1}$} & \gate{H} & \qw & \qw & \qw
+    \end{quantikz}
+    \end{center}
+    
+    \item \textbf{Key Insight:} Note that the key driver of this algorithm is the phase-kickback mechanism $Q_F^*\ket{x}\ket{-} = (-1)^{f(x)}\ket{x}\ket{-}$.
+\end{enumerate}
+
+\subsection{Deutsch-Jozsa Algorithm}
+Deutsch-Jozsa is a generalization of Deutsch to $n$-bit functions. It leverages massively parallel phase-kickback to evaluate the global property of the function.
+
+\begin{enumerate}
+    \item \textbf{Task:} Determine whether an $n$-bit function $f: \{0,1\}^n \rightarrow \{0,1\}$ is constant or balanced.
+    
+    \item \textbf{Mathematical fact:} Note that the Hadamard-Walsh transform on an $n$-qubit basis state yields $H^{\otimes n}\ket{x}=\frac{1}{\sqrt{2^n}}\sum_{y}(-1)^{x\cdot y}\ket{y}$.
+    
+    \item \textbf{Protocol:} Start from the initial state $\ket{0^n}\ket{1}$. We apply the operation sequence $H^{\otimes n} \circ Q_F^* \circ H^{\otimes n}\otimes H$ to get the state:
+    \begin{align*}
+        \sum_{z \in \{0,1\}^n} \left( \frac{1}{2^n} \sum_{x \in \{0,1\}^n} (-1)^{f(x)+x \cdot z} \right) \ket{z}.
+    \end{align*} 
+    We then measure the working $n$ qubits. Observe that the probability of measuring the all-zero state is $P(z=0^n) = \left|\frac{1}{2^n} \sum_{x \in \{0,1\}^n} (-1)^{f(x)}\right|^2$. This probability equals $1$ iff $f$ is constant and equals $0$ iff $f$ is balanced. Again, this only requires one $Q_F^*$ call.
+    
+    \begin{center}
+    \begin{quantikz}
+    \lstick{$\ket{0}^{\otimes n}$} & \gate{H^{\otimes n}} & \gate[wires=2]{Q_F^*} & \gate{H^{\otimes n}} & \meter{} \\
+    \lstick{$\ket{1}$} & \gate{H} & \qw & \qw & \qw
+    \end{quantikz}
+    \end{center}
+    
+    \item \textbf{Classical comparison:} Classically, a deterministic worst-case evaluation needs to query more than half the space, i.e., $2^{n-1}+1=O(2^n)$ queries. For a randomized algorithm: randomly pick $k$ distinct inputs $x_i$ and query to get $f(x_i)$; answer constant if $f(x_1)=\dots=f(x_k)$, and balanced otherwise. If $f$ was really constant, then the method works with certainty. However, if $f$ was balanced, then the false-positive condition $f(x_1)=\dots=f(x_k)$ occurs with probability $\frac{1}{2^{k-1}}$. So if our probability-error tolerance is $\varepsilon$, we would need $k=O(\log \frac{1}{\varepsilon})$ queries.
+\end{enumerate}
+
+\subsection{Bernstein-Vazirani Algorithm}
+Related to Deutsch-Jozsa is Bernstein-Vazirani, albeit with a slightly different end goal. The structure of the algorithm is very similar. 
+
+\begin{enumerate}
+    \item \textbf{Task:} Given a function $f: \{0,1\}^n \rightarrow \{0,1\}$ such that $f(x)=x \cdot s$ for some unknown secret string $s$, the goal is to find $s$.
+    \item \textbf{Classical Bound:} Classically, the most efficient method is to probe the function bit by bit to obtain $f(1,0,\dots)=s_1, f(0,1,\dots)=s_2, \dots$. This strictly requires $n$ queries.
+    
+    \item \textbf{Quantum Protocol:} Quantumly, the algorithm is the exact same as Deutsch-Jozsa: we apply the sequence $H^{\otimes n} \circ Q_F^* \circ H^{\otimes n}\otimes H$. Miraculously, measuring the query register produces the final output $\ket{s}$ with absolute certainty!
+    
+    \item \textbf{Explanation:} Ok, actually there is nothing miraculous - it's simply because after applying the oracle query, phase kickback leaves us with the state $\frac{1}{\sqrt{2^n}} \sum_x (-1)^{x \cdot s} \ket{x}$. This expression is exactly the mathematical expansion of $H^{\otimes n}\ket{s}$. And since Hadamards are self-inverse ($H^2 = I$), applying the final layer of Hadamards exactly recovers the string $\ket{s}$.
+\end{enumerate}

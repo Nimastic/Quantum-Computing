@@ -1,0 +1,258 @@
+% %%%% CUSTOM PREAMBLE
+% \usepackage{./preamble}
+
+% %% ADD MISC DEFINITIONS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %\addtolength{\topmargin}{-1cm}
+% %\addtolength{\textheight}{2cm}
+
+% \begin{document}
+
+
+%\maketitle
+
+\newpage
+ %%*****************************************************
+\noindent
+\textbf{CS4268 AY2025-26 Sem 2}
+\\
+\noindent
+Lecturer: Divesh Aggarwal
+\hfill
+Lecture 1                      %%% FILL IN LECTURE NUMBER HERE
+\hfill
+Date: January 15, 2026          %%% FILL IN LECTURE DATE HERE
+
+
+\noindent
+\rule{\textwidth}{1pt}
+
+\medskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% BODY OF SCRIBE NOTES GOES HERE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+Quantum computing lies at the intersection of computer science, mathematics, and physics. It utilizes quantum mechanical laws to solve some complex problems (potentially) faster than classical computers. In this course, we shall take the laws of quantum mechanics for granted as our axiomatic "ground truth" and shall focus entirely on their \textbf{computational consequences} \cite{NC10}.
+
+\subsection{Common Computational Tasks}
+Let's first look at some common computational tasks and their complexities on classical computers.
+
+\paragraph{Multiplication}
+The classical primary-school (grid) algorithm for multiplying two \(n\)-digit numbers performs all digit-wise products explicitly and therefore requires a total of \(O(n^{2})\) single-digit operations. This was improved by Karatsuba, who introduced a divide-and-conquer strategy that reduces the multiplication of two \(n\)-digit numbers to three multiplications of size \(n/2\) (with some lower-order additions). Hence we get the recursion
+\[
+        T(n) = 3T(n/2) + O(n).
+\]
+yielding an overall time complexity of \(O\!\left(n^{\log_{2} 3}\right) \approx O\!\left(n^{1.58}\right)\).
+
+The fastest known classical algorithms for multiplication go even further by utilizing the Fast Fourier Transform (FFT). For example, the Schönhage--Strassen algorithm for integer multiplication achieves a runtime of \(O(n \log n \log \log n)\) using FFT-based convolutions.
+
+\paragraph{Factorization}
+The simplest (and most direct) algorithm for factorizing an integer is \emph{trial division}. It finds a nontrivial divisor by checking integers $d = 2, 3, 4, \ldots$ and stopping when $d^2 > N$. This bound works because if $N = ab$ with $a \le b$, then $a \le \sqrt{N}$, and if no divisor exists up to $\sqrt{N}$, then $N$ is prime.
+
+In the worst case, this algorithm requires $O(\sqrt{N})$ divisions, or a net $O(\sqrt{N})$ number of arithmetic operations. If the input size is $n$ (where $n = \log_2 N$= number of bits), then
+\[
+\sqrt{N} = 2^{\frac{1}{2} \log_2 N} = 2^{n/2}.
+\]
+Thus, trial division has a runtime of $O(2^{n/2})$ and is exponential in the bit length of the input. Hence, this algorithm quickly becomes infeasible for practical use as the input size increases.
+
+The most efficient known classical algorithm for factorization is the \emph{General Number Field Sieve} (GNFS). Its runtime is
+\[
+\exp\!\left( \left( \frac{64}{9} \right)^{1/3} (\log N)^{1/3} (\log \log N)^{2/3} \right),
+\]
+which is sub-exponential in $N$ but still super-polynomial in the input size, making it once again infeasible for practical use when $N$ is large.
+
+\medskip
+\noindent
+\fbox{%
+    \parbox{\textwidth}{%
+        \textbf{RSA}\\
+        The apparent hardness of factorizing large numbers, especially semiprimes (numbers that are a product of two large primes) is what is utilized by the RSA public key cryptosystems, widely deployed in practice. It exploits the fact that given a huge semiprime $N$ (where $N = pq$ and both $p$ and $q$ are large prime numbers satisfying some sanity checks), it is hard to factorize the number and find $p$ and $q$.
+    }%
+}
+\medskip
+
+\paragraph{Unstructured Database Search}
+In the unstructured database search problem, the idea is that given a bit string $a_1a_2...a_n$, suppose it is promised that exactly one position contains 1 and rest all are 0s. The goal is to find the unique position \( i \) for which \( a_i = 1 \).
+
+The classical deterministic approach to this problem is the brute force search algorithm. It checks all \( n \) possibilities in the input and finds the correct \( i \) for which \( a_i = 1 \) in an overall runtime of \( O(n) \). In the deterministic setting, it is easy to see that $\Omega(n)$ is a lower bound as well. Even if we allow classical randomized computation, it can be shown that we still have a complexity of $\Theta(n)$ for this problem.
+
+\subsection{Probabilistic Computing}
+
+Probabilistic computing consists of randomized algorithms that, in addition to the input, also have access to a source of randomness such as independent and unbiased coin tosses. Due to the source of randomness the algorithm may lead to different execution paths for the same inputs.
+
+Randomized algorithms can usually be divided into two types: Monte Carlo algorithms and Las Vegas algorithms. Monte Carlo algorithms are those that always terminate within a prescribed polynomial time bound but may return an incorrect answer with some bounded probability. Las Vegas algorithms on the other hand always produce a correct output, but their running time is a random variable whose expected value is usually polynomial.
+
+\paragraph{Primality Testing}
+One of the primary problems where randomized algorithms prove to be useful is primality testing. The goal here is to identify whether the input number is prime or composite. As discussed earlier, deterministic trial division takes \( O(2^{n/2}) \) time for this.
+
+The Miller-Rabin test, on the other hand, uses Monte Carlo primality testing to achieve a complexity of \( O(n^{2} \log n \log \log n) \), which is polynomial in the input size. Solovay--Strassen \cite{SolovayStrassen77} is another randomized algorithm that achieves this task in a runtime of \( O(k \log^{3} n) \), where \( k \) is the number of tested bases. It was only very recently (2002) that a deterministic algorithm for primality testing was found. The AKS algorithm \cite{AKS04} provably runs in an overall time of \( O(\log^{12} N) \). Subsequent improvements under specific assumptions reduces this to \( O(\log^{6} N) \) \cite{LenstraPomerance19}.
+
+\medskip
+\noindent
+\fbox{%
+    \parbox{\textwidth}{%
+        \textbf{BPP = P}\\
+        A very strongly held belief in the theoretical computation community is that $\mathbf{BPP} = \mathbf{P}$. 
+This means that any problem that can be solved in polynomial time with bounded error probability (using randomness) can also be solved in polynomial time deterministically. If true, this would formalize the idea that random bits are merely a convenience for designing faster algorithms, and not a fundamentally stronger computational resource. This remains officially unproven, however.
+    }%
+}
+\medskip
+
+\subsection{Role of Quantum Computing}
+As discussed earlier, quantum computing utilizes the principles of quantum mechanics to implement algorithms that can solve specific complex problems better than classical computers. Two examples for this are as follows which we shall see in details in this course:
+\begin{enumerate}
+    \item \textbf{Shor's Algorithm (1994):} Peter Shor discovered a quantum algorithm that can factor integers in \textbf{polynomial time}. This gives an exponential speedup than the best known classical counterpart.
+    \begin{itemize}
+        \item \textit{Implication:} If we can build a large-scale quantum computer, there is an "easy" way of factorizing the product of 2 large prime numbers effectively breaking the public-key RSA cryptography. 
+    \end{itemize}
+    
+    \item \textbf{Grover's Algorithm (1996):} Lov Grover discovered a way to solve the unstructured database search problem on a quantum computer in time $O(\sqrt{n})$, which can be proved to be the lower bound as well making its quantum complexity to be $\Theta(\sqrt{n})$, which is a quadratic speedup than its classical counterpart.
+    \begin{itemize}
+        \item \textit{Implication:} Its application also extends to a number of other problems, such as the Boolean Satisfiability (SAT) problem. The goal of this problem is to determine whether a Boolean formula with \( n \) variables has an assignment that makes it evaluate to true. A deterministic exhaustive search would require testing all \( 2^{n} \) possible assignments, whereas Grover’s algorithm can find a satisfying assignment in approximately \( 2^{n/2} \) steps. Thus, although the runtime remains exponential, the algorithm achieves a quadratic reduction. Consequently, Grover’s algorithm does not reduce NP-complete problems to polynomial time, but it effectively halves the exponent in their time complexity.
+    \end{itemize}
+\end{enumerate}
+
+
+
+
+\section{The Fundamental Axioms of Quantum Mechanics}
+
+In the previous section, we saw that probabilistic computing is "Classical Computing + Randomness."
+Quantum computing introduces something richer: interference via superposition and entanglement. A high-level summary is:
+\[
+    \text{Quantum Computing} = \text{Classical Computing} + \text{Interference (Rotation)}.
+\]
+While probabilistic algorithms introduce randomness via coin tosses, quantum computing uses this extra structure to manipulate information in ways classical computers cannot. This is the source of quantum speedups:
+\begin{itemize}
+    \item \textbf{Polynomial Speedups:} For problems like unstructured search (Grover's Algorithm).
+    \item \textbf{Exponential Speedups:} For problems like factoring (Shor's Algorithm). \cite{NC10}
+\end{itemize}
+
+Since quantum states behave like \textbf{vectors} that can be rotated, to understand these algorithms, we must rely heavily on \textbf{Linear Algebra}.
+
+\subsection{From Bits to Qubits}
+
+A classical bit has a state $x \in \{0, 1\}$.
+A quantum bit, or \textbf{qubit}, also has two basis states, which we label using the standard "ket" notation:
+\[
+    \ket{0} \quad \text{and} \quad \ket{1}.
+\]
+For now, treat $\ket{0}$ and $\ket{1}$ as abstract labels. However, intuition comes from physics, where objects can be in more than one state at the same time:
+\begin{itemize}
+    \item An \textbf{electron} may have two energy levels, labeled $0$ (ground) and $1$ (excited).
+    \item A \textbf{photon} may have polarization that is Horizontal or Vertical.
+\end{itemize}
+If we label Horizontal as $\ket{0}$ and Vertical as $\ket{1}$, then before measurement, the photon may be in a superposition of both. After measurement, we observe only one outcome.
+
+\subsection{Law 1: Superposition}
+
+The first fundamental difference is that a qubit can be in a state that is a linear combination of the basis states.
+
+\begin{definition}[Quantum Mechanics Law 1: Superposition] If a quantum particle can be in one of the 2 basis states $\ket{0}$ and $\ket{1}$, then it can also be in a superposition state:
+\[
+    \ket{\psi} = \alpha\ket{0} + \beta\ket{1},
+\]
+where $\alpha, \beta \in \mathbb{C}$ are complex numbers called \textbf{amplitudes}.
+These amplitudes must satisfy the \textbf{normalization condition}:
+\[
+    |\alpha|^2 + |\beta|^2 = 1.
+\]
+\end{definition}
+
+\paragraph{Geometric Intuition (The Unit Circle)}
+If we restrict ourselves to \textbf{real} amplitudes ($\alpha, \beta \in \mathbb{R}$), the condition $\alpha^2 + \beta^2 = 1$ describes a circle of radius 1.
+Thus, we can visualize the state of a qubit as a point on the unit circle in $\mathbb{R}^2$.
+
+\begin{example}
+Consider the state $\ket{\psi} = 0.8\ket{0} - 0.6\ket{1}$.
+Check normalization:
+\[
+    |0.8|^2 + |-0.6|^2 = 0.64 + 0.36 = 1.
+\]
+Geometrically, this corresponds to the point $(0.8, -0.6)$ on the unit circle.
+\end{example}
+
+\begin{remark}[Complex Amplitudes]
+In the general case, $\alpha$ and $\beta$ are complex numbers ($a + ib$). The magnitude is defined as $|\alpha| = \sqrt{a^2 + b^2}$. For example, if $\ket{\psi} = \frac{1}{\sqrt{2}}\ket{0} + \frac{i}{\sqrt{2}}\ket{1}$, then $|\frac{i}{\sqrt{2}}|^2 = \frac{1}{2}$.
+\end{remark}
+
+\subsection{Law 2: Measurement}
+We cannot "see" the amplitudes $\alpha$ and $\beta$ directly. We can only extract information via measurement.
+
+\begin{definition}[Quantum Mechanics Law 2: Measurement]
+Given a state $\ket{\psi} = \alpha\ket{0} + \beta\ket{1}$, if we measure it in the standard basis:
+\begin{enumerate}
+    \item We observe outcome $\ket{0}$ with probability $P(0) = |\alpha|^2$.
+    \item We observe outcome $\ket{1}$ with probability $P(1) = |\beta|^2$.
+\end{enumerate}
+Crucially, after the measurement, the state \textbf{collapses} to the observed outcome.
+\end{definition} 
+\begin{example}
+    Suppose we have the state $\ket{\psi} = 0.8\ket{0} + 0.6\ket{1}$.
+    \begin{itemize}
+        \item \textbf{Probability:} We see $\ket{0}$ with probability $0.64$, and $\ket{1}$ with probability $0.36$.
+        \item \textbf{Collapse:} If we see $\ket{0}$, the state \textit{becomes} $\ket{0}$. A second measurement will yield $\ket{0}$ with 100\% probability.
+    \end{itemize}
+\end{example}
+
+This is the key distinction from simply "revealing" a hidden coin toss. In the quantum world, the measurement forces the system to choose a reality.
+
+\subsection{The Mathematical Formalism: Qubits as Vectors}
+
+So far, we have used $\ket{0}$ and $\ket{1}$ as abstract labels. Mathematically, a quantum state is a vector in a complex vector space $\mathbb{C}^d$.
+For a single qubit, the dimension is $d=2$. We identify the basis states with the standard basis vectors:
+\[
+    \ket{0} = e_0 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \qquad
+    \ket{1} = e_1 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}.
+\]
+Consequently, a general superposition $\ket{\psi} = \alpha\ket{0} + \beta\ket{1}$ is simply a column vector:
+\[
+    \ket{\psi} = \alpha \begin{bmatrix} 1 \\ 0 \end{bmatrix} + \beta \begin{bmatrix} 0 \\ 1 \end{bmatrix} = \begin{bmatrix} \alpha \\ \beta \end{bmatrix} \in \mathbb{C}^2.
+\]
+
+\subsection{Beyond Two-Basis States: Qudits and General Laws}
+
+There is nothing special about having exactly two states.
+\begin{itemize}
+    \item A \textbf{qutrit} ($d=3$) has basis states $\ket{0}, \ket{1}, \ket{2}$.
+    \item A general \textbf{qudit} ($d$) has basis states $\ket{0}, \ket{1}, \dots, \ket{d-1}$.
+\end{itemize}
+
+In this general setting, the state is a vector in $\mathbb{C}^d$:
+\[
+    \ket{\psi} = \alpha_0\ket{0} + \dots + \alpha_{d-1}\ket{d-1} \iff \begin{bmatrix} \alpha_0 \\ \vdots \\ \alpha_{d-1} \end{bmatrix} \in \mathbb{C}^d.
+\]
+Each basis state $\ket{i}$ is the standard basis vector $e_i$ (a column with a $1$ in the $i$-th position and $0$ elsewhere).
+
+We can now restate our two fundamental laws in their full generality.
+
+\begin{definition}[Law 1 in dimension $d$: State]
+A general $d$-dimensional state is a superposition:
+\[
+    \ket{\psi} = \sum_{i=0}^{d-1} \alpha_i \ket{i}, \quad \text{subject to} \quad \sum_{i=0}^{d-1} |\alpha_i|^2 = 1.
+\]
+\end{definition}
+
+\begin{definition}[Law 2 in dimension $d$: Measurement]
+Measuring $\ket{\psi} = \sum \alpha_i \ket{i}$ outputs outcome $i$ with probability $|\alpha_i|^2$.
+Immediately after measurement, the state collapses to $\ket{i}$.
+\end{definition}
+
+\paragraph{An example: a 4-dimensional system \texorpdfstring{($d=4$)}{(d=4)}}
+
+A common example is $d=4$. We can view this as a single system with 4 levels ($\ket{0}, \ket{1}, \ket{2}, \ket{3}$), or deeply importantly, as a system of \textbf{two qubits}.
+If we have two qubits, the combined system has $2 \times 2 = 4$ basis states:
+\[
+    \ket{00}, \ket{01}, \ket{10}, \ket{11}.
+\]
+Here, $\ket{01}$ means "First qubit is 0, Second qubit is 1." This scaling ($2^n$ dimension for $n$ qubits) is the source of quantum computing's massive state space.
+
+
+
+% \bibliographystyle{alpha}
+% \bibliography{main}
+
+% \end{document}

@@ -1,0 +1,119 @@
+% \documentclass[11pt]{article}
+
+% %%%% CUSTOM PREAMBLE
+% \usepackage{./preamble}
+
+% %% ADD MISC DEFINITIONS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %\addtolength{\topmargin}{-1cm}
+% %\addtolength{\textheight}{2cm}
+
+% \begin{document}
+
+%\maketitle
+
+\newpage
+ %%*****************************************************
+\noindent
+\textbf{CS4268 AY2025-26 Sem 2}
+\\
+\noindent
+Lecturer: Divesh Aggarwal
+\hfill
+Lecture 8                      %%% FILL IN LECTURE NUMBER HERE
+\hfill
+Date: March 12, 2026          %%% FILL IN LECTURE DATE HERE
+
+
+\noindent
+\rule{\textwidth}{1pt}
+
+\medskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% BODY OF SCRIBE NOTES GOES HERE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%Write lecture topic above.
+\textbf{Instructions}\\
+\begin{itemize}
+    \item Try to leave the preamble unchanged, only make changes to \texttt{main.tex} and  \texttt{references.bib}. Add images to the \texttt{images} folder. 
+    \item Share one (zipped) directory preserving the directory structure on Canvas. 
+    \item Prepare organized notes by elaborating on the broad items provided in different sections below based on the lecture material completing any missing details from lectures.
+    \item Feel free to modify structure and/or order of contents as you see fit; the below is just a guideline.
+\end{itemize} 
+
+
+\section{Simon's Problem and Algorithm}
+
+\begin{enumerate}
+    \item Problem: given $f: \{0,1\}^n \rightarrow \{0,1\}^n$ s.t. $f(x)=f(y) \iff x=y\oplus s$, find $s$. 
+    \item Classical Case
+    \begin{enumerate}
+        \item A randomized algorithm: randomly pick $k$ (TBD) distinct inputs $x_i$ and query to get $f(x_i)$. If there is no collision, answer $s=0^n$. If there is a collision $f(x_i)=f(x_j)$, then answer $s=x_i \oplus x_j$. 
+        \item Analysis: If actually $s=0^n$ then the algorithm works with certainty. If actually $s \neq 0^n$ then we might answer wrongly if there is no observed collisions. Let the probability that the samples have no collision after $k\geq 2$ queries be $P(k)$. Suppose after $j-1$ queries there is no matching. The probability that on the $j$th, i.e. next query there is still no collision with one of the previous queries is then $1-\frac{j-1}{2^n-(j-1)}$. Thus after $k$ rounds,
+        \begin{align*}
+            P(k) &= \prod_{j=2}^k \left[ 1- \frac{j-1}{2^n-(j-1)} \right]\\
+            &\geq 1-\sum_{j=2}^k \left[ \frac{j-1}{2^n-(k-1)} \right]\\
+            &\geq 1- \frac{\Theta(k^2)}{2^n-\Theta(k)}.
+        \end{align*}
+        Remember that we \textit{do} want a collision! So we want $P(k)$ to be small, say $\varepsilon$ (equivalently, coll. prob. is $1-\varepsilon$). Then $P(k)<\varepsilon \implies k \in \Omega(2^{n/2})$. Here in the first $\geq$ we used $(1-a)(1-b)\geq 1-(a+b)$ for $0\leq a,b \leq 1$. Also note that we can assume from the outset that $k\leq 2^{n/2}$ because if $k>2^{n/2}$ then there has to be a collision.
+        \item Simon also showed \textit{any} randomized algorithm needs $k=\Omega(2^{n/2})$ queries (proof is similar to the one above).
+    \end{enumerate}
+    
+    \item Simon's Quantum Algorithm
+    \begin{enumerate}
+        \item Quantum part: Start with $n$ work qubits and $n$ ancilla qubits $\ket{0^n}\ket{0^n}$. Apply $(H^{\otimes n}\otimes I)O_f(H^{\otimes n} \otimes I)$ then measure the work qubits.
+        \item Classical postprocessing: repeat $n-1$ times to get $n-1$ strings $y_i$ all satisfying $y_i \cdot s =0$, where $y_i$ are linearly independent with positive probability. If lin. ind., use Gaussian elimination to solve system, giving two candidates $0^n$ and $s' \neq 0^n$. 
+        \item Test: if $f(0^n)=f(s')$, answer $s=s'$; otherwise $f(0^n)\neq f(s')$, answer $s=0^n$.
+        \item Boosting: repeat entire process $k$ times to boost prob. of obtaining lin. ind. $y_i$. (LI can be easily checked.) If for \text{any} run $f(0^n)=f(s')$, answer $s=s'$; otherwise if for \text{all} runs $f(0^n)\neq f(s')$, answer $s=0^n$.
+    \end{enumerate}
+    
+    \item Analysis of Simon's algorithm
+    \begin{enumerate}
+        \item Quantum: after applying the unitaries the state is
+        \begin{align*}
+            \ket{\psi} = \sum_y \ket{y} \left( \frac{1}{2^n} \sum_x (-1)^{x \cdot y} \ket{f(x)} \right).
+        \end{align*}
+        If $s=0^n$, $f$ is injective so $p(y) = \frac{1}{2^n}$ for all $y$. If $s \neq 0^n$, $f$ is two-to-one, so if $z \in \text{range}(f)$ then $f(x_z) = f(x_z') = z$ for $x_z = x_z' \oplus s$. Then $p(y) = \frac{1}{2^{n-1}}$ if $y \cdot s = 0$, and $p(y) = 0$ if $y \cdot s = 1$.
+        \item Postprocessing: suppose we have lin. ind. $\{y_i\}_{i=1}^{n-1}$. GE gives the two possible solutions: $0^n,s'\neq 0^n$. Suppose actually $s=0^n$. Then $f(0^n)\neq f(s')$, so our answer $s=0^n$ is always correct. Suppose actually $s \neq 0^n$. Then $f(s)=f(0^n)=f(s')$, so our answer $s'=s$ is always correct.
+        \item Probability of linear independence: given $m$ LI strings $y_1,\dots,y_m$, spanning subspace is size $2^m$. Prob of $y_{m+1}$ being LI to this is $\frac{2^n-2^m}{2^n}$. So prob of $n-1$ LI strings is $P=(1-\frac{2^1}{2^n})\dots(1-\frac{2^{n-2}}{2^n}) \geq 1-\sum_{i=1}^{n-2} \frac{1}{2^i} > \frac{1}{2}$. So prob. of \textit{no LI} even after running $k$ times is at most $(1-\frac{1}{2})^k < e^{-k/2}$. So prob. of \textit{at least one LI} after running $k$ times is at least $1 - e^{-k/2}$.
+    \end{enumerate}
+\end{enumerate}
+
+
+
+
+
+
+
+\kk{
+Today Divesh will continue discussing the Fourier transform over $Z_N$, and also talk about Simon's algorithm over $Z_N$. These closely parallel the FT and Simon over $Z_2^n$, recall that the underlying sets are the same, but group operations are different. You can refer to the Lec6 final notes as a guide. If there's time will also discuss the connection between period finding and factoring.
+}
+
+
+
+
+
+
+\section{Simon over $Z_N$}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \bibliographystyle{alpha}
+% \bibliography{main.bib}
+% \end{document}

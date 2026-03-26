@@ -1,0 +1,169 @@
+\noindent
+\textbf{CS4268 AY2025-26 Sem 2}
+\\
+\noindent
+Lecturer: Divesh Aggarwal
+\hfill
+Lecture 8                      %%% FILL IN LECTURE NUMBER HERE
+\hfill
+Date: March 12, 2026          %%% FILL IN LECTURE DATE HERE
+
+
+\noindent
+\rule{\textwidth}{1pt}
+
+\medskip
+
+
+\section{Simon's Problem and Algorithm}
+
+\subsection[\texorpdfstring{Simon over $\bm{\mathbb{Z}_2^n}$}{}]{Simon over $\bm{\mathbb{Z}_2^n}$} 
+
+\paragraph{Problem:} Given $f: \{0,1\}^n \rightarrow \{0,1\}^n$ where it is promised that $\exists s \in \mathbb{Z}_2^n$ such that $\forall x,y$: $f(x)=f(y) \iff x=y\oplus s$, find $s$. 
+
+\paragraph{Classical Protocols}
+\begin{enumerate}
+    \item A randomized algorithm: randomly pick $k$ (TBD) distinct inputs $x_i$ and query to get $f(x_i)$. If there is no collision, answer $s=0^n$. If there is a collision $f(x_i)=f(x_j)$, then answer $s=x_i \oplus x_j$. 
+    
+    \item Analysis: if actually $s=0^n$ then the algorithm works with certainty. If actually $s \neq 0^n$ then we might answer wrongly if there are no observed collisions. Let the probability that the samples have no collision after $k\geq 2$ queries be $P(k)$. Suppose after $j-1$ queries there is no matching. The probability that on the $j$th, i.e. next query, there is still no collision with one of the previous queries is then $1-\frac{j-1}{2^n-(j-1)}$. Thus after $k$ rounds,
+    \begin{align*}
+        P(k) &= \prod_{j=2}^k \left[ 1- \frac{j-1}{2^n-(j-1)} \right]\\
+        &\geq 1-\sum_{j=2}^k \left[ \frac{j-1}{2^n-(k-1)} \right]\\
+        &\geq 1- \frac{\Theta(k^2)}{2^n-\Theta(k)}.
+    \end{align*}
+    Remember that we \textit{do} want a collision! So we want $P(k)$ to be small, say $\varepsilon$ (equivalently, coll. prob. is $1-\varepsilon$). Then $P(k)<\varepsilon \implies k \in \Omega(2^{n/2})$. Here in the first $\geq$ we used $(1-a)(1-b)\geq 1-(a+b)$ for $0\leq a,b \leq 1$. Also note that we can assume from the outset that $k\leq 2^{n/2}$ because if $k>2^{n/2}$ then there has to be a collision.
+    
+    \item Simon also showed \textit{any} randomized algorithm needs $k=\Omega(2^{n/2})$ queries (proof is similar to the one above).
+\end{enumerate}
+    
+\paragraph{Simon's Quantum Algorithm}
+\begin{enumerate}
+    \item Quantum subroutine: Start with $n$ work qubits and $n$ ancilla qubits $\ket{0^n}\ket{0^n}$. Apply $$(H^{\otimes n}\otimes I)O_f(H^{\otimes n} \otimes I)$$ then measure the work qubits (first register). 
+
+    \begin{figure}[!ht]
+    \centering
+    \begin{quantikz}
+    \lstick{$\ket{0^n}$} & \gate{H^{\otimes n}} & \gate[wires=2]{O_f} & \gate{H^{\otimes n}} & \meter{} \\
+    \lstick{$\ket{0^n}$} & \qw & \qw & \qw & \qw
+    \end{quantikz}
+    \caption{Simon's quantum subroutine for $\mathbb{Z}_2^n$.}
+    \label{fig:simon_Z2n}
+    \end{figure}
+
+    \item Classical postprocessing: repeat the quantum subroutine $n-1$ times to get $n-1$ strings $y_i$ all satisfying $y_i \cdot s =0$, where the $y_i$'s are linearly independent with positive probability. If indeed they are all linearly independent, then we use Gaussian elimination to solve the system, obtaining two solution candidates $0^n$ and $s' \neq 0^n$. 
+    
+    Compare the values of $f(0^n)$ and $f(s')$. If $f(0^n)=f(s')$, answer $s=s'$; otherwise $f(0^n)\neq f(s')$, answer $s=0^n$.
+    
+    \item Boosting: repeat the entire process $k$ times to boost the probability of obtaining linearly independent $y_i$ (linear independence can be easily checked). If for \text{any} run $f(0^n)=f(s')$, answer $s=s'$; otherwise if for \text{all} runs $f(0^n)\neq f(s')$, answer $s=0^n$.
+\end{enumerate}
+    
+\paragraph{Analysis of Simon's algorithm}
+\begin{enumerate}
+    \item Quantum: after applying the quantum circuit (before measurement) the state is (good exercise to verify yourselves)
+    \begin{align*}
+        \ket{\psi} = \sum_y \ket{y} \left( \frac{1}{2^n} \sum_x (-1)^{x \cdot y} \ket{f(x)} \right).
+    \end{align*}
+    If $s=0^n$, $f$ is injective so $p(y) = \frac{1}{2^n}$ for all $y$. 
+    
+    If $s \neq 0^n$, $f$ is two-to-one, so if $z \in \text{range}(f)$ then $f(x_z) = f(x_z') = z$ for $x_z = x_z' \oplus s$. Therefore in this case 
+    \begin{align*}
+    p(y)=
+    \begin{cases}
+        \frac{1}{2^{n-1}} & \text{if } y\cdot s = 0\\
+        0 & \text{if } y\cdot s = 1.
+    \end{cases}
+    \end{align*}
+        
+    \item Postprocessing: suppose we have linearly independent $\{y_i\}_{i=1}^{n-1}$. Gaussian elimination gives the two possible solutions: $0^n,s'\neq 0^n$. Suppose actually $s=0^n$. Then $f(0^n)\neq f(s')$, so our answer $s=0^n$ is always correct. Suppose actually $s \neq 0^n$. Then $f(s)=f(0^n)=f(s')$, so our answer $s'=s$ is also always correct.
+    
+    \item Without the linear independence of $\{y_i\}_{i=1}^{n-1}$ the postprocessing fails, thus we need to ensure the probability of linear independence is nonzero (and preferably high).
+    
+    Probability of linear independence: given $m$ LI strings $y_1,\dots,y_m$, spanning subspace is size $2^m$. Prob of $y_{m+1}$ being LI to this is $\frac{2^n-2^m}{2^n}$. So for a single run, the probability of $n-1$ LI strings is $P=(1-\frac{2^1}{2^n})\dots(1-\frac{2^{n-2}}{2^n}) \geq 1-\sum_{i=1}^{n-2} \frac{1}{2^i} > \frac{1}{2}$. 
+    
+    Thus, the probability of \textit{no} LI after $k$ runs is at most $(1-\frac{1}{2})^k < e^{-k/2}$, or equivalently, probability of \textit{at least one} LI after $k$ runs is at least $1 - e^{-k/2}$. This is really just the classical boosting via majority vote trick.
+\end{enumerate}
+
+
+
+\subsection[\texorpdfstring{Simon over $\bm{\mathbb{Z}_N}$}{}]{Simon over $\bm{\mathbb{Z}_N}$} 
+
+\paragraph{Problem:} Given $f: \mathbb{Z}_N \rightarrow \mathbb{Z}_N$ where it is promised that $\exists L \in \mathbb{Z}_N$ such that $\forall x,y$: $f(x)=f(y) \iff x=y+L$, find $L$. Here $N=2^n$ is a power of two.
+
+For simplicity we consider only the case where $L$ divides $N$ (ruling out $L=0$ in particular).
+
+\paragraph{Simon's Quantum Algorithm}
+\begin{enumerate}
+    \item Quantum subroutine: Start with $n$ work qubits and $n$ ancilla qubits $\ket{0^n}\ket{0^n}$. Apply $$(\mathsf{DFT_N}\otimes I)O_f(\mathsf{DFT_N} \otimes I)$$ then measure the work qubits (first register).
+
+    \begin{figure}[!ht]
+    \centering
+    \begin{quantikz}
+    \lstick{$\ket{0^n}$} & \gate{\mathsf{DFT_N}} & \gate[wires=2]{O_f} & \gate{\mathsf{DFT_N}} & \meter{} \\
+    \lstick{$\ket{0^n}$} & \qw & \qw & \qw & \qw
+    \end{quantikz}
+    \caption{Simon's quantum subroutine for $\mathbb{Z}_N$.}
+    \label{fig:simon_ZN}
+    \end{figure}
+
+    \item Classical postprocessing: for two runs of the quantum subroutine above we obtain the values $iN/L,jN/L$. Use this to compute our estimate $\hat{L} = N/\gcd(\frac{iN}{L},\frac{jN}{L})$.
+
+    \item Boosting: run the quantum subroutine $k$ times (instead of just 2). From the $k$ measurement results $\{\frac{i_\alpha N}{L}\}_{\alpha=1}^k$ we obtain $\gcd\left(\frac{i_1N}{L},\dots,\frac{i_kN}{L}\right)$. Our estimate is correspondingly $\hat{L} = N/\gcd\left(\frac{i_1N}{L},\dots,\frac{i_kN}{L}\right)$.
+    
+\end{enumerate}
+    
+\paragraph{Analysis of Simon's algorithm}
+\begin{enumerate}
+    \item Quantum: The protocol is exactly the same as that for $\mathbb{Z}_2^n$, except that instead of $H^{\otimes n}$ we now use the $\mathsf{DFT_N}$, which is (before measurement) we get the state (good exercise to verify yourselves)
+    \begin{align*}
+        \ket{\psi} = \sum_{y=0}^{N-1} \ket{y} \left( \frac{1}{N} \sum_{x=0}^{N-1} e^{2\pi i xy/N} \ket{f(x)} \right).
+    \end{align*}
+    Note the analogy between this state and the post-circuit state in the $\mathbb{Z}_2^n$ case above. We now proceed to simplify this expression, using the periodicity property of $f$: $f(x)=f(x+tL)$ for $t=0,1,\dots,N/L-1$. We have
+    \begin{align*}
+        \ket{\psi} &= \sum_{y=0}^{N-1} \ket{y} \left( \frac{1}{N} \sum_{x=0}^{N-1} e^{2\pi i xy/N} \ket{f(x)} \right)\\
+        &= \sum_{y=0}^{N-1} \ket{y} \left( \frac{1}{N} \sum_{x=0}^{L-1} \sum_{t=0}^{N/L-1} e^{2\pi i y(x+tL)/N} \ket{f(x+tL)} \right)\\
+        &= \sum_{y=0}^{N-1} \ket{y} \left( \frac{1}{N} \sum_{x=0}^{L-1} e^{2\pi i xy/N} \ket{f(x)} \sum_{t=0}^{N/L-1} e^{2\pi i ytL/N} \right)\\
+        &= \sum_{y=0,\frac{N}{L},\dots,(L-1)\frac{N}{L}} \ket{y} \left( \frac{1}{L} \sum_{x=0}^{L-1} e^{2\pi i xy/N} \ket{f(x)} \right)
+    \end{align*}
+    In the second equality we have simply regrouped terms; in the third equality we have invoked periodicity; in the last equality we have evaluated the geometric series
+    \begin{align*}
+        \sum_{t=0}^{N/L-1} e^{2\pi i ytL/N}=
+        \begin{cases}
+            \frac{N}{L} & \text{if } y=0 \text{ mod } \frac{N}{L}\\
+            0 & \text{otherwise.}
+        \end{cases}
+    \end{align*}
+    Measuring the work (first) register now gives $p(y)=\frac{1}{L}$ for those $y$ satisfying $y=0$ mod $\frac{N}{L}$, or equivalently $y=0,\frac{N}{L},\frac{2N}{L},\dots, \frac{(L-1)N}{L}$. That is,
+    \begin{align*}
+    p(y)=
+    \begin{cases}
+        \frac{1}{L} & \text{if } y = 0 \text{ mod } \frac{N}{L}\\
+        0 & \text{otherwise.}
+    \end{cases}
+    \end{align*}
+    As in the $\mathbb{Z}_2^n$ case above, what Simon really does is to refocus the probability mass onto the states $\ket{0},\ket{N/L},\ket{2N/L},\dots,\ket{(L-1)N/L}$, so that the final measurement yields a multiple of $N/L$. That is, a single run of this quantum circuit yields a number of the form $iN/L$, for some $i \in \{0,1,\dots,L-1\}$. Please note that we do not obtain the value $i$ -- rather it is the `overall' value $iN/L$ that we receive. From this we shall attempt to extract $L$. 
+    
+    \item Postprocessing: our estimate for the period $L$ is $\hat{L} = N/\gcd(\frac{iN}{L},\frac{jN}{L})$. Since $\gcd(i,j)=1 \iff \gcd(\frac{iN}{L},\frac{jN}{L})= N/L$, if it is indeed the case that $\gcd(i,j)=1$, then we get $\hat{L}=L$, yielding the correct answer.
+    
+    \item The classical postprocessing fails if $\gcd(i,j) > 1$. Thus we need to ensure the probability that $\gcd(i,j)=1$ is nonzero. To do this we turn to some number theory. For any prime $p$ we have $\Pr[p|i] = \lfloor N/p \rfloor/N \leq 1/p$. By independence we have $\Pr[p|i \text{ and } p|j] = \Pr[p|i] \cdot \Pr[p|j] \leq \frac{1}{p^2}$. Since $\gcd(i,j) > 1$ implies that \textit{at least} a prime $p$ divides both $i,j$, we have by the union bound
+    $$\Pr[\gcd(i,j) > 1] \leq \sum_{p \text{ prime}} \frac{1}{p^2} = \frac{1}{2^2} + \frac{1}{3^2} + \frac{1}{5^2} + \cdots.$$
+    We can bound this sum as follows:
+    \begin{align*}
+    \sum_{p \text{ prime}} \frac{1}{p^2}
+    &\leq \frac{1}{2^2} + \frac{1}{3^2} + \frac{1}{4^2} + \frac{1}{5^2} + \cdots\\
+    &= \frac{1}{4} + \left(\frac{1}{3^2} + \frac{1}{4^2} + \frac{1}{5^2}\right) + \left(\frac{1}{6^2} + \cdots + \frac{1}{11^2}\right) + \left(\frac{1}{12^2} + \cdots + \frac{1}{23^2}\right) + \cdots\\
+    &\leq \frac{1}{4} + \underbrace{\left(\frac{1}{3^2} + \frac{1}{3^2} + \frac{1}{3^2}\right)}_{3\text{ terms}} + \underbrace{\left(\frac{1}{6^2} + \cdots + \frac{1}{6^2}\right)}_{6\text{ terms}} + \underbrace{\left(\frac{1}{12^2} + \cdots + \frac{1}{12^2}\right)}_{12\text{ terms}} + \cdots\\
+    &= \frac{1}{4} + \frac{3}{3^2} + \frac{6}{6^2} + \frac{12}{12^2} + \cdots\\
+    &= \frac{1}{4} + \frac{1}{3}\left(1 + \frac{1}{2} + \frac{1}{4} + \cdots\right)\\
+    &= \frac{1}{4} + \frac{1}{3}\cdot 2 = \frac{11}{12}.
+    \end{align*}
+    Therefore $\Pr[\gcd(i,j)=1] \geq 1/12$. $\frac{1}{12}$ is not great but this is no problem because simply by running the subroutine $k$ times we exponentially increase the success probability. This follows from the exact same logic above for the two-run-scenario. For $k$ runs, we have
+    \begin{align*}
+        \Pr \left[\gcd\left(i_1,\dots,i_k \right) >1 \right] \leq \sum_{p \text{ prime}} \frac{1}{p^k} = O(2^{-k}),
+    \end{align*}
+    since the dominant contribution comes from the prime $p=2$. Equivalently,
+    \begin{align*}
+        \Pr \left[\gcd\left(i_1,\dots,i_k \right) = 1 \right] \geq 1- \sum_{p \text{ prime}} \frac{1}{p^k} = 1- O(2^{-k}).
+    \end{align*}
+
+\end{enumerate}
+

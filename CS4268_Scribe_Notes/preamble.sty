@@ -1,0 +1,100 @@
+% do not use package {physics}, which may cause many troubles
+
+%%%% @TheCharmingSociopath.github.io
+\usepackage[dvipsnames]{xcolor}
+\usepackage{mdframed}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{fullpage,latexsym,amsthm,latexsym,amssymb}
+\usepackage{amstext,amsfonts,amsmath,graphicx}
+\usepackage{braket}
+\usepackage{mathtools, nccmath}
+\usepackage{mathrsfs}
+\usepackage{multicol}
+% \usepackage[backref=page]{hyperref}
+% \usepackage{palatino}
+% \usepackage{cleveref}
+
+
+% \usepackage{xcolor}
+% \definecolor{amaranth}{rgb}{0.9,0.17,0.31}
+% \definecolor{brightmaroon}{rgb}{0.76, 0.13, 0.28}
+% \definecolor{burntorange}{rgb}{0.8, 0.33, 0.0}
+% \hypersetup{
+%     colorlinks=true,
+%     citecolor=amaranth,
+%     linkcolor=brightmaroon,
+%     filecolor=red,      
+%     urlcolor=burntorange,
+% }
+
+\usepackage{stmaryrd} %%% xmapsto
+
+%\usepackage[left=0.8in, right=0.8in, top=0.8in, bottom=0.8in]{geometry}
+
+
+%\oddsidemargin = -0.5 in
+%\addtolength{\textwidth}{0.8in}
+%\addtolength{\textheight}{0.2in}
+
+%% Theorem statements %%
+% THEOREMS -------------------------------------------------------
+
+\numberwithin{equation}{section}
+\setlength\parindent{0pt}
+\setlength{\parskip}{7pt}
+
+% \newcommand{\problem}[1]{\ensuremath{\mathsf{#1}} }
+% \newcommand{\cclass}[1]{\ensuremath{\mathsf{#1}} }
+
+
+%%%%% Math
+\newcommand{\C}{\ensuremath{\mathbb{C}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\F}{\ensuremath{\mathbb{F}}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\Q}{\ensuremath{\mathbb{Q}}}
+
+\newcommand{\cH}{\ensuremath{\mathcal{H}}}
+\newcommand{\cL}{\ensuremath{\mathcal{L}}}
+
+\newcommand{\innerp}[2]{\langle #1 , #2 \rangle}
+\renewcommand{\vec}[1]{\ensuremath{\boldsymbol{#1}}}
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\Mod}[1]{\ (\mathrm{mod}\ #1)}
+% \newcommand{\poly}{\mathsf{poly}}
+\newcommand{\polylog}{\mathsf{poly\,log}}
+\newcommand{\negl}{\mathsf{negl}}
+% \newcommand{\prob}[1]{\Pr\left[#1\right]}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\TD}{\operatorname{TD}}
+% \DeclareMathOperator*{\argmax}{arg\,max}
+% \DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\expect}{\mathbb{E}}
+\DeclareMathOperator*{\variance}{\mathbb{V}}
+\DeclareMathOperator{\spn}{span}
+% \DeclareMathOperator{\dist}{dist}
+\newcommand{\order}[1]{\mathcal{O}\left(#1\right)}
+
+% \newtheorem{theorem}{Theorem}[section]
+% \newtheorem*{remark}{Remark}
+% \newtheorem{proposition}[theorem]{Proposition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{conjecture}[theorem]{Conjecture}
+% \newtheorem{claim}[theorem]{Claim}
+% \newtheorem{fact}[theorem]{Fact}
+% \newtheorem{example}[theorem]{Example}
+% \newtheorem{corollary}[theorem]{Corollary}
+% \newtheorem{definition}[theorem]{Definition}
+
+% \numberwithin{equation}{section}
+
+
+
+% %%%%%%% Algorithms 
+% \usepackage{algorithm} % captioning
+% \usepackage{algpseudocode}
+% \renewcommand{\algorithmicrequire}{\textbf{Input:}}
+% \renewcommand{\algorithmicensure}{\textbf{Output:}}

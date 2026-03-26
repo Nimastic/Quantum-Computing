@@ -1,0 +1,123 @@
+% \documentclass[11pt]{article}
+
+% %%%% CUSTOM PREAMBLE
+% \usepackage{./preamble}
+
+% %% ADD MISC DEFINITIONS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %\addtolength{\topmargin}{-1cm}
+% %\addtolength{\textheight}{2cm}
+
+% \begin{document}
+
+%\maketitle
+
+\newpage
+ %%*****************************************************
+\noindent
+\textbf{CS4268 AY2025-26 Sem 2}
+\\
+\noindent
+Lecturer: Divesh Aggarwal
+\hfill
+Lecture 2                      %%% FILL IN LECTURE NUMBER HERE
+\hfill
+Date: January 22, 2026          %%% FILL IN LECTURE DATE HERE
+
+
+\noindent
+\rule{\textwidth}{1pt}
+
+\medskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% BODY OF SCRIBE NOTES GOES HERE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%Write lecture topic above.
+\textbf{Instructions}\\
+\begin{itemize}
+    \item Try to leave the preamble unchanged, only make changes to \texttt{main.tex} and  \texttt{references.bib}. Add images to the \texttt{images} folder. 
+    \item Share one (zipped) directory preserving the directory structure on Canvas. 
+    \item Prepare organized notes by elaborating on the broad items provided in different sections below based on the lecture material completing any missing details from lectures.
+    \item Feel free to modify structure and/or order of contents as you see fit; the below is just a guideline.
+\end{itemize} 
+
+
+\subsection{Hilbert Space and Quantum States}
+The language of quantum mechanics is linear algebra. We shall assume some familiarity, but introduce a very useful notation, namely Dirac's bra-ket notation.
+
+Recall the notion of a Hilbert Space.
+\begin{definition}
+    Add definition of Hilbert Space over $\mathbb{C}$ being a vector space equipped with an inner product.
+\end{definition}
+
+We introduce a very useful notation.
+
+Dirac's bra-ket notation:
+\begin{definition}
+    Add notation for basis vectors, and general vectors.
+\end{definition}
+
+Add notion of conjugate transpose of a vector, and inner products.
+
+From now on everything is to be in bra-ket notation.
+
+In quantum mechanics a system is mathematically modelled by a suitable (to be determined from theory and experiment) Hilbert space. The quantum state representing the system is simply an element of this Hilbert space.
+\begin{definition}
+    Add quantum state as element of Hilbert space, as superposition of basis vectors, column vector representation. Add physical interpretation of the components $\alpha_i$ of the column vector.
+\end{definition}
+
+\begin{example}
+    Add the examples of quantum states as superpositions of basis states.
+\end{example}
+
+Of course, we know the basis of a (nontrivial) Hilbert space is not unique. We could choose to represent states w.r.t. different bases, so the corresponding column vectors would have different physical interpretations.
+
+
+\subsection{Measuring w.r.t. different bases and Elitzur-Vaidman}
+Let us consider the problem of making measurements with respect to different bases.
+\begin{example}
+    Add example
+\end{example}
+
+Consider the following thought experiment: 
+
+Add material on Elitzur-Vaidman bomb. Classical option and preliminary quantum option. Conclusions from these options.
+
+Can we improve? Yes. First, brief detour into notion of rotations (more generally, unitaries later on) on quantum states.
+
+\begin{definition}
+    Add material on rotations on a single qubit.
+\end{definition}
+
+Add brief material on reflections somewhere too.
+
+Back to Elitzur-Vaidman. The improved quantum option now is to rotate the $\ket{+}$ state such that it `leans' very heavily onto $\ket{0}$, thus increasing the probability of no explosion. Then measure.
+
+Elaborate on this improved quantum option.
+
+\subsection{Unitaries}
+More generally, the general transformations we can perform between states are called unitaries. Remember that the specific, `concrete' rotations we saw above are orthogonal thus unitary. Intuitively: unitaries preserve length. Can think of unitaries as rotations too, though not so easy to visualize.
+
+
+\begin{definition}
+    Add notion of unitary matrices.
+\end{definition}
+
+
+    Add basic properties of unitaries.
+
+
+\begin{example}
+    Add examples of unitaries.
+\end{example}
+
+
+
+
+% \bibliographystyle{alpha}
+% \bibliography{main.bib}
+% \end{document}
+

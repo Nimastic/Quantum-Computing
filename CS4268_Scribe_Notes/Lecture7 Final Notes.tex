@@ -1,0 +1,339 @@
+\noindent
+\textbf{CS4268 AY2025-26 Sem 2}
+\\
+\noindent
+Lecturer: Divesh Aggarwal
+\hfill
+Lecture 7                      %%% FILL IN LECTURE NUMBER HERE
+\hfill
+Date: March 5, 2026          %%% FILL IN LECTURE DATE HERE
+
+
+\noindent
+\rule{\textwidth}{1pt}
+
+\medskip
+
+\section{Quantum Fourier Transform(s)}
+
+Before we begin let us recall the notion of a Fourier transform, first conceived of by Joseph Fourier in his analysis of heat flow. The core idea is to decompose an arbitrary function in terms of simpler, well-behaved functions, historically called `frequency functions' because in that context these simpler functions were sine/cosine wave functions parametrized by frequencies. More specifically, `well-behaved' here refers to invariance under the translation operation $T_af(x):=f(x+a)$. The translation-invariant functions are the eigenfunctions of $T_a$ for all $a \in \mathbb{R}$. In Joseph Fourier's case these were 
+the frequency basis functions $\chi_\xi(x):= e^{2\pi i \xi x}$, and the Fourier-transformed function $\hat{f}$ is given as a linear combination of these:
+\begin{align*}
+    \hat{f}(\xi) = \int_{\infty}^{\infty} f(x)e^{-2\pi i \xi x} dx.
+\end{align*}
+The integral here can be thought of as a linear combination. If you are willing to accept the vector notation
+\begin{align*}
+    \ket{f} = \int_{-\infty}^\infty f(x) \ket{x} dx
+\end{align*}
+and 
+\begin{align*}
+    \ket{\chi_\xi} = \int_{-\infty}^\infty \chi_\xi(x) \ket{x} dx
+\end{align*}
+then taking their inner product (which is defined as $\langle f|g \rangle:= \int_\infty^\infty f(x)\overline{g(x)} dx$ for complex-valued functions)
+one can check that $\langle \chi_\xi|f \rangle = \hat{f}(\xi)$. Note that we have used the Dirac delta function, which is the infinite-dimensional variant of the Kronecker delta: $\langle y|x \rangle = \delta(x-y)$. The key takeaway is $\langle x|f \rangle = f(x)$ and $\langle \chi_\xi|f \rangle = \hat{f}(\xi)$, thus $f(x)$ and $\hat{f}(\xi)$ are really simply different ways of representing $f$, with respect to different bases. Also note that technically speaking, the Fourier transform is a function $\mathcal{F}$ taking as input a function $f$ and outputting another function $\hat{f}$, i.e.
+\begin{align*}
+    \mathcal{F}(f) = \hat{f}.
+\end{align*}
+It has become somewhat customary to refer to $\hat{f}$ as the Fourier transform of $f$ however, because of convenience, and we too shall often do so. In practice this doesn't cause much confusion but just be aware of the difference.
+
+Before we proceed further let us point out a way of viewing things that is pervasive throughout discrete mathematics: \textit{functions and vectors are the same objects}. Specifically, what this refers to is the
+\begin{fact}[Function-Vector Equivalence]\label{remark:function-vector_equivalence}
+    Let $S$ be a finite set and $G$ be a field. Then functions $f$ with domain $S$ and codomain $G$ are the same as $|S|$-sized column/row vectors $v$ taking values in $G$, through the correspondence
+    \begin{align*}
+        f(i) \leftrightarrow v_i.
+    \end{align*}
+    Here since $S$ is finite we can let it be $[N]$ for some positive integer $N$, and in practice $G$ is usually a number system such as the real numbers/complex numbers/finite fields or subsets thereof.
+    
+    There is nothing deep about this statement, simply it means if $f$ is defined over a finite set of elements we can enumerate all its values (in some arbitrarily chosen order), then compile it into a vector. In fact this could be generalized to infinite-sized domains, with additional technical considerations of course. The reason we mention this here is because the Fourier transform is frequently stated for both functions and vectors, and there is a potential misunderstanding that these are different things, i.e. there are notions of Fourier transforms for functions, and also for vectors. These are really the same thing.
+
+    With this equivalence in mind, if we write $f$ as a column vector, then because the Fourier transform/operator is a linear function, it admits a matrix representation, such as the $H^{\otimes n}$ and DFT operators we shall see below. These matrices are also referred to as Fourier transforms. Hopefully this isn't too confusing. Just bear in mind that functions $\leftrightarrow$ vectors and linear functions of functions $\leftrightarrow$ matrices and you'll be fine.
+\end{fact}
+
+Back to the Fourier transform. The Fourier transform/decomposition was subsequently generalized to spaces beyond $\mathbb{R}^n$, and the study of this theory in the modern context is also known as harmonic analysis, which has deep links to many other fields of mathematics, most notably PDEs and representation theory. What we called `frequencies' also came to adopt fancier names, such as `harmonics', or `characters' (in the representation theory context). In particular, the theory of Fourier/Harmonic analysis over \textit{finite, abelian} groups is especially well-developed. As it turns out, in computer science and this course in particular we are most interested in the set $[N]$, where $N=2^n$ for some $n$. This set is quite naturally called the Boolean hypercube.
+
+Now note that there are two distinct abelian group operations $[N]$ admits. First, if $N=2^n$ then representing the numbers in binary we can equip $[N]$ with the bitwise addition modulo 2 operation. Second, for any positive integer $N$ (not just those which are powers of two), $[N]$ can be equipped with the addition modulo $N$ operation. These are two \textit{distinct} group operations defined on the \textit{same} underlying set, and give rise to different Fourier transforms. The Hadamard-Walsh transform is precisely the Fourier transform with respect to the first group operation, where we now call the group $\mathbb{Z}_2^n$. The `conventional' Fourier transform, also called the discrete Fourier transform is the Fourier transform with respect to the second group operation, where we now call the group $\mathbb{Z}_{2^n}$. This is the one people (including the standard textbook in quantum information and computation, \cite{NC10}) usually refer to when they say `quantum Fourier transform' (which technically refers to the quantum implementation of the DFT). 
+
+We first revisit the Hadamard-Walsh transform, before delving into the QFT. In both cases we shall proceed along the following structural flow:
+\begin{enumerate}
+    \item Specify the group.
+    \item Identify the translation operators $T_af(x) := f(x+a)$. Note that the presence of the $+$ symbol here indicates that translation is a \textit{group-dependent} notion.
+    \item Work out the form of the characters, which are the simultaneous eigenfunctions of all translation operators.
+    \item Work out the form of the corresponding Fourier transform matrix, which is the change-of-basis matrix between the canonical basis and the character basis.
+    \item Work out the Fourier coefficients, which are the coefficients of the function with respect to the character basis.
+\end{enumerate}
+
+\subsection{Hadamard-Walsh revisited}
+
+\paragraph{Group:} Group is designated $\mathbb{Z}_2^n.$ Underlying set is $\{0,1\}^n$. Group operation is bitwise addition modulo 2. Functions on this group we denote by $f: \mathbb{Z}_2^n \to \mathbb{C}$, which we can also write as $\ket{f} = \frac{1}{\sqrt{N}} \sum_x f(x)\ket{x}$, where $\ket{x}$ is the canonical `computational basis', which in column vector form has one `1' entry and zeros elsewhere. 
+
+\paragraph{Translation Operators:} Translation operators take in functions and output shifted functions. Here for each bitstring $a \in \mathbb{Z}_2^n$ we have a translation operator
+\begin{align*}
+    T_af(x) := f(x+a).
+\end{align*}
+The `$+$' for $\mathbb{Z}_2^n$ is often written as `$\oplus$'. Note that translation operators are unitary, $T_a^\dag = T_{-a}$, so their eigenvalues all have modulus 1. $T_a$ and $T_b$ commute for all $a,b$, thus they share simultaneous eigenvectors.
+
+\paragraph{Characters:} These are the simultaneous eigenvectors ${\chi(x)}$ of all the $T_a$'s:
+\begin{align*}
+    T_a\chi(x) = \lambda(a)\chi(x).
+\end{align*}
+Note that the eigenvalues generally depend on the shift amount $a$. Just as we had $\ket{f} = \frac{1}{\sqrt{N}} \sum_x f(x)\ket{x}$, here we have $\ket{\chi} = \frac{1}{\sqrt{N}} \sum_x \chi(x)\ket{x}$.
+
+Let us now determine the form of $\chi(x)$. First, $\chi(x+a) =: T_a\chi(x) = \lambda(a)\chi(x)$ is to hold for all $x,a \in \mathbb{Z}_2^n$. Setting $x=0$ in particular yields $\chi(a)=\lambda(a)\chi(0)$, which we can just as well write $\chi(x)=\lambda(x)\chi(0)$ for all bitstrings $x$. Note that $\chi(0) \neq 0$, otherwise $\chi(x)=0$ is the zero vector (which by definition disqualifies it from being an eigenvector). Now consider the bitstring sum $x+a$ for any $x,a$. On one hand we immediately have $\chi(x+a)=\lambda(x+a)\chi(0)$; on the other hand we also have $\chi(x+a)=\lambda(a)\chi(x)=\lambda(a)\lambda(x)\chi(0)$, thus yielding the eigenvalue identity $\lambda(x+a)=\lambda(x)\lambda(a)$.
+
+Recall now that $\chi(x)=\lambda(x)\chi(0)$. We make the \textit{convention} that $\chi(0)=1$. Why is this a convention? Recall that if $Av=\lambda v$ is an eigenvalue equation, the scaled eigenvector $cv$ satisfies the same eigenvalue equation $A(cv)=\lambda(cv)$ as well. In practice one usually sets a convention for the eigenvectors, for instance that they be normalized: $\|v\|_2=1$. Our convention here $\chi(0)=1$ exactly does this. Why? Because
+\begin{align*}
+    \langle \chi|\chi \rangle = \frac{1}{N} \sum_x |\chi(x)|^2 = \frac{1}{N}|\chi(0)|^2 \sum_x |\lambda(x)|^2 = |\chi(0)|^2
+\end{align*}
+where in the last inequality we have invoked the unit modulus property of translator eigenvalues. Thus we see that setting $\chi(0)=1$ yields normalized eigenvectors.
+
+With this, we have the character identity
+\begin{align*}
+    \chi(x+a) = \chi(x)\chi(a).
+\end{align*}
+That is, $\chi$ is an abelian group homomorphism from $\mathbb{Z}_2^n$ to $\mathbb{C}^\times$. $\mathbb{C}^\times$ is the \textit{multiplicative group of complex numbers} -- the underlying set is $\mathbb{C}\backslash\{0\}$ and the group operation is multiplication (not addition).
+
+Let us proceed further. Under the bitwise addition modulo 2 operation $x+x=0$ for all bitstrings $x$. Thus $\chi(0) = \chi(x+x) = \chi(x)^2$. Since this holds for all $x$, including the all-zeros string, we deduce that $\chi(x)=\pm 1$ for all $x$. How many (independent) functions $\chi$'s satisfy this? Well consider for simplicity the $n=1$ case: we have $\chi(0)=1$ and $\chi(1)=\pm1$, two options. We can write this succinctly as $\chi_s(x)=(-1)^{sx}$, i.e. the characters are indexed by $s$. In the $n=1$ case $s=0,1$. For general $n$ the logic is similar, just that the indices are now bitstrings $s$. The characters in this general case are given by
+\begin{align*}
+    \chi_s(x) = (-1)^{s \cdot x}
+\end{align*}
+and
+\begin{align*}
+    \ket{\chi_s} = \frac{1}{\sqrt{N}}\sum_x (-1)^{s \cdot x}\ket{x}.
+\end{align*}
+Please verify the orthonormality condition yourself: $\langle \chi_t|\chi_s \rangle = \delta_{st}$.
+
+\paragraph{Fourier Transform:} The Fourier transform matrix is simply defined to be the change-of-basis matrix from $\ket{s}$ to $\ket{\chi_s}$, i.e. the most general form is
+\begin{align*}
+    \text{FT}\ket{s} := \ket{\chi_s}.
+\end{align*}
+In $\mathbb{Z}_2^n$, bra-ing both sides by $\bra{t}$ yields
+\begin{align*}
+    \langle t|\text{FT}(\mathbb{Z}_2^n)|s \rangle = \frac{1}{\sqrt{N}} (-1)^{s \cdot t}, 
+\end{align*}
+thus in $\mathbb{Z}_2^n$
+\begin{align*}
+    \text{FT}(\mathbb{Z}_2^n) = H^{\otimes n} = \frac{1}{\sqrt{N}} \sum_{x,y \in \mathbb{Z}_2^n} (-1)^{x \cdot y} \ketbra{x}{y}.
+\end{align*}
+Please remember that here $N=2^n$.
+
+\paragraph{Fourier Coefficients:} Finally, the Fourier coefficients are simply defined to be $\hat{f}(s) := \langle \chi_s|f\rangle$. Here it is 
+\begin{align*}
+    \hat{f}(s) = \frac{1}{N} \sum_{x \in \mathbb{Z}_2^n} (-1)^{s \cdot x} f(x).
+\end{align*}
+
+\subsection{Quantum Fourier Transform}
+The Quantum Fourier Transform (henceforth simply QFT) is the quantum analogue of the classical discrete Fourier transform. It is a fundamental subroutine in many quantum algorithms, including Shor's algorithm for factoring, owing to its ability to extract periodicity efficiently.
+
+\paragraph{Group:} Group is designated $\mathbb{Z}_N= \mathbb{Z}_{2^n}$. Underlying set is still the same, $\{0,1\}^n$. Group operation is addition modulo $N$. Functions on this group we denote by $f: \mathbb{Z}_N \to \mathbb{C}$, which we can also write as $\ket{f} = \frac{1}{\sqrt{N}} \sum_x f(x)\ket{x}$.
+
+\paragraph{Translation Operators:} Translation operators take in functions and output shifted functions. Here for each number $a \in \mathbb{Z}_N$ we have a translation operator
+\begin{align*}
+    T_af(x) := f(x+a).
+\end{align*}
+Note that translation operators are unitary, $T_a^\dag = T_{-a}$, so their eigenvalues all have modulus 1. $T_a$ and $T_b$ commute for all $a,b$, thus they share simultaneous eigenvectors.
+
+\paragraph{Characters:} Again these are the simultaneous eigenvectors ${\chi(x)}$ of all the $T_a$'s:
+\begin{align*}
+    T_a\chi(x) = \lambda(a)\chi(x).
+\end{align*}
+
+Let us now determine the form of $\chi(x)$ for $\mathbb{Z}_N$. The argument sequence concerning the characters $\chi(x)/\ket{\chi}$ we saw above can be replicated here, mutatis mutandis, up until and including the fact
+\begin{align*}
+    \chi(x+a) = \chi(x)\chi(a).
+\end{align*}
+Once again $\chi$ is an abelian group homomorphism from $\mathbb{Z}_N$ to $\mathbb{C^\times}$.
+
+Now we explore the analytic form of $\chi(x)$ for $\mathbb{Z}_N$, which differs from that in the $\mathbb{Z}_2^n$ case. Since $1$ is the generator of $\mathbb{Z}_N$, we have $\chi(x)=\chi(1)^x$ for all $x$. In particular, letting $x=N$ yields $\chi(1)^N=1$. We thus deduce that there are $N$ possible choices for $\chi(1)$, and index them by $s=0,\dots,N-1$:
+\begin{align*}
+    \chi_s(1) = e^{2\pi i s/N}.
+\end{align*}
+Once we fix an $s$ this defines the rest of the $\chi_s(x)$'s. This yields
+\begin{align*}
+    \chi_s(x) = e^{2\pi i sx/N}.
+\end{align*}
+The corresponding kets are now
+\begin{align*}
+    \ket{\chi_s} = \frac{1}{\sqrt{N}}\sum_x e^{2\pi i sx/N} \ket{x}.
+\end{align*}
+Please verify the orthonormality condition yourself: $\langle \chi_t|\chi_s \rangle = \delta_{st}$. In this case this simply relies on summing through a geometric sequence.
+
+\paragraph{Fourier Transform:} The Fourier transform matrix is the change-of-basis matrix from $\ket{s}$ to $\ket{\chi_s}$, i.e. the most general form is
+\begin{align*}
+    \text{FT}\ket{s} := \ket{\chi_s}.
+\end{align*}
+In $\mathbb{Z}_N$, bra-ing both sides by $\bra{t}$ yields
+\begin{align*}
+    \langle t|\text{FT}(\mathbb{Z}_N)|s \rangle = \frac{1}{\sqrt{N}} e^{2\pi i st/N}, 
+\end{align*}
+thus in $\mathbb{Z}_N$
+\begin{align*}
+    \text{FT}(\mathbb{Z}_N) = \mathsf{DFT_N} = \frac{1}{\sqrt{N}} \sum_{x,y \in \mathbb{Z}_N} e^{2\pi i xy/N} \ketbra{x}{y}.
+\end{align*}
+Please remember that here $N=2^n$.
+
+\paragraph{Fourier Coefficients:} Finally, the Fourier coefficients are simply defined to be $\hat{f}(s) := \langle \chi_s|f\rangle$. Here it is 
+\begin{align*}
+    \hat{f}(s) = \frac{1}{N} \sum_{x \in \mathbb{Z}_N} e^{-2\pi i sx/N} f(x).
+\end{align*}
+
+Okay. Now strictly speaking everything above is called the Discrete Fourier Transform, DFT. The \textit{quantum} Fourier transform simply refers to implementing the DFT quantumly. Nothing above so far has anything to do with quantum, apart from the cultural appropriation of bra-ket notation. Right now, we enter quantum. For the group $\mathbb{Z}_{2^n}$ the quantum implementation was simply by parallel Hadamarding, so there wasn't too much to speak of. For the DFT things are a bit trickier.
+
+\begin{enumerate}
+    \item \textbf{Binary Representation:} 
+    To express the QFT elegantly, it is convenient to utilize the binary representation of numbers. For an integer $\alpha \geq 1$, its binary expansion is written as:
+    \begin{align*}
+        \alpha = \alpha_1\dots\alpha_n = \alpha_1 2^{n-1} + \alpha_2 2^{n-2} + \dots + \alpha_n 2^0
+    \end{align*}
+    where each $\alpha_i \in \{0, 1\}$. 
+    Similarly, we can represent fractional numbers $0 \leq \alpha < 1$ using binary fractions:
+    \begin{align*}
+        \alpha = 0.\alpha_1\dots\alpha_n = \alpha_1 2^{-1} + \alpha_2 2^{-2} + \dots + \alpha_n 2^{-n}
+    \end{align*}
+    Note the direct algebraic relationship: if we divide an integer $\alpha = \alpha_1\dots\alpha_n$ by $2^n$, we simply shift the binary point to the left $n$ times, yielding the fraction $\alpha/2^n = 0.\alpha_1\dots\alpha_n$.
+
+    \item \textbf{DFT and QFT:}
+    Recall:
+    \begin{align*}
+        \mathsf{DFT_N} = \frac{1}{\sqrt{N}} \sum_{j,k=0}^{N-1} e^{2\pi ijk/N} \ketbra{j}{k}.
+    \end{align*}
+    The Quantum Fourier Transform implements the exact same linear transformation, but it acts on the probability amplitudes of a quantum state. For a given computational basis state $\ket{j}$, the QFT applies the following superposition:
+    \begin{align*}
+        \mathsf{QFT}\ket{j} = \frac{1}{\sqrt{N}} \sum_{k=0}^{N-1} e^{2\pi ijk/N} \ket{k}.
+    \end{align*}
+    By leveraging the binary fractional representation discussed in the previous point, we can factor this sum into a tensor product of $n$ individual qubits. In binary, the state becomes:
+    \begin{align*}
+        \mathsf{QFT}\ket{j_1\dots j_n} = \frac{1}{\sqrt{2^n}}\left( \ket{0}+e^{2\pi i0.j_n}\ket{1} \right)\left( \ket{0}+e^{2\pi i0.j_{n-1}j_n}\ket{1} \right)\cdots \left( \ket{0}+e^{2\pi i0.j_1j_2\dots j_n}\ket{1}\right).
+    \end{align*}
+    This product form is remarkably useful as it reveals that the QFT leaves the qubits in a completely unentangled state (a product state), provided the input was a basis state.
+
+    \item \textbf{Derivation of the Binary Representation of QFT:}
+    We can mathematically derive the tensor product form from the standard QFT definition by expanding the index $k$ into its binary representation $k = k_1 k_2 \dots k_n = \sum_{l=1}^n k_l 2^{n-l}$:
+    \begin{align*}
+        \mathsf{QFT}\ket{j_1\dots j_n} &= \frac{1}{\sqrt{2^n}} \sum_{k=0}^{2^n-1} e^{\frac{2\pi ijk}{2^n}} \ket{k}\\
+        &= \frac{1}{\sqrt{2^n}} \sum_{k_1,\dots k_n=0}^{1} e^{2\pi ij(\sum_{l=1}^n k_l 2^{-l})} \ket{k_1 \dots k_n}\\
+        &= \frac{1}{\sqrt{2^n}} \sum_{k_1,\dots k_n=0}^{1} \bigotimes_{l=1}^n e^{2\pi ijk_l 2^{-l}} \ket{k_l}\\
+        &= \frac{1}{\sqrt{2^n}} \bigotimes_{l=1}^n \left[\sum_{k_l=0}^{1} e^{2\pi ijk_l 2^{-l}} \ket{k_l}\right]\\
+        &= \frac{1}{\sqrt{2^n}} \bigotimes_{l=1}^n \left[\ket{0} + e^{2\pi ij 2^{-l}} \ket{1}\right]\\
+        &= \frac{1}{\sqrt{2^n}}\left( \ket{0}+e^{2\pi i0.j_n}\ket{1} \right)\left( \ket{0}+e^{2\pi i0.j_{n-1}j_n}\ket{1} \right)\cdots \left( \ket{0}+e^{2\pi i0.j_1j_2\dots j_n}\ket{1}\right).
+    \end{align*}
+    This derivation gives the core intuition for constructing the efficient quantum circuit. We define the phase rotation gate $R_k := \text{diag}(1,e^{\frac{2\pi i}{2^k}})$. To generate the fractions $0.j_l \dots j_n$ in the phases, we first apply a Hadamard gate to put the qubit in a superposition $\ket{0} + e^{2\pi i 0.j_l}\ket{1}$, and then apply controlled-$R_k$ gates from the lower significant qubits to systematically add the smaller binary fractions to the phase. 
+    
+    A 3-qubit QFT circuit, comprising the $H$ and controlled-$R_k$ gates, is illustrated below (note that the output order of qubits is reversed and generally requires SWAP gates at the end, which are often omitted for simplicity):
+
+    \begin{center}
+    \begin{quantikz}
+        \lstick{$\ket{j_1}$} & \gate{H} & \ctrl{1} & \ctrl{2} & \qw & \qw & \qw & \qw \\
+        \lstick{$\ket{j_2}$} & \qw & \gate{R_2} & \qw & \gate{H} & \ctrl{1} & \qw & \qw \\
+        \lstick{$\ket{j_3}$} & \qw & \qw & \gate{R_3} & \qw & \gate{R_2} & \gate{H} & \qw
+    \end{quantikz}
+    \end{center}
+
+    \item \textbf{Algorithm Speedup and Caveats:}
+    The efficiency gains from the QFT are significant when viewed in terms of $n$, the number of bits (where $N = 2^n$). The classical FFT takes $\Theta(N \log N) = \Theta(n2^n)$ operations. In contrast, analyzing the circuit above, the $i$-th qubit requires one Hadamard and $n-i$ controlled-phase gates. Summing this over $n$ qubits gives $\frac{n(n+1)}{2}$ gates. Thus, the QFT takes $\Theta(n^2) = \Theta(\log^2 N)$ gates, an exponential speedup over the classical FFT.
+    
+    \textbf{Caveat:} The Fourier-transformed output state $\mathsf{QFT}\ket{x}$ is not directly analogous to having the vector $\mathsf{DFT}(x)$ in memory. The resulting frequency components are encoded purely in the \textit{amplitudes} of the quantum state. To actually extract or learn these values, we must perform measurements. Due to the probabilistic nature of quantum measurement, extracting the full set of amplitudes requires executing the circuit exponentially many times, which eliminates the speedup if the full frequency spectrum is the goal. The QFT's true utility lies as an intermediate step where global properties (like periods) can be extracted without having to inspect every amplitude.
+\end{enumerate}
+
+\subsection{Comparison between Hadamard-Walsh and QFT}
+
+Now you have seen both Fourier transforms. You have seen how different group operations give rise to different translation operators, which give rise to different characters, which give rise to different Fourier transforms. Please try to grasp the underlying logic and not rely too much on memorization; the indices here alone can kill. It is quite sufficient to remember the character forms $\chi_s(x)=(-1)^{s \cdot x}$/$\chi_s(x)=e^{2\pi isx/N}$; everything else follows naturally if you understand what they fundamentally are.
+
+Alright. Here is a table comparing Hadamard-Walsh and QFT, in case you ever need it.
+\[
+\begin{array}{|c|c|c|}
+\hline
+\textbf{Feature} 
+& \textbf{Hadamard-Walsh} 
+& \textbf{DFT/QFT} \\
+\hline
+
+\text{Underlying Set} 
+& \{0,1\}^n 
+& \{0,1,\dots,N-1\}\; (\text{often } N=2^n) \\
+\hline
+
+\text{Group Operation} 
+& \text{Bitwise addition mod 2} 
+& \text{Addition mod } N \\
+\hline
+
+\text{Group} 
+& \mathbb{Z}_2^n 
+& \mathbb{Z}_N \\
+\hline
+
+\text{Characters } \chi 
+& \chi_s(x)=(-1)^{s\cdot x} 
+& \chi_s(x)=e^{2\pi i sx/N} \\
+
+\text{}
+& \ket{\chi_s} = \frac{1}{\sqrt{N}}\displaystyle\sum_{x \in \mathbb{Z}_2^n} (-1)^{s \cdot x}\ket{x}
+& \ket{\chi_s} = \frac{1}{\sqrt{N}}\displaystyle\sum_{x \in \mathbb{Z}_N} e^{2\pi i sx/N} \ket{x} \\
+\hline
+
+\text{Transform}
+& \hat{f}(s) = \frac{1}{N} \displaystyle\sum_{x \in \mathbb{Z}_2^n} (-1)^{s \cdot x} f(x)
+& \hat{f}(s) = \frac{1}{N} \displaystyle\sum_{x \in \mathbb{Z}_N} e^{-2\pi i sx/N} f(x) \\
+\hline
+
+\text{Operator/Matrix Representation} 
+& H^{\otimes n} = \frac{1}{\sqrt{N}} \displaystyle\sum_{x,y \in \mathbb{Z}_2^n} (-1)^{x \cdot y} \ketbra{x}{y}
+& \mathsf{DFT_N} = \frac{1}{\sqrt{N}} \displaystyle\sum_{x,y \in \mathbb{Z}_N} e^{2\pi ixy/N} \ketbra{x}{y} \\
+\hline
+
+\end{array}
+\]
+
+And here's the one for the OG Fourier transform:
+\[
+\begin{array}{|c|c|}
+\hline
+\textbf{Feature} 
+& \textbf{Classical Fourier Transform} \\
+\hline
+
+\text{Underlying Set} 
+& \mathbb{R} \\
+\hline
+
+\text{Group Operation} 
+& \text{Addition } \\
+\hline
+
+\text{Group} 
+& (\mathbb{R}, +) \\
+\hline
+
+\text{Characters } \chi 
+& \chi_\xi(x)=e^{2\pi i \xi x},\ \xi\in\mathbb{R} \\
+\hline
+
+\text{Transform} 
+& \widehat f(\xi)=\displaystyle\int_{\mathbb R} 
+f(x)e^{-2\pi i \xi x}\,dx \\
+\hline
+
+\end{array}
+\]
+
+\subsection{Appendix: The Fast Fourier Transform}
+\paragraph{Fast Fourier Transform (Cooley-Tukey Algorithm):} Classically, computing the DFT directly from the definition requires $O(N^2)$ operations. The Cooley-Tukey Fast Fourier Transform (FFT) algorithm reduces this drastically. The algorithm proceeds as follows:
+
+Start by splitting the DFT sum (absorb $1/\sqrt{N}$ into the $x_j$ for brevity) into its even and odd indexed terms:
+\begin{align*}
+    y_k &= \sum_{j=0}^{N-1} e^{\frac{2\pi i jk}{N}} x_j\\
+    &= \sum_{j=0}^{N/2-1} e^{\frac{2\pi i (2j)k}{N}} x_{2j} + \sum_{j=0}^{N/2-1} e^{\frac{2\pi i (2j+1)k}{N}} x_{2j+1}\\
+    &= \underbrace{\sum_{j=0}^{N/2-1} e^{\frac{2\pi i jk}{N/2}} x_{2j}}_{E_k} + e^{\frac{2\pi ik}{N}}\underbrace{\sum_{j=0}^{N/2-1} e^{\frac{2\pi i jk}{N/2}} x_{2j+1}}_{O_k}.
+\end{align*}
+Notice that $E_k$ and $O_k$ are just smaller DFTs of size $N/2$. The key breakthrough of Cooley-Tukey is noticing the symmetry in the roots of unity, specifically $e^{\frac{2\pi i(k+N/2)}{N}} = -e^{\frac{2\pi ik}{N}}$, which allows us to write:
+\begin{align*}
+    y_{k+\frac{N}{2}} = E_k - e^{\frac{2\pi ik}{N}}O_k.
+\end{align*}
+This symmetry means we only have to compute the first half of the sequence ($y_k$ from $k=0$ until $k=N/2-1$) to get the second half for free. By recursively breaking this up into smaller DFTs until reaching the base case of $N=2$, we continually reuse the results of intermediate computations. We can evaluate the total complexity by drawing the binary tree expansion of this procedure: at each level $l$, there are $2^l$ $E_k/O_k$ terms, and for each term, we have $N/2^l$ values of $k$. Each $E_k/O_k$ term requires combining its children nodes, taking $O(1)$ operations. With $O(N)$ operations per level and $\log_2 N$ levels in the tree, the total classical time complexity evaluates to $O(N \log N)$.
+
+
+
+
+
+
+
