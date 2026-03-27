@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CS4268 Cheatsheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #faf9f6;
+    --ink: #1a1a1a;
+    --accent: #1a3a5c;
+    --accent2: #b5402b;
+    --accent3: #2a6041;
+    --accent4: #6b3a8a;
+    --border: #c8c4b8;
+    --section-bg: #f0ede6;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  .page {
+    width: 297mm;
+    min-height: 210mm;
+    padding: 7mm;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    background: var(--bg);
+  }
+
+  .header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 4px;
+    margin-bottom: 2px;
+  }
+  .header h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.5px; }
+  .header span { font-size: 9px; color: #555; font-family: var(--mono); }
+
+  .col { display: flex; flex-direction: column; gap: 5px; }
+  .col-span-2 { grid-column: span 2; display: flex; flex-direction: column; gap: 5px; }
+
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 3px 7px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: white;
+  }
+  .card-header.blue   { background: var(--accent); }
+  .card-header.red    { background: var(--accent2); }
+  .card-header.green  { background: var(--accent3); }
+  .card-header.purple { background: var(--accent4); }
+  .card-header.dark   { background: #333; }
+
+  .card-body { padding: 5px 7px; }
+
+  .def { margin-bottom: 4px; }
+  .def-title { font-weight: 700; font-size: 9.5px; color: var(--accent); }
+  .def-title.red    { color: var(--accent2); }
+  .def-title.green  { color: var(--accent3); }
+  .def-title.purple { color: var(--accent4); }
+
+  math-line, .ml {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9px;
+    background: var(--section-bg);
+    border-left: 2.5px solid var(--border);
+    padding: 2px 5px;
+    margin: 2px 0;
+    border-radius: 0 3px 3px 0;
+  }
+  .ml.accent { border-left-color: var(--accent); }
+  .ml.red    { border-left-color: var(--accent2); }
+  .ml.green  { border-left-color: var(--accent3); }
+  .ml.purple { border-left-color: var(--accent4); }
+
+  p { font-size: 9.5px; margin-bottom: 2px; }
+  .note { font-size: 8.5px; color: #555; font-style: italic; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+  th { background: var(--section-bg); padding: 2px 4px; text-align: left; font-weight: 700; border: 1px solid var(--border); }
+  td { padding: 2px 4px; border: 1px solid var(--border); font-family: var(--mono); font-size: 8px; }
+  tr:nth-child(even) td { background: #f8f7f4; }
+
+  .tag {
+    display: inline-block;
+    font-size: 7.5px;
+    font-family: var(--mono);
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0px 3px;
+    margin-right: 2px;
+  }
+
+  .circuit {
+    font-family: var(--mono);
+    font-size: 8.5px;
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 4px 6px;
+    white-space: pre;
+    line-height: 1.6;
+  }
+
+  hr { border: none; border-top: 1px dashed var(--border); margin: 3px 0; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; }
+
+  .mini-label { font-size: 8px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1px; }
+
+  @media print {
+    body { background: white; }
+    .page { width: 297mm; padding: 6mm; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>CS4268 Quantum Computing — Exam Cheatsheet</h1>
+    <span>Number Theory · Group Theory · QFT · Simon's · Deutsch-Jozsa · Bernstein-Vazirani</span>
+    <span style="margin-left:auto">AY2025-26 Sem 2</span>
+  </div>
+
+  <!-- COL 1: Number Theory -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header blue">Modular Arithmetic Rules</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">Key Rule</span>
+          <p>a≡a'(mod M), b≡b'(mod M) ⟹ ab≡a'b'(mod M)</p>
+          <div class="ml accent" style="font-size:8px">Proof: a=kM+a', b=k'M+b'
+ab = M(kk'M+kb'+k'a') + a'b'
+→ ab ≡ a'b' (mod M) ✓</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Notation</span>
+          <div class="ml accent">Zₘ = {1,2,…,M−1}
+a|b  ⟺  ∃q∈Z: aq=b</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">GCD &amp; Coprimality</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">GCD(a,b)</span>
+          <p>Largest integer d s.t. d|a and d|b.</p>
+        </div>
+        <div class="def">
+          <span class="def-title">Coprime</span>
+          <p>a, b coprime iff gcd(a,b) = 1</p>
+        </div>
+        <div class="def">
+          <span class="def-title">Bézout's Identity</span>
+          <p>∃ integers x,y: <span style="font-family:var(--mono)">ax + by = gcd(a,b)</span></p>
+          <p class="note">Solutions not unique. Add k·b to x, subtract k·a from y.</p>
+          <div class="ml accent">ax+by=c has int. solutions ⟺ gcd(a,b)|c
+Finding a⁻¹ mod M: solve ax+My=1
+via EEA → a⁻¹ = x mod M</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">Extended Euclidean Algorithm</div>
+      <div class="card-body">
+        <p style="font-size:8.5px">Returns g, x, y s.t. g = gcd(a,b) and ax+by = g</p>
+        <div class="ml accent" style="margin-top:3px">
+r₀=a, r₁=b; s₀=1,s₁=0; t₀=0,t₁=1
+while rᵢ > 0:
+  qᵢ = ⌊rᵢ₋₁/rᵢ⌋
+  rᵢ₊₁ = rᵢ₋₁ − qᵢrᵢ
+  sᵢ₊₁ = sᵢ₋₁ − qᵢsᵢ
+  tᵢ₊₁ = tᵢ₋₁ − qᵢtᵢ
+return rᵢ₋₁, sᵢ₋₁, tᵢ₋₁</div>
+        <p class="note" style="margin-top:2px">Complexity: O(log²a) · runs O(log b) iterations</p>
+        <hr>
+        <div class="def">
+          <span class="def-title">Two Key Uses of EEA</span>
+          <p><b>1.</b> Solve ax+by=c when gcd(a,b)|c → scale Bézout solution by c/gcd</p>
+          <p><b>2.</b> Find a⁻¹ mod M: run EEA on (a,M), get ax+My=1 → a⁻¹ = x mod M</p>
+          <p class="note">ax≡1(mod M) solvable iff gcd(a,M)=1, i.e. a ∈ Z*_M</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">Multiplicative Group Z*ₘ</div>
+      <div class="card-body">
+        <div class="def">
+          <div class="ml accent">Z*ₘ = {a ∈ Zₘ | gcd(a,M) = 1}</div>
+          <p style="margin-top:2px">Binary op: multiplication mod M</p>
+          <p>Identity = 1. Inverse of a: use Bézout → ax ≡ 1 (mod M), so a⁻¹ = x mod M</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Euler's Totient φ(M)</span>
+          <p>φ(M) = |Z*ₘ| = # integers in [1,M] coprime to M</p>
+          <div class="ml accent">M prime  → φ(M) = M−1
+M = pq   → φ(M) = (p−1)(q−1)
+Sum rule: Σ_{d|M} φ(d) = M</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Euler's Theorem</span>
+          <div class="ml accent">gcd(a,M)=1 ⟹ aᵠ⁽ᴹ⁾ ≡ 1 (mod M)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">Order &amp; Generators</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">ord_M(a)</span>
+          <p>Smallest r &gt; 0 s.t. aʳ ≡ 1 (mod M)</p>
+          <div class="ml accent">ord_M(a)  |  φ(M)
+If p prime: ord_p(a)  |  p−1</div>
+          <p class="note">Proof: write φ(M)=qr+s, then aˢ≡1. Since r is smallest, s=0.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Generator / Primitive Root</span>
+          <p>g generates G if every element = gᵏ for some k. Z*ₚ is cyclic for any prime p.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Z*ₚ Cyclic — Proof Sketch</span>
+          <p>Let N_p(d) = #{a ∈ Z*ₚ : ord_p(a) = d}</p>
+          <div class="ml accent">Step 1: N_p(d) ∈ {0, φ(d)} for all d | p−1
+  (if ∃ one element of order d, the d
+   roots of xᵈ≡1 are exactly {a,a²,…,aᵈ}
+   and φ(d) of them have order exactly d)
+
+Step 2: Σ_{d|p-1} N_p(d) = p−1
+  (every element has some order dividing p−1)
+
+Step 3: Σ_{d|p-1} φ(d) = p−1  [sum rule]
+
+Steps 1+2+3 → N_p(d) = φ(d) for ALL d
+→ N_p(p−1) = φ(p−1) ≥ 1  ✓ generator exists</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 2: Quantum Algorithms 1 -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header red">Deutsch Algorithm</div>
+      <div class="card-body">
+        <p><b>Task:</b> Is f:{0,1}→{0,1} constant or balanced? Uses <b>1 query</b>.</p>
+        <div class="circuit">|0⟩ ─H──────H─ measure
+|1⟩ ─H──Qf──── (discard)</div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">The 4 Functions</span>
+          <table style="margin-top:2px">
+            <tr><th>f</th><th>f(0)</th><th>f(1)</th><th>Type</th></tr>
+            <tr><td>f₀</td><td>0</td><td>0</td><td>constant</td></tr>
+            <tr><td>f₁</td><td>1</td><td>1</td><td>constant</td></tr>
+            <tr><td>f₂</td><td>0</td><td>1</td><td>balanced</td></tr>
+            <tr><td>f₃</td><td>1</td><td>0</td><td>balanced</td></tr>
+          </table>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">State derivation</span>
+          <div class="ml red" style="font-size:8px">Start: |0⟩|1⟩
+→[H⊗H]→ |+⟩|−⟩ = (1/√2)(|0⟩+|1⟩)|−⟩
+→[Q_f]→ (1/√2)((−1)^f(0)|0⟩+(−1)^f(1)|1⟩)|−⟩
+→[H on 1st]→ ±|0⟩  if constant (f(0)=f(1))
+              ±|1⟩  if balanced (f(0)≠f(1))</div>
+          <p class="note">Phase kickback: Q_f|x⟩|−⟩=(−1)^f(x)|x⟩|−⟩. Ancilla |−⟩ unchanged.</p>
+        </div>
+        <p style="margin-top:3px">Measure 1st qubit: <span style="font-family:var(--mono)">|0⟩ ↔ constant, |1⟩ ↔ balanced</span></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header red">Deutsch-Jozsa</div>
+      <div class="card-body">
+        <p><b>Task:</b> f:{0,1}ⁿ→{0,1}, constant or balanced? Uses <b>1 query</b>.</p>
+        <div class="circuit">|0ⁿ⟩ ─Hⁿ──────Hⁿ─ measure n qubits
+|1⟩  ─H───Qf────── (discard)</div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Amplitude formula</span>
+          <div class="ml red">amp(z) = (1/2ⁿ) Σ_{x∈{0,1}ⁿ} (−1)^(f(x)+x·z)
+
+Derivation: |0ⁿ⟩|−⟩ →[Hⁿ]→ (1/√2ⁿ)Σ_x|x⟩|−⟩
+→[Q_f]→ (1/√2ⁿ)Σ_x(−1)^f(x)|x⟩|−⟩
+→[Hⁿ]→ Σ_z amp(z)|z⟩|−⟩</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Constant case (f(x)=c)</span>
+          <div class="ml red">amp(0ⁿ) = (1/2ⁿ) Σ_x (−1)^c · 1  [x·0ⁿ=0]
+= (−1)^c · (2ⁿ/2ⁿ) = ±1
+→ P(0ⁿ) = 1 (measure 0ⁿ with certainty)</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Balanced case</span>
+          <div class="ml red">amp(0ⁿ) = (1/2ⁿ) Σ_x (−1)^f(x)
+= (1/2ⁿ)[Σ_{f=0}(+1) + Σ_{f=1}(−1)]
+= (1/2ⁿ)[2^(n−1) − 2^(n−1)] = 0
+→ P(0ⁿ) = 0 (never measure 0ⁿ)</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Query complexity</span>
+          <table style="margin-top:2px">
+            <tr><th>Model</th><th>Queries</th></tr>
+            <tr><td>Quantum</td><td>1</td></tr>
+            <tr><td>Classical det.</td><td>2^(n−1)+1</td></tr>
+            <tr><td>Classical rand.</td><td>O(log(1/ε))</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header red">Bernstein-Vazirani</div>
+      <div class="card-body">
+        <p><b>Task:</b> f(x) = x·s, find secret s. Quantum uses <b>1 query</b> vs classical n.</p>
+        <p>Same circuit as DJ: apply Hⁿ → Qf → Hⁿ. Measuring gives |s⟩ with certainty.</p>
+        <div class="ml red">After Qf: (1/√2ⁿ) Σ_x (−1)^(x·s) |x⟩ = Hⁿ|s⟩
+Applying Hⁿ again (H²=I) recovers |s⟩</div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Worked example: n=2, s=10</span>
+          <div class="ml red" style="font-size:8px">f(x) = x·10 → only 1st bit matters
+Signs: x=00→+, 01→+, 10→−, 11→−
+
+After H²|00⟩: (1/2)(|00⟩+|01⟩+|10⟩+|11⟩)
+After Qf:    (1/2)(|00⟩+|01⟩−|10⟩−|11⟩)
+            = H²|10⟩  ← sign pattern encodes s
+After H²:   |10⟩  → measure 10 = s ✓</div>
+          <p class="note">Sign rule: (−1)^(x·s). For s=10: only x with x₁=1 get minus sign.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header dark">Hadamard-Walsh vs QFT</div>
+      <div class="card-body">
+        <table>
+          <tr><th></th><th>H-W (Zⁿ₂)</th><th>QFT (Z_N)</th></tr>
+          <tr><td>Group op</td><td>Bit XOR mod 2</td><td>Add mod N</td></tr>
+          <tr><td>Character</td><td>εₛ(x)=(−1)^(s·x)</td><td>εₛ(x)=e^(2πisx/N)</td></tr>
+          <tr><td>Matrix</td><td>Hⁿ</td><td>DFT_N</td></tr>
+          <tr><td>f̂(s)</td><td>(1/N)Σ(−1)^(s·x)f(x)</td><td>(1/N)Σe^(−2πisx/N)f(x)</td></tr>
+        </table>
+        <p class="note" style="margin-top:3px">Both: FT|s⟩ := |εₛ⟩ (change-of-basis to character basis)</p>
+        <hr>
+        <div class="def">
+          <span class="def-title">DFT vs QFT</span>
+          <p><b>DFT</b> = classical matrix on a vector. <b>QFT</b> = same transform on quantum amplitudes. Same formula, different object.</p>
+          <p class="note">You cannot read all QFT output coefficients — measuring collapses to one sample.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Character examples</span>
+          <div class="ml accent" style="font-size:8px">HWT (n=3): ε₁₀₁(110) = (−1)^(101·110)
+  101·110 = 1·1+0·1+1·0 = 1 → (−1)¹ = −1
+
+QFT (N=8): ε₃(5) = e^(2πi·3·5/8) = e^(30πi/8)
+  = e^(7πi/4) = cos(7π/4)+i·sin(7π/4)
+  = (1−i)/√2</div>
+          <p class="note">HWT: dot product mod 2 → ±1. QFT: multiply then exponentiate → complex phase.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 3: QFT -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header green">Quantum Fourier Transform</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title green">Action on basis state</span>
+          <div class="ml green">QFT|j⟩ = (1/√N) Σₖ e^(2πijk/N) |k⟩</div>
+        </div>
+        <div class="def" style="margin-top:3px">
+          <span class="def-title green">Product / tensor form (N=2ⁿ)</span>
+          <div class="ml green" style="font-size:8px">QFT|j₁…jₙ⟩ =
+(1/√2ⁿ)(|0⟩+e^(2πi·0.jₙ)|1⟩)
+        ⊗(|0⟩+e^(2πi·0.jₙ₋₁jₙ)|1⟩)
+        ⊗ …
+        ⊗(|0⟩+e^(2πi·0.j₁j₂…jₙ)|1⟩)</div>
+          <p class="note">Binary fraction: 0.j₁…jₙ = j₁·2⁻¹+…+jₙ·2⁻ⁿ</p>
+          <p class="note"><b>Notable:</b> output is a <b>product state (unentangled)</b> for any basis input — each qubit only carries a phase, not correlations.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title green">3-qubit circuit</span>
+          <div class="circuit" style="font-size:7.5px">|j₁⟩ ─H─R₂─R₃──────────
+|j₂⟩ ───●──┼──H─R₂──────
+|j₃⟩ ───────●──●──H─────
+(+ SWAP gates to reverse output order)</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title green">Complexity</span>
+          <p>QFT: <span style="font-family:var(--mono)">O(n²) = O(log²N)</span> gates</p>
+          <div class="ml green" style="font-size:8px">Per-qubit gate count:
+qubit i: 1 H + (n−i) controlled-Rₖ gates
+total: Σᵢ(n−i+1) = n(n+1)/2 = O(n²)</div>
+          <p>Classical FFT: <span style="font-family:var(--mono)">O(N log N)</span> → exponential speedup</p>
+          <p class="note">Caveat: amplitudes can't be read out directly. QFT useful as intermediate step for extracting global properties (e.g. period).</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title green">Phase gate R_k</span>
+          <div class="ml green">Rₖ = diag(1, e^(2πi/2ᵏ))</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header green">Fourier Transform Summary</div>
+      <div class="card-body">
+        <div class="def">
+          <p>Core idea: decompose f in terms of translation-invariant eigenfunctions (characters). FT = change of basis from canonical → character basis.</p>
+        </div>
+        <div class="def" style="margin-top:3px">
+          <span class="def-title green">Classical (continuous)</span>
+          <div class="ml green">f̂(ξ) = ∫ f(x)e^(−2πiξx) dx
+characters: εξ(x) = e^(2πiξx)</div>
+        </div>
+        <div class="def" style="margin-top:2px">
+          <p class="note">Functions ↔ vectors (Function-Vector Equivalence). Linear functions of functions ↔ matrices.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 4: Simon's Problem -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header purple">Simon's Problem over Zⁿ₂</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title purple">Problem</span>
+          <p>Given f:{0,1}ⁿ→{0,1}ⁿ with f(x)=f(y) ⟺ x=y⊕s. Find s.</p>
+          <p class="note">Hidden period over group Z₂ⁿ (XOR). Hidden subgroup {0ⁿ,s} ≤ Z₂ⁿ. Two inputs equivalent iff same coset. s=0ⁿ: injective; else every output has exactly two preimages x and x⊕s.</p>
+          <p class="note">Classical randomized: Ω(2^(n/2)) queries (birthday paradox).</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Quantum Circuit</span>
+          <div class="circuit" style="font-size:7.5px">|0ⁿ⟩ ─Hⁿ──────Hⁿ─ measure → yᵢ
+        Of
+|0ⁿ⟩ ─────────── (ancilla)</div>
+          <p style="margin-top:2px">After circuit:</p>
+          <div class="ml purple" style="font-size:8px">p(y) = 1/2^(n−1)  if y·s = 0 (mod 2)
+p(y) = 0          if y·s = 1 (mod 2)</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">State walkthrough</span>
+          <div class="ml purple" style="font-size:7.5px">|0ⁿ⟩|0ⁿ⟩ →[Hⁿ]→ (1/√2ⁿ) Σ_x |x⟩|0ⁿ⟩
+
+→[Of]→  (1/√2ⁿ) Σ_x |x⟩|f(x)⟩   (entangled)
+
+→[meas. 2nd]→  (1/√2)(|x₀⟩ + |x₀⊕s⟩)
+    ↑ pair state: two branches differ by exactly s
+
+→[Hⁿ]→  ampl. of |y⟩ ∝ (−1)^(x₀·y)·(1+(−1)^(s·y))
+    s·y=0 → factor=2 (amplitudes reinforce)
+    s·y=1 → factor=0 (destructive interference)</div>
+          <p class="note">x₀ unknown/random — doesn't matter. Only the interference pattern encodes s.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Classical Postprocessing</span>
+          <p>Repeat n−1 times to get n−1 lin. indep. yᵢ. Gaussian elimination → solutions {0ⁿ, s'}. Check f(0ⁿ) vs f(s') to identify s.</p>
+          <div class="ml purple">P(n−1 LI strings) > 1/2
+After k runs: P(fail) &lt; e^(−k/2)</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Worked: n=2, s=11 (full states)</span>
+          <div class="ml purple" style="font-size:7.5px">Pairs: {00↔11, 01↔10}, f(00)=f(11)=a, f(01)=f(10)=b
+
+After H⊗2 + oracle:
+  ½((|00⟩+|11⟩)|a⟩ + (|01⟩+|10⟩)|b⟩)
+
+Measure 2nd reg → say get |a⟩. 1st reg collapses:
+  (|00⟩+|11⟩)/√2
+
+Apply H⊗2:
+  H⊗2|00⟩ = ½(|00⟩+|01⟩+|10⟩+|11⟩)
+  H⊗2|11⟩ = ½(|00⟩−|01⟩−|10⟩+|11⟩)
+  Sum: ½(|00⟩+|11⟩) ← |01⟩,|10⟩ cancel!
+
+Measure → {00, 11} each with prob ½.
+y·s=0: (y=00) 0+0=0 ✓  (y=11) 1+1=2≡0 ✓
+→ s₁+s₂=0 → s₁=s₂ → s=11 (non-zero) ✓</div>
+          <p class="note">⚠ The pair state (|00⟩+|11⟩)/√2 is fixed by H⊗2 because it is an eigenstate (eigenvalue +1) — NOT because H²=I. (H²=I means applying twice returns to start; here applying once already stays.)</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Example: n=3, s=101</span>
+          <div class="ml purple" style="font-size:7.5px">Constraint: y·s = y₁+y₃ = 0 (mod 2) → y₁=y₃
+Valid outputs: {000, 010, 101, 111}
+Collect 2 LI equations, Gaussian elim → s=101
+Verify: f(000) = f(101) ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header purple">Simon's Problem over Z_N</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title purple">Problem</span>
+          <p>Given f:Z_N→Z_N with f(x)=f(y) ⟺ x=y+L. Find period L. (N=2ⁿ, L|N)</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Quantum Circuit</span>
+          <div class="circuit" style="font-size:7.5px">|0ⁿ⟩ ─DFT_N─────DFT_N─ measure
+           Of
+|0ⁿ⟩ ─────────────── (ancilla)</div>
+          <p style="margin-top:2px">After measurement:</p>
+          <div class="ml purple">p(y) = 1/L  if y = 0 mod (N/L)
+p(y) = 0    otherwise
+→ outcome is multiple of N/L
+⚠ You receive iN/L (the full value),
+  NOT i alone. Must divide N by gcd.</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Postprocessing</span>
+          <p>Two runs give iN/L and jN/L.</p>
+          <div class="ml purple">L̂ = N / gcd(iN/L, jN/L)
+Correct iff gcd(i,j) = 1</div>
+          <p style="margin-top:2px"><b>Success probability:</b></p>
+          <div class="ml purple">P(gcd(i,j)>1) ≤ Σ_p 1/p² ≤ 11/12
+→ P(gcd=1) ≥ 1/12
+
+k runs: P(gcd(i₁…iₖ)>1) = O(2^−k)
+→ P(success) ≥ 1 − O(2^−k)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header dark">Key Identities Quick Ref</div>
+      <div class="card-body">
+        <table>
+          <tr><th>Identity</th><th>Formula</th></tr>
+          <tr><td>Bézout</td><td>ax+by = gcd(a,b)</td></tr>
+          <tr><td>Euler</td><td>a^φ(M) ≡ 1 (mod M)</td></tr>
+          <tr><td>ord divides</td><td>ord_M(a) | φ(M)</td></tr>
+          <tr><td>HWT</td><td>Hⁿ|x⟩=(1/√2ⁿ)Σ(−1)^(x·y)|y⟩</td></tr>
+          <tr><td>QFT</td><td>QFT|j⟩=(1/√N)Σe^(2πijk/N)|k⟩</td></tr>
+          <tr><td>Kickback</td><td>Qf|x⟩|−⟩=(−1)^f(x)|x⟩|−⟩</td></tr>
+          <tr><td>H²=I</td><td>H is self-inverse</td></tr>
+          <tr><td>φ(pq)</td><td>(p−1)(q−1)</td></tr>
+        </table>
+        <p class="note" style="margin-top:3px">Geometric series: Σ_{t=0}^{N/L−1} e^(2πiytL/N) = N/L if L|y, else 0</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" style="margin-top:8px; border-top: 3px solid var(--ink); padding-top:8px;">
+
+  <div class="header">
+    <h1>CS4268 — Page 2: Grover · Shor · Phase Kickback · Hadamard Transform</h1>
+    <span style="margin-left:auto">AY2025-26 Sem 2</span>
+  </div>
+
+  <!-- COL 1: Phase Kickback + Hadamard -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header blue">Phase Kickback</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">Setup</span>
+          <p>Ancilla qubit in |−⟩ = (|0⟩−|1⟩)/√2. Oracle Q_f acts as:</p>
+          <div class="ml accent">Q_f|x⟩|y⟩ = |x⟩|y ⊕ f(x)⟩
+
+Q_f|x⟩|−⟩ = (−1)^f(x) |x⟩|−⟩</div>
+          <p class="note">Phase "kicks back" onto control register. Ancilla unchanged.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Two-case derivation</span>
+          <div class="ml accent">Case f(x)=0:
+  Q_f|x⟩|−⟩ = |x⟩|0⊕0⟩−|x⟩|1⊕0⟩ / √2
+             = |x⟩(|0⟩−|1⟩)/√2 = |x⟩|−⟩
+             = (−1)⁰|x⟩|−⟩ ✓
+
+Case f(x)=1:
+  Q_f|x⟩|−⟩ = |x⟩|0⊕1⟩−|x⟩|1⊕1⟩ / √2
+             = |x⟩(|1⟩−|0⟩)/√2 = −|x⟩|−⟩
+             = (−1)¹|x⟩|−⟩ ✓</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Oracle unitarity</span>
+          <p>Q_f is self-inverse: Q_f² = I.</p>
+          <div class="ml accent">Q_f|x,y⟩ = |x, y⊕f(x)⟩  (XOR is its own inverse)
+Q_f(Q_f|x,y⟩) = |x, y⊕f(x)⊕f(x)⟩ = |x,y⟩
+→ Q_f is unitary (bijection on basis states)</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Oracle types (distinct!)</span>
+          <div class="ml accent">Standard oracle:  Uf|x⟩|y⟩ = |x⟩|y⊕f(x)⟩
+Phase oracle:    Of|x⟩    = (−1)^f(x)|x⟩
+↑ no ancilla; f(x) written into sign directly</div>
+          <p class="note">Phase kickback converts standard oracle + |−⟩ ancilla into phase oracle behaviour.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Why it works</span>
+          <p>|−⟩ is eigenstate of X with eigenvalue −1. Flipping the ancilla when f(x)=1 multiplies state by −1.</p>
+          <div class="ml accent">|−⟩ = (|0⟩−|1⟩)/√2
+X|−⟩ = −|−⟩  →  eigenvalue −1</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">General eigenstate form</span>
+          <div class="ml accent">If U|u⟩ = e^(iφ)|u⟩ (eigenstate), then:
+(|0⟩+|1⟩)/√2 ⊗ |u⟩ →[ctrl-U]→ (|0⟩+e^(iφ)|1⟩)/√2 ⊗ |u⟩
+Phase e^(iφ) from target kicks back to control.</div>
+          <p class="note">Boolean case: U=X, |u⟩=|−⟩, e^(iφ)=−1 → the standard formula.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Preparing |−⟩</span>
+          <div class="ml accent">|0⟩ →[X]→ |1⟩ →[H]→ |−⟩</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Uses</span>
+          <p>Deutsch, DJ, BV, Grover oracle, conditional phase shifts (2|0⟩⟨0|−I)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">Hadamard-Walsh Transform</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">Single qubit</span>
+          <div class="ml accent">H = (1/√2)[[1,1],[1,−1]]
+H|0⟩ = |+⟩,  H|1⟩ = |−⟩
+H|+⟩ = |0⟩,  H|−⟩ = |1⟩
+H² = I  (self-inverse)</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">n-qubit HWT</span>
+          <div class="ml accent">H^⊗n|x⟩ = (1/√2ⁿ) Σ_y (−1)^(x·y) |y⟩
+
+H^⊗n|0ⁿ⟩ = (1/√2ⁿ) Σ_x |x⟩  (uniform superpos.)
+</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Key Properties</span>
+          <div class="ml accent">H^⊗n is unitary and self-inverse: (H^⊗n)² = I
+Group: Zⁿ₂  (bitwise XOR)
+Character: εₛ(x) = (−1)^(s·x)</div>
+          <p class="note">n-qubit HWT = Fourier transform over Zⁿ₂. Applying H⊗n twice returns to original state.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Worked example: H⊗²|10⟩</span>
+          <div class="ml accent" style="font-size:8px">H⊗²|10⟩ = H|1⟩ ⊗ H|0⟩
+= |−⟩ ⊗ |+⟩
+= (1/√2)(|0⟩−|1⟩) ⊗ (1/√2)(|0⟩+|1⟩)
+= (1/2)(|00⟩+|01⟩−|10⟩−|11⟩)
+
+Shortcut: coeff of |yz⟩ = (−1)^(x·y) / √2ⁿ
+  x=10, y=10: (−1)^(1·1+0·0) = −1 ✓
+  x=10, y=01: (−1)^(1·0+0·1) = +1 ✓</div>
+          <p class="note">Dot product trick: amp(y) = (−1)^(x·y)/√2ⁿ where x·y = Σᵢ xᵢyᵢ mod 2</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Complexity</span>
+          <p>O(n) = O(log N) gates — one H per qubit in parallel.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 2: Grover Part 1 -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header red">Grover's Algorithm</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title red">Problem</span>
+          <p>Search for M marked items among N. f:[N]→{0,1}, f(x)=1 iff x is marked.</p>
+          <p class="note">Classical: Ω(N/M) queries. Grover: O(√(N/M)) → quadratic speedup.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Circuit</span>
+          <div class="circuit" style="font-size:7.5px">|0ⁿ⟩ ─Hⁿ─[G]─[G]─···─[G]─ measure
+|0⟩  ─X──H─────────────── |−⟩ (ancilla)</div>
+          <p style="margin-top:2px">Grover operator G = H⊗ⁿ (2|0ⁿ⟩⟨0ⁿ|−I) H⊗ⁿ · Of</p>
+          <div class="ml red">Equivalently: G = (2|ψ⟩⟨ψ|−I) · Of
+where |ψ⟩ = H^⊗n|0ⁿ⟩ = uniform superpos.</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Algorithm Steps</span>
+          <p>1. Init |0ⁿ⟩|0⟩, apply H⊗ⁿ⊗HX → |ψ⟩|−⟩</p>
+          <p>2. Apply G exactly k = ⌊(π/4)√(N/M)⌋ times</p>
+          <p>3. Measure n work qubits → solution w.h.p.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Define subspaces</span>
+          <div class="ml red">A = {x : f(x)=0},  B = {x : f(x)=1}
+|α⟩ = (1/√(N−M)) Σ_{x∈A} |x⟩
+|β⟩ = (1/√M)     Σ_{x∈B} |x⟩
+|ψ⟩ = √((N−M)/N)|α⟩ + √(M/N)|β⟩</div>
+          <p class="note">⟨α|β⟩ = 0 · G acts in the 2D real subspace spanned by |α⟩,|β⟩.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 3: Grover Analysis -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header red">Grover Analysis — Geometry</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title red">Two reflections = rotation</span>
+          <p>Of = reflection about |α⟩ axis (flips sign of |β⟩ component)</p>
+          <div class="ml red">Of(a|α⟩+b|β⟩) = a|α⟩ − b|β⟩
+  = (2|α⟩⟨α|−I)(a|α⟩+b|β⟩)</div>
+          <p style="margin-top:2px">(2|ψ⟩⟨ψ|−I) = reflection about |ψ⟩ axis</p>
+          <p>Composition of two reflections in ℝ² = rotation.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">G as rotation matrix</span>
+          <p>Define angle θ via:</p>
+          <div class="ml red">cos(θ/2) = √((N−M)/N)  = a
+sin(θ/2) = √(M/N)      = b
+
+G = [[cosθ, −sinθ],
+     [sinθ,  cosθ]]  (in |α⟩,|β⟩ basis)
+
+G|α⟩ = cosθ|α⟩ + sinθ|β⟩
+G|β⟩ = −sinθ|α⟩ + cosθ|β⟩</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">After k iterations</span>
+          <div class="ml red">Gᵏ|ψ⟩ = cos((2k+1)θ/2)|α⟩
+        + sin((2k+1)θ/2)|β⟩
+
+P(solution) = sin²((2k+1)θ/2)</div>
+          <p style="margin-top:2px">Maximise by setting (2k+1)θ/2 ≈ π/2:</p>
+          <div class="ml red">k = ⌊π/(2θ) − 1/2⌋
+Error ≤ θ (at most one extra rotation)</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Iteration count</span>
+          <div class="ml red">M ≤ N/2:  θ/2 ≥ sin(θ/2) = √(M/N)
+k ≤ π/(2θ) ≤ (π/4)√(N/M)
+→ k = O(√(N/M)) iterations</div>
+          <p class="note">If M ≥ N/2: double N with ancilla qubit, mark only when ancilla=|0⟩.</p>
+          <p class="note">Amplitude amplified: sin²(θ/2) → sin²((2k+1)θ/2) ≈ 1</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 4: Shor's Algorithm -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header purple">Shor's Algorithm (Factoring)</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title purple">Problem</span>
+          <p>Given N=pq (product of two primes), find p and q. Classical best: sub-exponential. Shor: polynomial O(log³N).</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Reduction: Factoring → Period Finding</span>
+          <p>Pick random a with gcd(a,N)=1. Define:</p>
+          <div class="ml purple">f(x) = aˣ mod N   (periodic with period r)
+aʳ ≡ 1 (mod N)  ← r = ord_N(a)</div>
+          <p style="margin-top:2px">If r is even and aʳ/² ≢ −1 (mod N):</p>
+          <div class="ml purple">aʳ − 1 ≡ 0 (mod N)
+→ (aʳ/²−1)(aʳ/²+1) ≡ 0 (mod N)
+→ gcd(aʳ/²±1, N) gives non-trivial factor</div>
+          <p class="note">Works with prob. ≥ 1/2 over random a. Repeat if r odd or aʳ/²≡−1.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Quantum Period Finding (core)</span>
+          <div class="circuit" style="font-size:7.5px">|0ⁿ⟩ ─QFT──────────QFT⁻¹─ measure → r̃
+|0ⁿ⟩ ──────U_f─────────── (f register)</div>
+          <div class="ml purple">1. Init |0ⁿ⟩|0ⁿ⟩, apply QFT to 1st register
+2. Apply U_f: |x⟩|0⟩ → |x⟩|aˣ mod N⟩
+3. Measure 2nd register (collapses 1st to
+   uniform superpos. over {x₀, x₀+r, …})
+4. Apply QFT⁻¹ to 1st register
+5. Measure → multiple of N/r
+6. Use continued fractions to extract r</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Number theory prerequisites</span>
+          <div class="ml purple">gcd(a,N)=1   ↔  a ∈ Z*_N
+r = ord_N(a)   r | φ(N) = (p−1)(q−1)
+φ(N) = (p−1)(q−1)  for N=pq
+aᵠ⁽ᴺ⁾ ≡ 1 (mod N)   [Euler's theorem]</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Why QFT extracts period</span>
+          <p>After measuring f-register, 1st register is:</p>
+          <div class="ml purple">|φ⟩ ∝ Σ_{j} |x₀ + jr⟩   (uniform over coset)
+QFT → peaks at multiples of N/r
+Continued fractions: s/N ≈ k/r → find r</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header dark">Speedup Summary</div>
+      <div class="card-body">
+        <table>
+          <tr><th>Algorithm</th><th>Problem</th><th>Classical</th><th>Quantum</th></tr>
+          <tr><td>Deutsch</td><td>Const/balanced 1-bit</td><td>2 queries</td><td>1 query</td></tr>
+          <tr><td>DJ</td><td>Const/balanced n-bit</td><td>O(2ⁿ)</td><td>1 query</td></tr>
+          <tr><td>BV</td><td>Find secret s</td><td>n queries</td><td>1 query</td></tr>
+          <tr><td>Simon</td><td>Find period (Zⁿ₂)</td><td>Ω(2^(n/2))</td><td>O(n)</td></tr>
+          <tr><td>Grover</td><td>Unstructured search</td><td>O(N/M)</td><td>O(√(N/M))</td></tr>
+          <tr><td>Shor</td><td>Factoring N</td><td>exp(O(n^(1/3)))</td><td>O(n³)</td></tr>
+        </table>
+        <p class="note" style="margin-top:3px">Grover is provably optimal for unstructured search (BBBV theorem).</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- PAGE 3: Proof Sketches & Intuitions -->
+<div class="page" style="margin-top:8px; border-top: 3px solid var(--ink); padding-top:8px;">
+
+  <div class="header">
+    <h1>CS4268 — Page 3: Proof Sketches &amp; Intuitions (Number Theory)</h1>
+    <span style="margin-left:auto">From Tutorial Transcript</span>
+  </div>
+
+  <!-- COL 1: Modular Arithmetic Tricks + EEA Use Cases -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header blue">Modular Arithmetic — The Trick</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">Working with congruences</span>
+          <p>To verify a ≡ a' (mod M): write a = kM + a', take mod M on both sides → a ≡ a'.</p>
+          <div class="ml accent">Given: a ≡ a' (mod M), b ≡ b' (mod M)
+Write: a = kM + a', b = k'M + b'
+ab = (kM+a')(k'M+b')
+   = M(kk'M+kb'+k'a') + a'b'
+→ ab ≡ a'b' (mod M) ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">EEA Use Cases</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">Use Case 1: Solve ax + by = c</span>
+          <p>When c = k · gcd(a,b) for some integer k. Run EEA to get x₀, y₀ s.t. ax₀+by₀=gcd(a,b), then scale by k.</p>
+          <div class="ml accent">General solution: x = kx₀ + (b/d)·t
+              y = ky₀ − (a/d)·t
+for any integer t, d = gcd(a,b)</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Use Case 2: Find multiplicative inverse</span>
+          <p>Find x s.t. ax ≡ 1 (mod b). Requires gcd(a,b)=1.</p>
+          <div class="ml accent">Run EEA on (a, b) → get x, y s.t. ax + by = 1
+Take mod b: ax ≡ 1 (mod b)
+→ x mod b is the inverse of a</div>
+          <p class="note">This is how Z*ₘ inverses are computed in practice.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">Z*ₘ Inverse — Proof via Bézout</div>
+      <div class="card-body">
+        <div class="def">
+          <p>For any a ∈ Z*ₘ, gcd(a,M)=1. Apply Bézout:</p>
+          <div class="ml accent">∃ x,y ∈ ℤ: ax + My = 1
+Take (mod M): ax ≡ 1 (mod M)
+→ (x mod M) is a's inverse in Z*ₘ</div>
+          <p style="margin-top:2px">Check x mod M also satisfies Bézout: replace x with x mod M = x − kM, then a(x−kM) + M(y+ka) = 1 ✓</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Example: Z*₁₅</span>
+          <div class="ml accent">Z*₁₅ = {1,2,4,7,8,11,13,14}
+2·8 = 16 ≡ 1 (mod 15) → 2⁻¹ = 8
+7·13 = 91 ≡ 1 (mod 15) → 7⁻¹ = 13</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 2: Euler's Theorem proof sketch -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header green">Euler's Theorem — Proof Sketch</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title green">Setup</span>
+          <p>Let Z*ₘ = {x₁, x₂, …, xₖ} where k = φ(M). Since gcd(a,M)=1, a ∈ Z*ₘ.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title green">Key idea: multiplication by a is a permutation</span>
+          <div class="ml green">Consider: a·Z*ₘ = {ax₁, ax₂, …, axₖ}
+
+Claim: this is the same set as Z*ₘ (just reordered).
+
+Why? Because axᵢ ≡ axⱼ (mod M) iff xᵢ = xⱼ
+(a has an inverse → cancel a from both sides).
+So all axᵢ are distinct mod M → same set.</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title green">Finish</span>
+          <div class="ml green">Product of {x₁,…,xₖ} ≡ product of {ax₁,…,axₖ}
+
+∏ xᵢ ≡ aᵏ · ∏ xᵢ  (mod M)
+
+Since ∏ xᵢ ∈ Z*ₘ → it has an inverse.
+Multiply both sides by (∏ xᵢ)⁻¹:
+
+1 ≡ aᵏ ≡ aᵠ⁽ᴹ⁾  (mod M) ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header green">Order Divides φ(M) — Proof Sketch</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title green">Goal:</span>
+          <p>Show r = ord_M(a) divides φ(M).</p>
+        </div>
+        <div class="def">
+          <span class="def-title green">Division algorithm trick</span>
+          <div class="ml green">By Euler: aᵠ⁽ᴹ⁾ ≡ 1 (mod M)
+Write φ(M) = q·r + s,  0 ≤ s &lt; r
+
+Then: aᵠ⁽ᴹ⁾ = a^(qr+s) = (aʳ)^q · aˢ
+           ≡ 1^q · aˢ ≡ aˢ ≡ 1 (mod M)
+
+But r is the SMALLEST positive integer
+with aʳ ≡ 1. Since 0 ≤ s &lt; r:
+s cannot be positive → s = 0
+→ r | φ(M) ✓</div>
+        </div>
+        <hr>
+        <div class="def">
+          <p class="note">Corollary: if p prime, ord_p(a) | p−1 since φ(p)=p−1.</p>
+          <p class="note">Implication for Shor: the period r of aˣ mod N divides φ(N)=(p−1)(q−1).</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 3: Cyclic group proof sketch -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header purple">Z*ₚ is Cyclic — Proof Sketch</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title purple">Goal</span>
+          <p>Show ∃ a ∈ Z*ₚ with ord_p(a) = p−1 (a generator).</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Step A — Sum identity</span>
+          <div class="ml purple">For any M ≥ 1: Σ_{d | M} φ(d) = M
+
+Proof: consider fractions 1/M, 2/M, …, M/M.
+Each reduces to k/d with gcd(k,d)=1.
+# fractions with denom d = φ(d).
+Summing over all d|M gives M. ✓</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Step B — Nₚ(d) ∈ {0, φ(d)}</span>
+          <p>Nₚ(d) = #{a ∈ Z*ₚ : ord_p(a) = d}</p>
+          <div class="ml purple">If Nₚ(d) > 0: ∃ a with ord_p(a)=d.
+Then {1,a,a²,…,aᵈ⁻¹} are d distinct roots
+of xᵈ−1 ≡ 0 (mod p).
+A degree-d poly over a prime field has
+at most d roots → these are ALL roots.
+Any b with bᵈ≡1 must be some aᵏ.
+ord(aᵏ) = d/gcd(k,d) = d  iff gcd(k,d)=1
+# such k in [0,d−1] = φ(d).
+→ Nₚ(d) = φ(d). ✓</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Step C — Conclusion</span>
+          <div class="ml purple">From B: Nₚ(d) ≤ φ(d) for all d | p−1
+
+Claim: Σ_{d | p−1} Nₚ(d) = p−1
+(each element has exactly one order,
+and every order divides p−1)
+
+From A: Σ_{d | p−1} φ(d) = p−1
+
+So both sides equal p−1, and no term
+exceeds → Nₚ(d) = φ(d) for ALL d.
+
+For d = p−1: Nₚ(p−1) = φ(p−1) ≥ 1
+→ ∃ generator of Z*ₚ ✓</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 4: φ(pq) proof + Shor connection + tips -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header purple">φ(pq) = (p−1)(q−1) — Proof</div>
+      <div class="card-body">
+        <div class="def">
+          <p>Count integers in {1,…,pq−1} NOT coprime to pq. Since p,q prime, non-coprime = multiples of p or q.</p>
+          <div class="ml purple">Multiples of p in range: p, 2p, …, qp → q total
+Multiples of q in range: q, 2q, …, pq → p total
+But pq counted twice → subtract 1
+
+Not coprime: q + p − 1
+
+φ(pq) = pq − (p+q−1) = (p−1)(q−1) ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header purple">Shor — Number Theory Connection</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title purple">Why period finding works</span>
+          <div class="ml purple">f(x) = aˣ mod N is periodic with period r
+r = ord_N(a), and r | φ(N) = (p−1)(q−1)
+
+aʳ ≡ 1 (mod N)
+→ (aʳ/²)² ≡ 1 (mod N)
+→ (aʳ/²−1)(aʳ/²+1) ≡ 0 (mod N=pq)
+
+N doesn't divide either factor alone (if r even,
+aʳ/² ≢ ±1) → gcd splits N:
+
+gcd(aʳ/²−1, N) = p or q  ✓</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">When does this fail?</span>
+          <div class="ml purple">Fails if: r is odd, OR aʳ/² ≡ −1 (mod N)
+Fix: pick a new random a and retry.
+P(success per attempt) ≥ 1/2.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header dark">Common Exam Pitfalls</div>
+      <div class="card-body">
+        <div class="def">
+          <p>⚠ <b>Bézout coefficients not unique</b> — EEA and direct solving give different (x,y). Both valid.</p>
+          <p style="margin-top:3px">⚠ <b>Z*ₘ ≠ Zₘ</b> — Only elements coprime to M are in Z*ₘ. E.g. 3 ∉ Z*₁₅.</p>
+          <p style="margin-top:3px">⚠ <b>ord divides φ, not equals</b> — ord_M(a) | φ(M), but could be a proper divisor.</p>
+          <p style="margin-top:3px">⚠ <b>QFT ≠ reading amplitudes</b> — Output amplitudes can't be fully extracted without exponentially many measurements. Use QFT only as intermediate step.</p>
+          <p style="margin-top:3px">⚠ <b>Grover error ≤ θ</b> — Rounding k to nearest integer means error in angle ≤ θ. Smaller M/N → smaller θ → better precision.</p>
+          <p style="margin-top:3px">⚠ <b>Simon ZN: L must divide N</b> — Simplification for clean geometric series evaluation.</p>
+          <p style="margin-top:3px">⚠ <b>Simon pair state: x₀ is random</b> — The specific x₀ doesn't matter; the interference from (|x₀⟩+|x₀⊕s⟩) only depends on s.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- PAGE 4: Number Theory Worked Concepts (Tutorial) -->
+<div class="page" style="margin-top:8px; border-top: 3px solid var(--ink); padding-top:8px;">
+
+  <div class="header">
+    <h1>CS4268 — Page 4: Number Theory Worked Concepts (Tutorial)</h1>
+    <span>EEA · Diophantine · Inverses · φ(M) · Euler · Order · Generators · Z*_p cyclic</span>
+    <span style="margin-left:auto">AY2025-26 Sem 2</span>
+  </div>
+
+  <!-- COL 1: EEA + Diophantine -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header blue">EEA — Back-substitution Method</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">Key idea</span>
+          <p>Run Euclidean algorithm forward to find gcd. Then back-substitute remainders to express gcd as ax+by.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Worked: gcd(101, 23)</span>
+          <div class="ml accent" style="font-size:8px">101 = 4(23) + 9
+ 23 = 2(9)  + 5
+  9 = 1(5)  + 4
+  5 = 1(4)  + 1   ← gcd = 1
+  4 = 4(1)
+
+Back-sub: 1 = 5 − 1(4)
+            = 5 − 1(9−5) = 2(5) − 9
+            = 2(23−2·9) − 9 = 2(23) − 5(9)
+            = 2(23) − 5(101−4·23) = 22(23) − 5(101)
+So: 101(−5) + 23(22) = 1
+→ 23⁻¹ ≡ 22 (mod 101) ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">EEA — Tabular Method</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">Same example: gcd(101, 23)</span>
+          <table style="font-size:7.5px">
+            <tr><th>i</th><th>rᵢ</th><th>sᵢ</th><th>tᵢ</th></tr>
+            <tr><td>0</td><td>101</td><td>1</td><td>0</td></tr>
+            <tr><td>1</td><td>23</td><td>0</td><td>1</td></tr>
+            <tr><td>2</td><td>9</td><td>1</td><td>−4</td></tr>
+            <tr><td>3</td><td>5</td><td>−2</td><td>9</td></tr>
+            <tr><td>4</td><td>4</td><td>3</td><td>−13</td></tr>
+            <tr><td>5</td><td>1</td><td>−5</td><td>22</td></tr>
+            <tr><td>6</td><td>0</td><td>—</td><td>—</td></tr>
+          </table>
+          <p class="note" style="margin-top:2px">gcd=1, x=−5, y=22. Check: 101(−5)+23(22)=−505+506=1 ✓</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">Diophantine Equations</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">Solve: 15x + 28y = 1</span>
+          <p>gcd(15,28)=1 so solutions exist. Run EEA:</p>
+          <div class="ml accent" style="font-size:8px">28 = 1(15) + 13
+15 = 1(13) + 2
+13 = 6(2)  + 1
+Back-sub: 1 = 13 − 6·2
+            = 13 − 6(15−13) = 7(13) − 6(15)
+            = 7(28−15) − 6(15) = 7(28) − 13(15)
+x=−13, y=7  →  15(−13)+28(7) = −195+196=1 ✓</div>
+          <p class="note">General soln: x=−13+28t, y=7−15t for any t∈Z</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 2: Inverses + φ(M) -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header green">Finding Inverses mod M</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title green">Find 7⁻¹ mod 15</span>
+          <p>Need: 7x ≡ 1 (mod 15). Run EEA on (7,15):</p>
+          <div class="ml green" style="font-size:8px">15 = 2(7) + 1
+→ 7(−2) + 15(1) = 1? No: 7(−2)=−14, 15(1)=15, sum=1 ✓
+Actually: 1 = 15 − 2(7)
+→ 7⁻¹ = −2 ≡ 13 (mod 15)
+Check: 7·13 = 91 = 6(15)+1 ≡ 1 (mod 15) ✓</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title green">Find 11⁻¹ mod 26</span>
+          <div class="ml green" style="font-size:8px">26 = 2(11) + 4
+11 = 2(4)  + 3
+ 4 = 1(3)  + 1
+Back-sub: 1 = 4 − 3 = (26−2·11) − (11−2·4)
+            = 3(4) − 3(11) + 26 = 3(26−2·11)−3·11+26
+            = 4(26) − 9(11)
+→ 11⁻¹ = −9 ≡ 17 (mod 26)
+Check: 11·17 = 187 = 7(26)+5? No: 7·26=182, 187−182=5 ✗
+Recheck: 26·7=182; 187−182=5. Hmm.
+Actually 11·17=187, 187 mod 26 = 187−7·26=187−182=5. Let me redo:
+26=2·11+4; 11=2·4+3; 4=1·3+1
+1=4−3=4−(11−2·4)=3·4−11=3(26−2·11)−11=3·26−7·11
+→ 11⁻¹=−7≡19(mod 26). Check: 11·19=209=8·26+1 ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header green">φ(M) — Worked Examples</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title green">φ(12)</span>
+          <div class="ml green">12 = 2²·3. Integers 1–12 NOT coprime to 12:
+multiples of 2: {2,4,6,8,10,12} → 6
+multiples of 3: {3,9} not already counted → 2
+Not coprime: 8 total
+φ(12) = 12 − 8 = 4
+Z*₁₂ = {1, 5, 7, 11}</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title green">φ(15)</span>
+          <div class="ml green">15 = 3·5 (distinct primes)
+φ(15) = (3−1)(5−1) = 2·4 = 8
+Z*₁₅ = {1,2,4,7,8,11,13,14}</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title green">Sum rule check: Σ φ(d) = 12</span>
+          <p class="note">Divisors of 12: 1,2,3,4,6,12. φ(1)+φ(2)+φ(3)+φ(4)+φ(6)+φ(12) = 1+1+2+2+2+4 = 12 ✓</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 3: Order + Euler worked -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header purple">Order — Worked Examples</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title purple">ord₇(2)</span>
+          <div class="ml purple">2¹=2, 2²=4, 2³=1 (mod 7)
+→ ord₇(2) = 3
+Check: 3 | φ(7) = 6 ✓</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">ord₁₅(2)</span>
+          <div class="ml purple">2¹=2, 2²=4, 2³=8, 2⁴=1 (mod 15)
+→ ord₁₅(2) = 4
+Check: 4 | φ(15) = 8 ✓</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Generators of Z*₇</span>
+          <div class="ml purple">φ(7)=6. Need ord=6.
+Try a=3: 3¹=3, 3²=2, 3³=6, 3⁴=4, 3⁵=5, 3⁶=1
+→ ord₇(3) = 6 → 3 is a primitive root mod 7
+Z*₇ = {1,2,3,4,5,6} = ⟨3⟩ ✓</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Shor: period of 2ˣ mod 15</span>
+          <div class="ml purple">2⁰=1, 2¹=2, 2²=4, 2³=8, 2⁴=1 (mod 15)
+r = ord₁₅(2) = 4 (even ✓)
+2^(r/2) = 2² = 4 ≢ −1≡14 (mod 15) ✓
+gcd(4−1,15) = gcd(3,15) = 3
+gcd(4+1,15) = gcd(5,15) = 5
+→ factors: 3 and 5 ✓</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 4: Simon's + algorithm connection -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header purple">Simon → Shor: The Pattern</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title purple">Shared design pattern</span>
+          <table style="font-size:7.5px">
+            <tr><th>Step</th><th>Simon Z₂ⁿ</th><th>Shor / Simon Z_N</th></tr>
+            <tr><td>1</td><td>H^⊗n superpos.</td><td>QFT superpos.</td></tr>
+            <tr><td>2</td><td>Query oracle f</td><td>Query f(x)=aˣ mod N</td></tr>
+            <tr><td>3</td><td>Measure 2nd reg</td><td>Measure 2nd reg</td></tr>
+            <tr><td>4</td><td>H^⊗n again</td><td>QFT⁻¹</td></tr>
+            <tr><td>5</td><td>Get y: y·s=0</td><td>Get multiple of N/r</td></tr>
+            <tr><td>6</td><td>Gauss. elim. → s</td><td>Cont. fractions → r</td></tr>
+          </table>
+          <p class="note" style="margin-top:3px">Key insight: quantum gives <b>constraints</b> on period, not period directly. Classical step reconstructs it.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title purple">Interference summary</span>
+          <div class="ml purple" style="font-size:7.5px">Simon Z₂ⁿ: amplitude of |y⟩ ∝ (1+(−1)^(s·y))
+  → zero if s·y=1 (destructive)
+  → nonzero if s·y=0 (constructive)
+
+Simon Z_N: geometric series
+  Σ_{t} e^(2πiytL/N) = N/L if L|y, else 0
+  → concentrates mass on multiples of N/L</div>
+          <p class="note">Both: Fourier transform turns hidden periodicity into measurable peaks.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header dark">Quick Reference: Key Numbers</div>
+      <div class="card-body">
+        <table>
+          <tr><th>M</th><th>φ(M)</th><th>Z*_M</th></tr>
+          <tr><td>5</td><td>4</td><td>{1,2,3,4}</td></tr>
+          <tr><td>7</td><td>6</td><td>{1,2,3,4,5,6}</td></tr>
+          <tr><td>12</td><td>4</td><td>{1,5,7,11}</td></tr>
+          <tr><td>15</td><td>8</td><td>{1,2,4,7,8,11,13,14}</td></tr>
+          <tr><td>pq</td><td>(p−1)(q−1)</td><td>|Z*|=(p−1)(q−1)</td></tr>
+        </table>
+        <hr>
+        <table style="margin-top:4px">
+          <tr><th>a mod 15</th><th>ord₁₅(a)</th></tr>
+          <tr><td>2</td><td>4</td></tr>
+          <tr><td>4</td><td>2</td></tr>
+          <tr><td>7</td><td>4</td></tr>
+          <tr><td>8</td><td>4</td></tr>
+          <tr><td>11</td><td>2</td></tr>
+          <tr><td>14</td><td>2</td></tr>
+        </table>
+        <p class="note" style="margin-top:2px">All orders divide φ(15)=8 ✓. No element has order 8 → Z*₁₅ is NOT cyclic (since 15 is not prime).</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- PAGE 5: Foundations -->
+<div class="page" style="margin-top:8px; border-top: 3px solid var(--ink); padding-top:8px;">
+
+  <div class="header">
+    <h1>CS4268 — Page 5: Foundations — Qubits · Gates · Entanglement · Common Traps</h1>
+    <span style="margin-left:auto">AY2025-26 Sem 2</span>
+  </div>
+
+  <!-- COL 1: Qubit Formalism -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header blue">Qubit Fundamentals</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">State &amp; normalization</span>
+          <div class="ml accent">|ψ⟩ = α|0⟩ + β|1⟩,   α,β ∈ ℂ
+|α|² + |β|² = 1  (probabilities sum to 1)
+
+|0⟩ = [1,0]ᵀ,   |1⟩ = [0,1]ᵀ
+|ψ⟩ = [α, β]ᵀ</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Measurement (comp. basis)</span>
+          <div class="ml accent">P(0) = |α|²,   P(1) = |β|²
+State collapses to observed basis state.
+‼ Amplitudes ≠ probabilities. P = |amp|².</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Unitary evolution</span>
+          <div class="ml accent">U†U = I  (norm-preserving, reversible)
+All quantum gates must be unitary.
+Classical irreversible AND → embed as:
+  |x,y⟩ → |x, y⊕f(x)⟩</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Bra-ket</span>
+          <div class="ml accent">|ψ⟩ = ket (column),  ⟨ψ| = bra (row, conj. T)
+⟨φ|ψ⟩ = inner product,  ‖ψ‖² = ⟨ψ|ψ⟩ = 1</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">±-basis</span>
+          <div class="ml accent">|+⟩=(|0⟩+|1⟩)/√2,  |−⟩=(|0⟩−|1⟩)/√2
+H|0⟩=|+⟩, H|1⟩=|−⟩, H²=I
+Measuring after H = measuring in ±-basis.</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Composite systems</span>
+          <div class="ml accent">n qubits → 2ⁿ-dimensional space (tensor ⊗)
+(α|0⟩+β|1⟩)⊗(γ|0⟩+δ|1⟩)
+ = αγ|00⟩+αδ|01⟩+βγ|10⟩+βδ|11⟩</div>
+          <p class="note">State space grows exponentially with n.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 2: Gates + Oracle + Uncomputation -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header blue">Standard Gates</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">Pauli-X (NOT)</span>
+          <div class="ml accent">X|0⟩=|1⟩,  X|1⟩=|0⟩
+X = [[0,1],[1,0]]</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Pauli-Z (phase flip)</span>
+          <div class="ml accent">Z|0⟩=|0⟩,  Z|1⟩=−|1⟩
+Z = [[1,0],[0,−1]]
+Z = HXH  (X conjugated by H)</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Hadamard</span>
+          <div class="ml accent">H = (1/√2)[[1,1],[1,−1]]
+Switches comp. basis ↔ ±-basis.</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">CNOT</span>
+          <div class="ml accent">CNOT|x,y⟩ = |x, y⊕x⟩
+Flips target iff control=|1⟩.
+H → CNOT creates Bell pairs.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">Uncomputation</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">Problem</span>
+          <p>Reversible computation creates garbage ancillas that entangle with your answer, corrupting interference.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Pattern</span>
+          <div class="ml accent">1. Compute:  |x⟩|0⟩ → |x⟩|f(x)⟩|garbage⟩
+2. Copy useful result to fresh register
+3. Run circuit backward (uncompute):
+       → |x⟩|f(x)⟩|0⟩  (garbage erased)</div>
+          <p class="note">Oracle is self-inverse (O_f²=I), so running it again uncomputes. Used throughout Grover, Simon, Shor.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header blue">4×4 HWT and DFT Matrices (N=4, n=2)</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">H⊗² — entry (x,y) = (−1)^(x·y)/2</span>
+          <table style="margin-top:2px; font-size:7.5px">
+            <tr><th></th><th>00</th><th>01</th><th>10</th><th>11</th></tr>
+            <tr><td><b>00</b></td><td>+1</td><td>+1</td><td>+1</td><td>+1</td></tr>
+            <tr><td><b>01</b></td><td>+1</td><td>−1</td><td>+1</td><td>−1</td></tr>
+            <tr><td><b>10</b></td><td>+1</td><td>+1</td><td>−1</td><td>−1</td></tr>
+            <tr><td><b>11</b></td><td>+1</td><td>−1</td><td>−1</td><td>+1</td></tr>
+          </table>
+          <p class="note">All ×(1/2). Signs = (−1)^(row·col), dot product mod 2.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">DFT₄ — entry (j,k) = ω^(jk)/2, ω=i</span>
+          <table style="margin-top:2px; font-size:7.5px">
+            <tr><th></th><th>0</th><th>1</th><th>2</th><th>3</th></tr>
+            <tr><td><b>0</b></td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+            <tr><td><b>1</b></td><td>1</td><td>i</td><td>−1</td><td>−i</td></tr>
+            <tr><td><b>2</b></td><td>1</td><td>−1</td><td>1</td><td>−1</td></tr>
+            <tr><td><b>3</b></td><td>1</td><td>−i</td><td>−1</td><td>i</td></tr>
+          </table>
+          <p class="note">All ×(1/2). ω=e^(2πi/4)=i. Powers cycle: 1→i→−1→−i→1.</p>
+        </div>
+        <hr>
+        <p class="note"><b>Key difference:</b> HWT uses only ±1 (mod-2 dot product). DFT uses complex phases i^(jk) (ordinary multiplication). Same-sized set, different group structure → different Fourier transform.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 3: Entanglement + No-Cloning + Teleportation -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header red">Entanglement</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title red">Separable vs Entangled</span>
+          <p>Separable: |ψ⟩ = |a⟩_A ⊗ |b⟩_B (product state).</p>
+          <p>Entangled: cannot factor into product. Each subsystem has no independent pure-state description.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Bell state (canonical)</span>
+          <div class="ml red">|Φ⁺⟩ = (|00⟩+|11⟩)/√2  ← entangled
+Circuit: |0⟩ →[H]→[●]→
+         |0⟩ ────────[⊕]→</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title red">Partial measurement</span>
+          <div class="ml red">State: (|00⟩+|11⟩)/√2
+Measure qubit 1:
+  |0⟩ w.p. 1/2 → qubit 2 collapses to |0⟩
+  |1⟩ w.p. 1/2 → qubit 2 collapses to |1⟩</div>
+          <p class="note">Outcomes correlated. Used in Simon: measuring 2nd register collapses 1st to pair state.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header red">No-Cloning Theorem</div>
+      <div class="card-body">
+        <div class="def">
+          <p><b>Statement:</b> No unitary U s.t. for all |ψ⟩:</p>
+          <div class="ml red">U(|ψ⟩|0⟩) = |ψ⟩|ψ⟩</div>
+          <p style="margin-top:2px"><b>Proof (linearity contradiction):</b></p>
+          <div class="ml red">U|0⟩|0⟩=|00⟩,  U|1⟩|0⟩=|11⟩
+→ U(|+⟩|0⟩) = (|00⟩+|11⟩)/√2
+but we need |+⟩|+⟩ ∝ |00⟩+|01⟩+|10⟩+|11⟩
+→ Contradiction. ∎</div>
+          <p class="note">Classical bits freely copyable; unknown quantum states are not.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header red">Quantum Teleportation</div>
+      <div class="card-body">
+        <div class="def">
+          <p>Send unknown |ψ⟩ from Alice → Bob.</p>
+          <div class="ml red">Resources: 1 Bell pair + 2 classical bits
+Steps:
+1. Alice does CNOT+H on her qubit+Bell half
+2. Alice measures → sends 2 classical bits a,b
+3. Bob applies Xᵃ Zᵇ → recovers |ψ⟩</div>
+          <p style="margin-top:2px">Key points:</p>
+          <p>• Original |ψ⟩ consumed (no-cloning safe)</p>
+          <p>• Entanglement is the resource; 2 bits carry corrections</p>
+          <p>• No faster-than-light info (need classical channel)</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 4: Common Traps + Big Picture -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header dark">Exam Traps</div>
+      <div class="card-body">
+        <div class="def">
+          <span class="def-title">❌ Amplitudes = probabilities</span>
+          <div class="ml accent">Wrong: P(x) = α(x)
+Right: P(x) = |α(x)|²
+Amplitudes are complex; probabilities are real ≥ 0.</div>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">❌ Superposition = "both answers"</span>
+          <p>Superposition alone gives no speedup. The power is <b>interference</b> — bad outcomes cancel, good ones reinforce.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">❌ QFT reads out all Fourier coefficients</span>
+          <p>No. QFT encodes them into amplitudes. Measurement samples one outcome. Full readout would destroy the speedup.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">❌ Simon / DJ output the secret directly</span>
+          <p>No. They output <b>constraints</b> (linear equations) on the secret. Gaussian elimination / gcd finishes the job classically.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">❌ Hadamard and QFT are unrelated</span>
+          <p>Both are Fourier transforms — H⊗ⁿ over (ℤ₂)ⁿ (characters (−1)^(s·x)), QFT over ℤ_N (characters e^(2πisx/N)).</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">❌ H²=I means every state is fixed by one H</span>
+          <div class="ml accent">H²=I means applying H twice returns to start.
+A state fixed by one H is a +1 eigenstate of H.
+E.g. (|00⟩+|11⟩)/√2 → H⊗2 → same state.
+NOT all states behave this way (e.g. (|01⟩+|10⟩)/√2 → H⊗2 → (|00⟩−|11⟩)/√2)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header dark">The Universal Algorithm Skeleton</div>
+      <div class="card-body">
+        <div class="def">
+          <div class="ml accent" style="font-size:8px">1. Uniform superpos.  H⊗ⁿ|0ⁿ⟩ or QFT|0ⁿ⟩
+2. Oracle query      → f(x) encoded in phases
+   (phase kickback:  O_f|x⟩|−⟩=(−1)^f(x)|x⟩|−⟩)
+3. Fourier transform → HWT or QFT
+4. Interference      → only "useful" y survive
+5. Measure           → constraint on hidden s or L
+6. Classical step    → Gauss. elim. or gcd → answer</div>
+          <p class="note" style="margin-top:3px">QC outputs <b>evidence about</b> the hidden object; the classical step closes the gap.</p>
+        </div>
+        <hr>
+        <div class="def">
+          <span class="def-title">Course staircase</span>
+          <div class="ml accent" style="font-size:7.5px">Qubits → measurement → bra-ket
+→ unitaries + gates → tensor product
+→ entanglement → no-cloning / teleportation
+→ reversible circuits + oracle encoding
+→ phase kickback + uncomputation
+→ Deutsch / DJ / BV
+→ HWT = Fourier over (ℤ₂)ⁿ
+→ QFT = Fourier over ℤ_N
+→ Simon (hidden subgroup)
+→ Shor (period finding → factoring)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- PAGE 6: Week 9–10 Tutorial Content -->
+<div style="page-break-before:always"></div>
+<div class="page">
+  <div class="header">
+    <span class="h-title">CS4268 Quantum Computing</span>
+    <span class="h-sub">Page 6 — Week 9–10: Circuit Tricks, F₂ Algebra, Fourier Facts</span>
+  </div>
+
+  <!-- COL 1: Deferred Measurement + Toffoli -->
+  <div class="col">
+    <div class="card">
+      <div class="card-title" style="color:var(--accent)">Deferred Measurement</div>
+      <div class="def-block">
+        <span class="def-title">Principle</span>
+        Replace mid-circuit measurement with a CNOT to an ancilla qubit; measure at the end instead. Result is identical.
+      </div>
+      <div class="def-block">
+        <span class="def-title">When measurement controls future gates</span>
+        If you measure and branch on result, replace with a <em>controlled-U</em> (ancilla as control). No mid-circuit collapse needed.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Key idea</span>
+        <span class="mono">|ψ⟩ = α|0⟩|ψ₀⟩ + β|1⟩|ψ₁⟩</span><br>
+        CNOT to ancilla → ancilla stores measurement outcome coherently.<br>
+        Measuring ancilla later gives same distribution as measuring early.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color:var(--accent2)">Toffoli (CCNOT) Gate</div>
+      <div class="def-block">
+        <span class="def-title">Action</span>
+        <span class="mono">|a,b,c⟩ → |a,b,c⊕(a∧b)⟩</span>
+      </div>
+      <div class="def-block">
+        <span class="def-title">Useful modes</span>
+        <table class="mtable" style="width:100%;font-size:8px">
+          <tr><th>Setting</th><th>Effect</th></tr>
+          <tr><td>c=0</td><td>AND: output = a∧b</td></tr>
+          <tr><td>a=b=1</td><td>NOT: flips c</td></tr>
+          <tr><td>b=1, c=0</td><td>COPY: output = a</td></tr>
+          <tr><td>⊕ trick</td><td>OR: use De Morgan: a∨b = ¬(¬a∧¬b)</td></tr>
+        </table>
+      </div>
+      <div class="def-block">
+        <span class="def-title">Universality</span>
+        Toffoli + H is universal for quantum computation. Toffoli alone is universal for reversible classical computation.
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 2: CC-U Decomposition + Deutsch Sign Oracle -->
+  <div class="col">
+    <div class="card">
+      <div class="card-title" style="color:var(--accent3)">CC-U Decomposition</div>
+      <div class="def-block">
+        <span class="def-title">Setup</span>
+        Want: apply U on target iff both control bits = 1.<br>
+        Find V such that <span class="mono">V² = U</span>.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Circuit</span>
+        Use: controlled-V, controlled-V†, CNOT on controls.<br>
+        Build from 1-control gates only.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Casework proof</span>
+        <table class="mtable" style="width:100%;font-size:8px">
+          <tr><th>a,b</th><th>On target</th></tr>
+          <tr><td>00</td><td>I·I·I = I ✓</td></tr>
+          <tr><td>01</td><td>V†·V = I ✓</td></tr>
+          <tr><td>10</td><td>V·V† = I ✓</td></tr>
+          <tr><td>11</td><td>V·V = U ✓</td></tr>
+        </table>
+        Each 2-control gate decomposes into O(1) single-control gates.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color:var(--accent4)">Deutsch with Sign Oracle</div>
+      <div class="def-block">
+        <span class="def-title">Sign oracle Q±</span>
+        Maps <span class="mono">|x⟩ → (−1)^f(x)|x⟩</span>. Phase already kicked back — no ancilla needed.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Circuit (1 qubit)</span>
+        <span class="mono">|0⟩ →H→ Q± →H→ measure</span><br>
+        Result 0 = constant, result 1 = balanced.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Global phase argument</span>
+        If f constant=0: Q±=I, output |0⟩.<br>
+        If f constant=1: Q±=−I (global phase), still output |0⟩.<br>
+        ⚠ Global phase is unobservable — both constant cases give same output.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Classical impossibility</span>
+        Classical algorithm needs 2 queries to distinguish constant vs balanced (adversary argument: 1 query leaves ambiguity). Quantum uses 1 query.
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 3: F₂ Linear Algebra + Real QC Encoding -->
+  <div class="col">
+    <div class="card">
+      <div class="card-title" style="color:var(--accent)">𝔽₂ Linear Algebra</div>
+      <div class="def-block">
+        <span class="def-title">Dot product ≠ inner product</span>
+        Over 𝔽₂: <span class="mono">u·u = 0</span> is possible (e.g. u=1). Not positive-definite. Cannot use for norms.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Subspace size</span>
+        A k-dimensional subspace of 𝔽₂ⁿ has exactly <span class="mono">2^k</span> elements.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Solutions to Ax=0</span>
+        If rank(A)=r, nullspace has dimension n−r → <span class="mono">2^(n−r)</span> solutions.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Solutions to Ax=b</span>
+        Either 0 solutions (b∉colspan(A)) or exactly <span class="mono">2^(n−r)</span> solutions (one particular + nullspace coset).
+      </div>
+      <div class="def-block">
+        <span class="def-title">Key pattern (Simon)</span>
+        Simon's hidden subspace A has 2^k elements; its orthogonal complement A⊥ has dimension n−k.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color:var(--accent2)">Real Quantum Computing Encoding</div>
+      <div class="def-block">
+        <span class="def-title">Problem</span>
+        Real hardware may only support real amplitudes. How to encode complex <span class="mono">a+bi</span>?
+      </div>
+      <div class="def-block">
+        <span class="def-title">Encoding</span>
+        Replace <span class="mono">(a+bi)|x⟩</span> with <span class="mono">a|x⟩|0⟩ + b|x⟩|1⟩</span>.<br>
+        Extra qubit tracks imaginary part. Norm: a²+b² preserved.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Phase gate</span>
+        <span class="mono">i|x⟩ → |x⟩</span> becomes rotation in the (|x0⟩, |x1⟩) plane.<br>
+        Multiplication by i ↔ real 2×2 rotation by 90°.
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 4: Boolean Fourier + Subspace Duality + Roots of Unity + DJ Randomized -->
+  <div class="col">
+    <div class="card">
+      <div class="card-title" style="color:var(--accent3)">Boolean Fourier Coefficients</div>
+      <div class="def-block">
+        <span class="def-title">Definition</span>
+        For <span class="mono">f:{±1}ⁿ→ℝ</span>, characters <span class="mono">χₛ(x)=∏ᵢxᵢˢⁱ</span>:<br>
+        <span class="mono">f̂(s) = 𝔼[f(x)χₛ(x)]</span>
+      </div>
+      <div class="def-block">
+        <span class="def-title">±½ interpretation</span>
+        <span class="mono">f̂(s) = ½(avg of f on {x: χₛ=+1} − avg on {x: χₛ=−1})</span><br>
+        Measures how much f correlates with parity of S-coordinates.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Translated function</span>
+        If <span class="mono">g(x)=f(x⊕y)</span>, then <span class="mono">ĝ(s) = (−1)^(s·y) f̂(s)</span>.<br>
+        Translation flips signs of coefficients; magnitudes |f̂(s)|² unchanged.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color:var(--accent4)">Subspace Fourier Duality</div>
+      <div class="def-block">
+        <span class="def-title">Orthogonal complement</span>
+        For A ≤ 𝔽₂ⁿ with dim k:<br>
+        <span class="mono">A⊥ = {s : s·a=0 ∀a∈A}</span>, dim(A⊥)=n−k.<br>
+        Double dual: <span class="mono">(A⊥)⊥ = A</span>.
+      </div>
+      <div class="def-block">
+        <span class="def-title">Fourier transform of uniform-on-A</span>
+        If state is uniform superposition over A,<br>
+        HWT gives uniform superposition over A⊥.<br>
+        <span class="accent2">This is the key Simon pattern.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color:var(--accent)">Roots of Unity Cancellation</div>
+      <div class="def-block">
+        <span class="mono" style="font-size:8.5px">(1/M) Σₜ₌₀^{M−1} ω^(tu) = 1 if u≡0 (mod M), else 0</span><br>
+        where <span class="mono">ω = e^(2πi/M)</span>.<br>
+        Used in QFT analysis: non-multiples of period cancel to 0.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color:var(--accent2)">DJ Randomized Lower Bound</div>
+      <div class="def-block">
+        <span class="def-title">Classical randomized</span>
+        After T random queries on an n-bit DJ instance:<br>
+        <span class="mono">Pr[error] ≤ 2^(−T)</span> for balanced (constant always detectable after 2 agreeing queries).<br>
+        T = O(1) queries → exponential improvement over deterministic (needs 2ⁿ⁻¹+1).
+      </div>
+      <div class="def-block">
+        <span class="def-title">Classical deterministic</span>
+        Worst case: need <span class="mono">2ⁿ⁻¹+1</span> queries (adversary can keep function ambiguous until then).
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

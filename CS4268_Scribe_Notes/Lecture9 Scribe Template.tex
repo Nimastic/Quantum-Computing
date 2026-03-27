@@ -46,11 +46,182 @@ Date: March 19, 2026          %%% FILL IN LECTURE DATE HERE
 
 
 
-\section{Shor}
+\section{Shor's Algorithm}
 
 \kk{
 Today is on Shor. The quantum subroutine is essentially simon over $Z_n$, a draft of which is given above if you need it. Please scribe in detail the number theoretic preliminaries (i believe there's a note somewhere by Aditya), the quantum part, and classical post-processing.
 }
+
+\subsection{Number-Theoretic Preliminaries}
+
+We collect the number-theoretic background needed for Shor's algorithm. All integers are assumed to be positive unless stated otherwise. For $M \in \mathbb{Z}^+$ we write $\mathbb{Z}_M := \{1, 2, \dots, M-1\}$ and recall the standard fact: if $a \equiv a' \pmod{M}$ and $b \equiv b' \pmod{M}$, then $ab \equiv a'b' \pmod{M}$.
+
+\subsubsection{Coprimality and Greatest Common Divisor}
+
+\begin{definition}[Greatest Common Divisor]
+Let $a$ and $b$ be integers, not both zero. The \emph{greatest common divisor} $\gcd(a,b)$ is the largest integer $d$ such that $d \mid a$ and $d \mid b$.
+\end{definition}
+
+\begin{definition}[Coprime]
+Two integers $a$ and $b$ are \emph{coprime} (or \emph{relatively prime}) if $\gcd(a,b)=1$.
+\end{definition}
+
+\begin{example}
+The divisors of $15$ are $\{1,3,5,15\}$ and the divisors of $28$ are $\{1,2,4,7,14,28\}$, so $\gcd(15,28)=1$ and they are coprime. In contrast, $\gcd(15,25)=5$, so $15$ and $25$ are not coprime.
+\end{example}
+
+\subsubsection{Bézout's Identity}
+
+\begin{theorem}[Bézout's Identity]
+\label{thm:bezout}
+Let $a$ and $b$ be integers, not both zero. There exist integers $x$ and $y$ (the \emph{Bézout coefficients}) such that
+\[
+    ax + by = \gcd(a,b).
+\]
+\end{theorem}
+
+For example, with $a=15$ and $b=28$ one can check that $x=15, y=-8$ gives $15 \cdot 15 + 28 \cdot (-8) = 225 - 224 = 1 = \gcd(15,28)$. Solutions are not unique: for any integer $k$, the pair $(x+kb,\, y-ka)$ is also a solution.
+
+\begin{remark}
+The equation $ax+by=c$ over the integers has integer solutions if and only if $\gcd(a,b) \mid c$. If $d = \gcd(a,b) \nmid c$ then $d$ divides the left-hand side but not the right, giving a contradiction.
+\end{remark}
+
+\subsubsection{The Extended Euclidean Algorithm}
+
+The Extended Euclidean Algorithm (EEA) computes $\gcd(a,b)$ together with the Bézout coefficients. It augments the ordinary Euclidean algorithm with bookkeeping for the coefficients at each step.
+
+\begin{algorithm}[H]
+\caption{Extended Euclidean Algorithm}
+\begin{algorithmic}[1]
+\Require Integers $a \geq b \geq 0$
+\Ensure Integers $g,x,y$ such that $g = \gcd(a,b)$ and $ax+by=g$
+\State $r_0 \leftarrow a,\; r_1 \leftarrow b$
+\State $s_0 \leftarrow 1,\; s_1 \leftarrow 0$
+\State $t_0 \leftarrow 0,\; t_1 \leftarrow 1$
+\State $i \leftarrow 1$
+\While{$r_i > 0$}
+    \State $q_i \leftarrow \lfloor r_{i-1}/r_i \rfloor$
+    \State $r_{i+1} \leftarrow r_{i-1} - q_i r_i$
+    \State $s_{i+1} \leftarrow s_{i-1} - q_i s_i$
+    \State $t_{i+1} \leftarrow t_{i-1} - q_i t_i$
+    \State $i \leftarrow i+1$
+\EndWhile
+\State \Return $r_{i-1},\; s_{i-1},\; t_{i-1}$
+\end{algorithmic}
+\end{algorithm}
+
+The while loop runs $O(\log b)$ times and the total time complexity is $O(\log^2 a)$, dominated by integer multiplication.
+
+\subsubsection{The Multiplicative Group \texorpdfstring{$\mathbb{Z}_M^*$}{Z*\_M}}
+
+\begin{definition}[Commutative Group]
+A \emph{commutative group} $(G, \cdot)$ is a set $G$ with a binary operation $\cdot$ satisfying closure, associativity, existence of an identity $e$, and existence of inverses. We restrict to finite commutative groups throughout.
+\end{definition}
+
+\begin{definition}[Multiplicative Group Modulo $M$]
+For $M \in \mathbb{Z}^+$, define
+\[
+    \mathbb{Z}_M^* = \{a \in \mathbb{Z}_M \mid \gcd(a,M)=1\},
+\]
+equipped with multiplication modulo $M$.
+\end{definition}
+
+\begin{lemma}
+$\mathbb{Z}_M^*$ is a group under multiplication modulo $M$.
+\end{lemma}
+\begin{proof}[Proof sketch]
+Closure: $\gcd(a,M)=1$ and $\gcd(b,M)=1$ implies $\gcd(ab,M)=1$. Associativity follows from integer multiplication. The identity is $1$. For inverses: given $a \in \mathbb{Z}_M^*$, Bézout's identity (\cref{thm:bezout}) yields $ax + My = 1$ for some integers $x,y$; reducing modulo $M$ gives $ax \equiv 1 \pmod{M}$, so $x \bmod M$ is the multiplicative inverse of $a$.
+\end{proof}
+
+\begin{example}
+$\mathbb{Z}_{15}^* = \{1,2,4,7,8,11,13,14\}$. Since $2 \times 8 = 16 \equiv 1 \pmod{15}$, the elements $2$ and $8$ are inverses of each other.
+\end{example}
+
+\subsubsection{Euler's Totient Function}
+
+\begin{definition}[Euler's Totient Function]
+For $M \in \mathbb{Z}^+$, Euler's totient $\varphi(M)$ counts the integers $1 \leq k \leq M$ coprime to $M$, i.e.\ $\varphi(M) = |\mathbb{Z}_M^*|$.
+\end{definition}
+
+\begin{theorem}
+\label{thm:totient-prime}
+If $M$ is prime, then $\varphi(M) = M-1$.
+\end{theorem}
+\begin{proof}
+Every $k \in \mathbb{Z}_M$ satisfies $\gcd(k,M)=1$ since $M$ is prime, and $|\mathbb{Z}_M|=M-1$.
+\end{proof}
+
+\begin{theorem}
+\label{thm:totient-pq}
+If $p$ and $q$ are distinct primes and $M = pq$, then $\varphi(M) = (p-1)(q-1)$.
+\end{theorem}
+\begin{proof}
+Among $\{1,\dots,pq\}$, the elements sharing a factor with $pq$ are the multiples of $p$ (there are $q$ of them) and the multiples of $q$ (there are $p$ of them), with $pq$ counted twice. So the count of elements not coprime to $pq$ is $p+q-1$, giving $\varphi(pq) = pq - (p+q-1) = (p-1)(q-1)$.
+\end{proof}
+
+\subsubsection{Euler's Theorem}
+
+\begin{theorem}[Euler's Theorem]
+\label{thm:euler}
+If $\gcd(a,M)=1$, then $a^{\varphi(M)} \equiv 1 \pmod{M}$.
+\end{theorem}
+\begin{proof}
+Let $\mathbb{Z}_M^* = \{x_1,\dots,x_k\}$ with $k=\varphi(M)$. Since $a \in \mathbb{Z}_M^*$, multiplication by $a$ permutes the elements. Thus
+\[
+    \prod_{i=1}^k x_i \equiv \prod_{i=1}^k (ax_i) \equiv a^k \prod_{i=1}^k x_i \pmod{M}.
+\]
+Since each $x_i$ is coprime to $M$, their product is invertible modulo $M$; cancelling it gives $a^{\varphi(M)} \equiv 1 \pmod{M}$.
+\end{proof}
+
+\subsubsection{Order and Generators}
+
+\begin{definition}[Order of an Element]
+\label{def:order}
+For $a \in \mathbb{Z}_M^*$, the \emph{order} $\mathrm{ord}_M(a)$ is the smallest positive integer $r$ such that $a^r \equiv 1 \pmod{M}$.
+\end{definition}
+
+\begin{lemma}[Order Divides Totient]
+\label{lem:order-divides}
+For any $a \in \mathbb{Z}_M^*$, $\mathrm{ord}_M(a)$ divides $\varphi(M)$.
+\end{lemma}
+\begin{proof}
+Let $r = \mathrm{ord}_M(a)$. Write $\varphi(M) = qr + s$ with $0 \leq s < r$. By Euler's Theorem, $1 \equiv a^{\varphi(M)} = (a^r)^q \cdot a^s \equiv a^s \pmod{M}$. Since $r$ is minimal and $0 \leq s < r$, we must have $s=0$, so $r \mid \varphi(M)$.
+\end{proof}
+
+\begin{corollary}
+\label{cor:order-prime}
+Let $p$ be prime. Then $\mathrm{ord}_p(a)$ divides $p-1$ for all $a \in \mathbb{Z}_p^*$.
+\end{corollary}
+
+\begin{definition}[Cyclic Group and Generator]
+A commutative group $(G,\cdot)$ is \emph{cyclic} if there exists a \emph{generator} $g \in G$ such that every element of $G$ is a power of $g$. We write $G = \langle g \rangle$.
+\end{definition}
+
+In $\mathbb{Z}_M^*$, a generator is called a \emph{primitive root modulo $M$}. For example, $2$ generates $\mathbb{Z}_5^* = \{1,2,3,4\}$ since $2^1=2$, $2^2=4$, $2^3 \equiv 3$, $2^4 \equiv 1 \pmod{5}$.
+
+\begin{lemma}
+\label{lem:totient-sum}
+For any $M \geq 1$, $\displaystyle\sum_{d \mid M} \varphi(d) = M$.
+\end{lemma}
+\begin{proof}
+Consider the $M$ fractions $\frac{1}{M},\frac{2}{M},\dots,\frac{M}{M}$. Each reduces to an irreducible fraction $\frac{k}{d}$ with $d \mid M$. For a fixed divisor $d$, the number of fractions reducing to denominator $d$ is exactly $\varphi(d)$. Summing over all divisors gives $M$.
+\end{proof}
+
+\begin{lemma}
+\label{lem:Np}
+Let $p$ be prime and $d \mid (p-1)$. Let $N_p(d)$ denote the number of elements in $\mathbb{Z}_p^*$ of order exactly $d$. Then $N_p(d) \in \{0, \varphi(d)\}$.
+\end{lemma}
+\begin{proof}
+If $N_p(d)>0$, let $a \in \mathbb{Z}_p^*$ have order $d$. The elements $1, a, a^2, \dots, a^{d-1}$ are $d$ distinct roots of $x^d \equiv 1 \pmod{p}$. Since a degree-$d$ polynomial over a prime field has at most $d$ roots, these are all of them. Any element of order $d$ must be one of these, and $a^k$ has order $d$ iff $\gcd(k,d)=1$, of which there are $\varphi(d)$ choices.
+\end{proof}
+
+\begin{theorem}[Existence of Generators]
+\label{thm:generators}
+For any prime $p$, the multiplicative group $\mathbb{Z}_p^*$ is cyclic.
+\end{theorem}
+\begin{proof}
+By \cref{lem:Np}, $N_p(d) \leq \varphi(d)$ for all $d \mid (p-1)$. Every element of $\mathbb{Z}_p^*$ has some order dividing $p-1$ (\cref{lem:order-divides}), so $\sum_{d \mid (p-1)} N_p(d) = p-1$. By \cref{lem:totient-sum}, $\sum_{d \mid (p-1)} \varphi(d) = p-1$ as well. Since each term satisfies $N_p(d) \leq \varphi(d)$ and the sums are equal, we must have $N_p(d) = \varphi(d)$ for every divisor $d$. In particular $N_p(p-1) = \varphi(p-1) \geq 1$, so there exists an element of order $p-1$, i.e.\ a generator.
+\end{proof}
 
 
 

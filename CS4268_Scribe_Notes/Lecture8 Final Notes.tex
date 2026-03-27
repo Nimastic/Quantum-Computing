@@ -19,7 +19,9 @@ Date: March 12, 2026          %%% FILL IN LECTURE DATE HERE
 
 \subsection[\texorpdfstring{Simon over $\bm{\mathbb{Z}_2^n}$}{}]{Simon over $\bm{\mathbb{Z}_2^n}$} 
 
-\paragraph{Problem:} Given $f: \{0,1\}^n \rightarrow \{0,1\}^n$ where it is promised that $\exists s \in \mathbb{Z}_2^n$ such that $\forall x,y$: $f(x)=f(y) \iff x=y\oplus s$, find $s$. 
+\paragraph{Problem:} Given $f: \{0,1\}^n \rightarrow \{0,1\}^n$ where it is promised that $\exists s \in \mathbb{Z}_2^n$ such that $\forall x,y$: $f(x)=f(y) \iff x=y\oplus s$, find $s$.
+
+One way to view this is as a \emph{hidden period problem} over the group $\mathbb{Z}_2^n$. The usual notion of periodicity is $f(x)=f(x+r)$ for some hidden shift $r$ under ordinary addition; here the ``addition'' is bitwise XOR, so the period is the hidden string $s$ satisfying $f(x)=f(x \oplus s)$. Algebraically, the hidden structure is captured by the subgroup $\{0^n, s\} \leq \mathbb{Z}_2^n$: two inputs are equivalent (i.e.\ $f$-indistinguishable) if and only if they lie in the same coset of this subgroup. When $s=0^n$ the function is one-to-one; when $s\neq 0^n$ every output has exactly two preimages, namely $x$ and $x \oplus s$.
 
 \paragraph{Classical Protocols}
 \begin{enumerate}
@@ -38,7 +40,7 @@ Date: March 12, 2026          %%% FILL IN LECTURE DATE HERE
     
 \paragraph{Simon's Quantum Algorithm}
 \begin{enumerate}
-    \item Quantum subroutine: Start with $n$ work qubits and $n$ ancilla qubits $\ket{0^n}\ket{0^n}$. Apply $$(H^{\otimes n}\otimes I)O_f(H^{\otimes n} \otimes I)$$ then measure the work qubits (first register). 
+    \item Quantum subroutine: Start with $n$ work qubits and $n$ ancilla qubits $\ket{0^n}\ket{0^n}$. Apply $$(H^{\otimes n}\otimes I)O_f(H^{\otimes n} \otimes I)$$ then measure the work qubits (first register).
 
     \begin{figure}[!ht]
     \centering
@@ -49,6 +51,28 @@ Date: March 12, 2026          %%% FILL IN LECTURE DATE HERE
     \caption{Simon's quantum subroutine for $\mathbb{Z}_2^n$.}
     \label{fig:simon_Z2n}
     \end{figure}
+
+    To see what this circuit does, it helps to track the state at each stage:
+    \begin{itemize}
+        \item \textbf{After first $H^{\otimes n}$:} The first register is in the uniform superposition over all $n$-bit strings,
+        \[
+            \frac{1}{\sqrt{2^n}} \sum_{x \in \{0,1\}^n} \ket{x}\ket{0^n}.
+        \]
+        \item \textbf{After oracle $O_f$:} The oracle entangles the two registers, writing $f(x)$ into the second register for each $x$ simultaneously:
+        \[
+            \frac{1}{\sqrt{2^n}} \sum_{x \in \{0,1\}^n} \ket{x}\ket{f(x)}.
+        \]
+        \item \textbf{After measuring the second register:} Suppose the outcome is some value $z = f(x_0)$. Because $f$ is two-to-one (for $s \neq 0^n$), exactly two inputs $x_0$ and $x_0 \oplus s$ map to $z$. The first register collapses to the \emph{pair state}
+        \[
+            \frac{1}{\sqrt{2}}\bigl(\ket{x_0} + \ket{x_0 \oplus s}\bigr).
+        \]
+        This state encodes the hidden string $s$: the two branches differ by exactly $s$ under XOR. Note that $x_0$ is random and unknown, but that does not matter for the next step.
+        \item \textbf{After second $H^{\otimes n}$:} Applying the Hadamard transform to the pair state produces, for each $y \in \{0,1\}^n$, an amplitude proportional to
+        \[
+            (-1)^{x_0 \cdot y}\bigl(1 + (-1)^{s \cdot y}\bigr),
+        \]
+        where $x \cdot y = \sum_i x_i y_i \pmod{2}$ is the bitwise dot product. The bracket $1+(-1)^{s \cdot y}$ is either $2$ (when $s \cdot y = 0$) or $0$ (when $s \cdot y = 1$). Thus only those $y$ with $s \cdot y = 0 \pmod{2}$ have nonzero amplitude, and measurement of the first register must yield such a $y$.
+    \end{itemize}
 
     \item Classical postprocessing: repeat the quantum subroutine $n-1$ times to get $n-1$ strings $y_i$ all satisfying $y_i \cdot s =0$, where the $y_i$'s are linearly independent with positive probability. If indeed they are all linearly independent, then we use Gaussian elimination to solve the system, obtaining two solution candidates $0^n$ and $s' \neq 0^n$. 
     
@@ -63,9 +87,16 @@ Date: March 12, 2026          %%% FILL IN LECTURE DATE HERE
     \begin{align*}
         \ket{\psi} = \sum_y \ket{y} \left( \frac{1}{2^n} \sum_x (-1)^{x \cdot y} \ket{f(x)} \right).
     \end{align*}
-    If $s=0^n$, $f$ is injective so $p(y) = \frac{1}{2^n}$ for all $y$. 
-    
-    If $s \neq 0^n$, $f$ is two-to-one, so if $z \in \text{range}(f)$ then $f(x_z) = f(x_z') = z$ for $x_z = x_z' \oplus s$. Therefore in this case 
+    To see where the measurement constraint $y \cdot s = 0$ comes from, it is instructive to track the amplitude of a fixed $\ket{y}$ through the final Hadamard. After the second register is measured and found to equal $z = f(x_0)$, the first register is in the pair state $\frac{1}{\sqrt{2}}(\ket{x_0}+\ket{x_0 \oplus s})$. The Hadamard identity $H^{\otimes n}\ket{x} = \frac{1}{\sqrt{2^n}}\sum_{y}(-1)^{x \cdot y}\ket{y}$ gives
+    \begin{align*}
+        H^{\otimes n} \cdot \frac{1}{\sqrt{2}}\bigl(\ket{x_0}+\ket{x_0 \oplus s}\bigr)
+        &= \frac{1}{\sqrt{2 \cdot 2^n}} \sum_y (-1)^{x_0 \cdot y}\bigl(1+(-1)^{s \cdot y}\bigr)\ket{y}.
+    \end{align*}
+    The factor $1+(-1)^{s \cdot y}$ is $2$ if $s \cdot y = 0 \pmod{2}$ and $0$ if $s \cdot y = 1 \pmod{2}$: this is \emph{destructive interference}, where the two branches of the superposition cancel whenever $s \cdot y \neq 0$. Consequently only those $y$ satisfying $s \cdot y = 0$ survive measurement.
+
+    If $s=0^n$, $f$ is injective so $p(y) = \frac{1}{2^n}$ for all $y$.
+
+    If $s \neq 0^n$, $f$ is two-to-one, so if $z \in \text{range}(f)$ then $f(x_z) = f(x_z') = z$ for $x_z = x_z' \oplus s$. Therefore in this case
     \begin{align*}
     p(y)=
     \begin{cases}
@@ -73,7 +104,23 @@ Date: March 12, 2026          %%% FILL IN LECTURE DATE HERE
         0 & \text{if } y\cdot s = 1.
     \end{cases}
     \end{align*}
-        
+
+    \item The transform $H^{\otimes n}$ appearing here is the \emph{Walsh--Hadamard Transform (WHT)}, which is the Fourier transform for the group $(\mathbb{Z}_2)^n$. Concretely, the \emph{Walsh characters} (i.e.\ the irreducible unitary characters of $(\mathbb{Z}_2)^n$) are the functions
+    \[
+        \varepsilon_s : x \mapsto (-1)^{s \cdot x}, \quad s \in \{0,1\}^n,
+    \]
+    which form a complete orthogonal basis for functions $\{0,1\}^n \to \mathbb{R}$ (or $\mathbb{C}$). The WHT decomposes any such function into its Walsh-character components, exactly as the classical Fourier transform decomposes a function into complex exponentials. The formula
+    \[
+        H^{\otimes n}\ket{x} = \frac{1}{\sqrt{2^n}}\sum_{y}(-1)^{x \cdot y}\ket{y}
+    \]
+    is precisely the change of basis from the computational basis to the Walsh-character basis.
+
+    From this viewpoint, the interference argument above has a clean spectral interpretation. Measuring the second register collapses the first register to the \emph{indicator function} of the two-element set $\{x_0, x_0 \oplus s\}$. The WHT of this function is non-zero only on the subspace
+    \[
+        s^\perp = \{y \in \{0,1\}^n : y \cdot s = 0 \pmod{2}\},
+    \]
+    which has dimension $n-1$ (i.e.\ $2^{n-1}$ elements). In other words, the WHT concentrates all probability mass on $s^\perp$, and the measurement outcomes are the ``Fourier frequencies'' of the hidden period subgroup $\{0^n, s\}$. Collecting $n-1$ linearly independent elements of $s^\perp$ and solving the resulting linear system over $\mathbb{F}_2$ recovers $s$ — this is the classical Gaussian elimination step.
+
     \item Postprocessing: suppose we have linearly independent $\{y_i\}_{i=1}^{n-1}$. Gaussian elimination gives the two possible solutions: $0^n,s'\neq 0^n$. Suppose actually $s=0^n$. Then $f(0^n)\neq f(s')$, so our answer $s=0^n$ is always correct. Suppose actually $s \neq 0^n$. Then $f(s)=f(0^n)=f(s')$, so our answer $s'=s$ is also always correct.
     
     \item Without the linear independence of $\{y_i\}_{i=1}^{n-1}$ the postprocessing fails, thus we need to ensure the probability of linear independence is nonzero (and preferably high).
@@ -84,6 +131,47 @@ Date: March 12, 2026          %%% FILL IN LECTURE DATE HERE
 \end{enumerate}
 
 
+
+\paragraph{Worked Example ($n=3$, $s=101$)}
+
+Suppose $n=3$ and the hidden string is $s=101$. Each run of the quantum subroutine outputs a random $y=(y_1,y_2,y_3)$ satisfying
+\[
+    y \cdot s = y_1 \cdot 1 + y_2 \cdot 0 + y_3 \cdot 1 = y_1 + y_3 = 0 \pmod{2}.
+\]
+The valid outcomes are exactly those strings with $y_1 = y_3$, namely
+\[
+    \{000,\; 010,\; 101,\; 111\}.
+\]
+After collecting two linearly independent equations, say $y^{(1)} = 010$ (giving $0=0$, trivially satisfied, so this is not useful independently) and $y^{(2)} = 101$ (giving $1+1=0 \pmod 2$, consistent with $s=101$), Gaussian elimination over $\mathbb{F}_2$ yields $s=101$ as the unique nonzero solution. One then verifies by querying $f(0^3)$ and $f(101)$ and confirming they match.
+
+\paragraph{Remark: Connection to Shor's Algorithm}
+
+Simon's algorithm is historically significant as the first example of a \emph{super-polynomial} quantum speedup over any classical algorithm for a promise problem. More importantly, it establishes a design pattern that recurs in Shor's algorithm:
+\begin{enumerate}
+    \item Create a uniform superposition over all inputs.
+    \item Query a function with hidden periodic structure.
+    \item Apply a Fourier-type transform (here $H^{\otimes n}$, i.e.\ the WHT; in Shor, the $\mathrm{DFT}_N$).
+    \item Use interference to concentrate measurement outcomes on constraints satisfied by the hidden period.
+    \item Recover the period via classical postprocessing (here Gaussian elimination; in Shor, the continued-fractions algorithm).
+\end{enumerate}
+In both cases the quantum computer does not output the period directly --- it outputs \emph{constraints} on the period, and the classical step reconstructs it. Simon over $\mathbb{Z}_N$ (see below) makes this analogy even more explicit.
+
+The same 5-step skeleton appears across several quantum algorithms, each one being an instance of the \emph{hidden subgroup problem} (HSP) for a different group:
+
+\begin{center}
+\begin{tabular}{llll}
+\hline
+\textbf{Algorithm} & \textbf{Group} & \textbf{Hidden structure} & \textbf{Fourier transform} \\
+\hline
+Bernstein--Vazirani & $(\mathbb{Z}_2)^n$ & Hidden linear function ($f(x)=s\cdot x$) & WHT ($H^{\otimes n}$) \\
+Simon's            & $(\mathbb{Z}_2)^n$ & Hidden subgroup $\{0^n,s\}$ (XOR period)  & WHT ($H^{\otimes n}$) \\
+Simon over $\mathbb{Z}_N$ & $\mathbb{Z}_N$ & Hidden subgroup $L\mathbb{Z}$ (additive period) & $\mathrm{DFT}_N$ \\
+Shor's             & $\mathbb{Z}_{2^n}$ & Multiplicative order $r = \mathrm{ord}_N(a)$ & $\mathrm{QFT}_{2^n}$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent The key distinction is the underlying group: Bernstein--Vazirani and Simon operate over the binary group $(\mathbb{Z}_2)^n$ under XOR, so the correct Fourier transform is the WHT (whose characters are the Walsh functions $\varepsilon_s(x) = (-1)^{s \cdot x}$). Shor operates over $\mathbb{Z}_{2^n}$ under ordinary addition, so the correct transform is the $\mathrm{QFT}$ (whose characters are $\varepsilon_s(x) = e^{2\pi isx/N}$). The algorithms look structurally identical because they are: the only difference is which Fourier transform is the right one for the group at hand.
 
 \subsection[\texorpdfstring{Simon over $\bm{\mathbb{Z}_N}$}{}]{Simon over $\bm{\mathbb{Z}_N}$} 
 
