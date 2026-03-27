@@ -115,6 +115,21 @@ As discussed earlier, quantum computing utilizes the principles of quantum mecha
     \end{itemize}
 \end{enumerate}
 
+\medskip
+\noindent
+\fbox{%
+    \parbox{\textwidth}{%
+        \textbf{A Fine-Grained Complexity Aside: SETH}\\
+        The \emph{Strong Exponential Time Hypothesis} (SETH), due to Impagliazzo, Paturi, and Zane \cite{IPZ01}, is a conjecture about the limits of classical SAT algorithms. It states that for every $\varepsilon > 0$, there exists some clause width $k$ such that $k$-SAT on $n$ variables cannot be solved in time $O(2^{(1-\varepsilon)n})$. Informally: as $k$ grows, the best possible base in the exponent approaches $2$, so there is no uniform way to beat brute force by a fixed constant in the exponent for all $k$.
+
+        SETH is much stronger than $P \neq NP$, and also stronger than the Exponential Time Hypothesis (ETH). The hierarchy is
+        \[
+            \text{SETH} \Longrightarrow \text{ETH} \Longrightarrow P \neq NP,
+        \]
+        with no reverse implication known. Its importance is that it gives \emph{conditional lower bounds} for problems already in $P$: a faster-than-expected algorithm for problems such as Orthogonal Vectors, Edit Distance, or Longest Common Subsequence would refute SETH. In the context of this course, SETH is a useful reminder that even on the classical side, significant improvements to SAT are conjecturally difficult. Grover's algorithm does not make SAT polynomial-time, but it still gives a generic square-root speedup over exhaustive search.%
+    }%
+}
+
 
 
 

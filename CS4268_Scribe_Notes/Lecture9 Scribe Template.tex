@@ -35,22 +35,33 @@ Date: March 19, 2026          %%% FILL IN LECTURE DATE HERE
 %% BODY OF SCRIBE NOTES GOES HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%Write lecture topic above.
-\textbf{Instructions}\\
-\begin{itemize}
-    \item Try to leave the preamble unchanged, only make changes to \texttt{main.tex} and  \texttt{references.bib}. Add images to the \texttt{images} folder. 
-    \item Share one (zipped) directory preserving the directory structure on Canvas. 
-    \item Prepare organized notes by elaborating on the broad items provided in different sections below based on the lecture material completing any missing details from lectures.
-    \item Feel free to modify structure and/or order of contents as you see fit; the below is just a guideline.
-\end{itemize} 
+\section{Shor's Algorithm I: From Factoring to Period Finding}
 
+Shor's algorithm is the canonical example of an exponential quantum speedup for a natural problem of major cryptographic importance: factoring an integer $N$. The algorithm is hybrid. The quantum computer is not used to factor $N$ directly; instead, it solves an order-finding problem, and classical number theory converts that order into nontrivial factors of $N$ \cite{NC10}. This lecture develops the number-theoretic setup and the quantum period-finding subroutine.
 
+\subsection{Why factoring reduces to order finding}
 
-\section{Shor's Algorithm}
+Let $N$ be an odd composite integer. Choose an integer $a$ with $1 < a < N$. If $\gcd(a,N) > 1$, then we have immediately found a nontrivial factor and may stop. The interesting case is therefore when $\gcd(a,N)=1$, i.e.\ when $a \in \mathbb{Z}_N^*$.
 
-\kk{
-Today is on Shor. The quantum subroutine is essentially simon over $Z_n$, a draft of which is given above if you need it. Please scribe in detail the number theoretic preliminaries (i believe there's a note somewhere by Aditya), the quantum part, and classical post-processing.
-}
+For such an $a$, consider the function
+\[
+    f(x) = a^x \bmod N.
+\]
+Because $a$ lies in the finite group $\mathbb{Z}_N^*$, the sequence
+\[
+    1,\ a,\ a^2,\ a^3,\ \dots \pmod N
+\]
+must eventually repeat. In fact it is periodic from the start, and the period is exactly the order of $a$ modulo $N$.
+
+\begin{definition}[Order-finding problem]
+Given $N$ and $a \in \mathbb{Z}_N^*$, find
+\[
+    r = \mathrm{ord}_N(a),
+\]
+the least positive integer such that $a^r \equiv 1 \pmod N$.
+\end{definition}
+
+Shor's key insight is that factoring can be reduced to this order-finding problem.
 
 \subsection{Number-Theoretic Preliminaries}
 
@@ -222,6 +233,165 @@ For any prime $p$, the multiplicative group $\mathbb{Z}_p^*$ is cyclic.
 \begin{proof}
 By \cref{lem:Np}, $N_p(d) \leq \varphi(d)$ for all $d \mid (p-1)$. Every element of $\mathbb{Z}_p^*$ has some order dividing $p-1$ (\cref{lem:order-divides}), so $\sum_{d \mid (p-1)} N_p(d) = p-1$. By \cref{lem:totient-sum}, $\sum_{d \mid (p-1)} \varphi(d) = p-1$ as well. Since each term satisfies $N_p(d) \leq \varphi(d)$ and the sums are equal, we must have $N_p(d) = \varphi(d)$ for every divisor $d$. In particular $N_p(p-1) = \varphi(p-1) \geq 1$, so there exists an element of order $p-1$, i.e.\ a generator.
 \end{proof}
+
+\subsection{Turning the order into factors}
+
+\begin{theorem}[Order-finding implies factoring]
+\label{thm:shor-reduction}
+Let $N$ be an odd composite integer and let $a \in \mathbb{Z}_N^*$ with order $r=\mathrm{ord}_N(a)$. If
+\begin{enumerate}
+    \item $r$ is even, and
+    \item $a^{r/2} \not\equiv -1 \pmod N$,
+\end{enumerate}
+then
+\[
+    \gcd(a^{r/2}-1,N)
+    \qquad\text{and}\qquad
+    \gcd(a^{r/2}+1,N)
+\]
+are nontrivial factors of $N$.
+\end{theorem}
+
+\begin{proof}
+Since $r$ is the order of $a$, we have $a^r \equiv 1 \pmod N$. Hence
+\[
+    (a^{r/2}-1)(a^{r/2}+1) = a^r - 1 \equiv 0 \pmod N.
+\]
+So $N$ divides the product $(a^{r/2}-1)(a^{r/2}+1)$. If either factor were congruent to $0 \pmod N$, then $a^{r/2} \equiv \pm 1 \pmod N$. The case $a^{r/2} \equiv 1 \pmod N$ is impossible because it contradicts the minimality of $r$, and the case $a^{r/2} \equiv -1 \pmod N$ is explicitly excluded. Therefore neither factor is divisible by $N$, but their product is. It follows that each of
+\[
+    \gcd(a^{r/2}-1,N), \qquad \gcd(a^{r/2}+1,N)
+\]
+is a proper divisor of $N$, hence a nontrivial factor.
+\end{proof}
+
+\begin{example}
+Take $N=15$ and $a=2$. Since
+\[
+    2^1 \equiv 2,\quad 2^2 \equiv 4,\quad 2^3 \equiv 8,\quad 2^4 \equiv 1 \pmod{15},
+\]
+the order is $r=4$. This is even, and $2^{r/2} = 2^2 = 4 \not\equiv -1 \pmod{15}$. Therefore
+\[
+    \gcd(2^2-1,15)=\gcd(3,15)=3,
+    \qquad
+    \gcd(2^2+1,15)=\gcd(5,15)=5.
+\]
+So the factors of $15$ are recovered from the order.
+\end{example}
+
+\begin{remark}
+The reduction is probabilistic because a randomly chosen $a$ may fail the conditions in \cref{thm:shor-reduction}. For example, the order might be odd, or $a^{r/2} \equiv -1 \pmod N$. In that case we simply choose another random $a$ and repeat.
+\end{remark}
+
+\subsection{The quantum order-finding subroutine}
+
+The classical bottleneck is finding the period of $f(x)=a^x \bmod N$. A direct classical search evaluates $f(0),f(1),f(2),\dots$ until the repetition becomes visible. When the order is large this can take exponential time in $\log N$. The quantum routine instead prepares a coherent superposition of many inputs at once and uses the Quantum Fourier Transform (QFT) to extract the hidden periodicity.
+
+\subsubsection{Register sizes and state preparation}
+
+Let $n = \lceil \log_2 N \rceil$ and choose $m$ so that
+\[
+    Q := 2^m \geq N^2.
+\]
+We use:
+\begin{itemize}
+    \item a first register of $m$ qubits to store an integer $x \in \{0,1,\dots,Q-1\}$,
+    \item a second register large enough to store values modulo $N$.
+\end{itemize}
+
+Starting from $\ket{0}^{\otimes m}\ket{0}$, apply Hadamards to the first register:
+\[
+    \ket{0}^{\otimes m}\ket{0}
+    \mapsto
+    \frac{1}{\sqrt{Q}} \sum_{x=0}^{Q-1} \ket{x}\ket{0}.
+\]
+This creates a uniform superposition over all possible exponents $x$.
+
+\subsubsection{Modular exponentiation in superposition}
+
+Next apply the reversible map
+\[
+    U_f:\ket{x}\ket{0} \mapsto \ket{x}\ket{f(x)}
+    =
+    \ket{x}\ket{a^x \bmod N}.
+\]
+Linearity of quantum mechanics gives
+\[
+    \frac{1}{\sqrt{Q}} \sum_{x=0}^{Q-1} \ket{x}\ket{0}
+    \mapsto
+    \frac{1}{\sqrt{Q}} \sum_{x=0}^{Q-1} \ket{x}\ket{a^x \bmod N}.
+\]
+The two registers are now entangled: inputs $x$ that produce the same value of $a^x \bmod N$ are correlated with the same second-register basis state.
+
+\subsubsection{Collapse to an arithmetic progression}
+
+If we measure the second register and obtain some value $y$, then the first register collapses to a superposition of those $x$ satisfying $a^x \equiv y \pmod N$. Since $f$ has period $r$, these values differ by multiples of $r$. Thus the first register takes the form
+\[
+    \frac{1}{\sqrt{L}} \sum_{k=0}^{L-1} \ket{x_0 + kr},
+\]
+for some offset $x_0$ and some $L \approx Q/r$.
+
+This is the precise sense in which the quantum state now contains the period: the amplitudes are supported on an arithmetic progression with spacing $r$.
+
+\subsubsection{Applying the QFT}
+
+We now apply $\mathsf{QFT}_Q$ to the first register. Using
+\[
+    \mathsf{QFT}_Q \ket{x}
+    =
+    \frac{1}{\sqrt{Q}} \sum_{c=0}^{Q-1} e^{2\pi ixc/Q}\ket{c},
+\]
+we obtain
+\[
+    \frac{1}{\sqrt{LQ}} \sum_{c=0}^{Q-1}
+    \left(
+        e^{2\pi i x_0 c/Q}
+        \sum_{k=0}^{L-1} e^{2\pi i krc/Q}
+    \right)\ket{c}.
+\]
+The inner sum is a geometric series. It is large precisely when the phase increment
+\[
+    e^{2\pi i rc/Q}
+\]
+is close to $1$, i.e.\ when $rc/Q$ is close to an integer. Therefore the output distribution is sharply peaked near values
+\[
+    c \approx \frac{sQ}{r}
+    \qquad
+    (s = 0,1,\dots,r-1).
+\]
+Measurement of the first register thus reveals a number $c$ from which the rational value $s/r$ can be reconstructed classically.
+
+\begin{remark}[Why the QFT helps]
+The QFT does not output the period $r$ directly. Instead, it converts the periodic structure in the computational basis into sharp peaks in the frequency basis. This is analogous to how a classical Fourier transform turns a periodic time-domain signal into spikes at its characteristic frequencies.
+\end{remark}
+
+\subsection{Shor as ``Simon over \texorpdfstring{$\mathbb{Z}_N$}{Z\_N}''}
+
+Conceptually, Shor's algorithm follows the same blueprint as Simon's algorithm from the previous lecture:
+\begin{enumerate}
+    \item prepare a superposition over inputs,
+    \item evaluate a function that hides a periodic structure,
+    \item apply the Fourier transform for the relevant group,
+    \item measure Fourier information and reconstruct the hidden period classically.
+\end{enumerate}
+For Simon, the group is $(\mathbb{Z}_2)^n$ and the Fourier transform is the Walsh--Hadamard transform. For Shor, the underlying group is $\mathbb{Z}_Q$ under ordinary addition, so the correct transform is the discrete Fourier transform implemented quantumly as $\mathsf{QFT}_Q$.
+
+\subsection{A toy example}
+
+Again take $N=15$ and $a=2$, whose order is $r=4$. Choose $Q=16$. Then
+\[
+    f(x)=2^x \bmod 15
+    =
+    1,2,4,8,1,2,4,8,\dots
+\]
+has exact period $4$. After modular exponentiation and measurement of the second register, the first register collapses to a state supported on one of the four arithmetic progressions
+\[
+    \{0,4,8,12\},\ \{1,5,9,13\},\ \{2,6,10,14\},\ \{3,7,11,15\}.
+\]
+Applying $\mathsf{QFT}_{16}$ produces peaks at
+\[
+    c \in \{0,4,8,12\},
+\]
+which are exactly the multiples of $Q/r = 4$. In this toy case, the period is visible immediately. For general $N$, the measured value only approximates a multiple of $Q/r$, and the continued-fractions step from the next lecture is needed to recover $r$ exactly.
 
 
 

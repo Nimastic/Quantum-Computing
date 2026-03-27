@@ -35,22 +35,155 @@ Date: March 26, 2026          %%% FILL IN LECTURE DATE HERE
 %% BODY OF SCRIBE NOTES GOES HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%Write lecture topic above.
-\textbf{Instructions}\\
+\section{Shor's Algorithm II: Continued Fractions and Recovering the Factors}
+
+In the previous lecture we reduced factoring to order finding and saw how the quantum circuit transforms the periodic function $f(x)=a^x \bmod N$ into frequency information via the QFT. This lecture completes the algorithm: how to recover the order from a measurement outcome, how to turn that order into nontrivial factors, and why the result is such a major cryptographic milestone.
+
+\subsection{What the quantum measurement gives us}
+
+Recall that the quantum subroutine outputs an integer $c \in \{0,1,\dots,Q-1\}$, where $Q=2^m \geq N^2$, such that with high probability
+\[
+    \frac{c}{Q} \approx \frac{s}{r}
+\]
+for some integer $s \in \{0,1,\dots,r-1\}$ chosen implicitly by the measurement, where $r=\mathrm{ord}_N(a)$ is the unknown order we seek.
+
+Thus the task after the quantum part is no longer ``find the period from scratch.'' It has become the much more structured problem:
+\begin{quote}
+Find the denominator $r$ of a rational number $s/r$ given a very accurate approximation to it.
+\end{quote}
+This is a classical number-theoretic problem, and the standard tool for it is the continued-fractions algorithm.
+
+\subsection{Continued fractions}
+
+\begin{definition}[Continued fraction]
+Every real number $x$ can be written formally as
+\[
+    x = a_0 + \cfrac{1}{a_1 + \cfrac{1}{a_2 + \cfrac{1}{a_3 + \cdots}}},
+\]
+where $a_0 \in \mathbb{Z}$ and $a_i \in \mathbb{Z}_{>0}$ for $i \geq 1$. Truncating this expansion after finitely many terms gives the \emph{convergents} of $x$.
+\end{definition}
+
+The key fact we use is that convergents give exceptionally good rational approximations. In particular, if a rational number $s/r$ is sufficiently close to a real number $x$, then $s/r$ must appear as one of the convergents in the continued-fraction expansion of $x$.
+
+\begin{theorem}[Rational reconstruction criterion]
+\label{thm:cf-criterion}
+Suppose
+\[
+    \left|x - \frac{s}{r}\right| < \frac{1}{2r^2}
+\]
+with $\gcd(s,r)=1$. Then $s/r$ is a convergent of the continued-fraction expansion of $x$.
+\end{theorem}
+
+In Shor's algorithm, taking $x=c/Q$ and choosing $Q \geq N^2$ ensures that the measured outcome is accurate enough for this criterion, since the true order satisfies $r < N$.
+
+\subsection{Recovering the order}
+
+The post-processing procedure is therefore:
+\begin{enumerate}
+    \item Run the quantum order-finding circuit and measure $c$.
+    \item Form the rational approximation $c/Q$.
+    \item Compute the continued-fraction expansion of $c/Q$.
+    \item Inspect its convergents until finding a denominator $r'$ such that
+    \[
+        a^{r'} \equiv 1 \pmod N.
+    \]
+\end{enumerate}
+
+If $\gcd(s,r)=1$, then the reduced fraction $s/r$ already has denominator $r$, so the correct order is obtained immediately. If $\gcd(s,r) > 1$, the convergent may instead reveal a proper divisor of $r$; in that case we can test candidate denominators or simply rerun the quantum subroutine. Repetition succeeds with high probability.
+
+\begin{example}
+Take $N=15$, $a=2$, and $Q=16$. The order is $r=4$. If the QFT measurement yields $c=4$, then
+\[
+    \frac{c}{Q} = \frac{4}{16} = \frac{1}{4},
+\]
+so the denominator $4$ is already visible. If the measurement yields $c=12$, then
+\[
+    \frac{c}{Q} = \frac{12}{16} = \frac{3}{4},
+\]
+and again the denominator is $4$. In both cases continued fractions recover the correct order.
+\end{example}
+
+\subsection{From the order to the prime factors}
+
+Once an even order $r$ has been recovered, we use the factorization identity
+\[
+    a^r - 1 = \left(a^{r/2}-1\right)\left(a^{r/2}+1\right).
+\]
+Because $a^r \equiv 1 \pmod N$, the product on the right is divisible by $N$. If additionally $a^{r/2} \not\equiv -1 \pmod N$, then neither factor is itself divisible by $N$, and taking gcds isolates nontrivial divisors:
+\[
+    p = \gcd(a^{r/2}-1,N),
+    \qquad
+    q = \gcd(a^{r/2}+1,N).
+\]
+
+\makeatletter
+\renewcommand{\theHALG@line}{\thealgorithm.\arabic{ALG@line}}
+\makeatother
+
+\begin{algorithm}[H]
+\caption{Classical post-processing in Shor's algorithm}
+\begin{algorithmic}
+\Require Odd composite integer $N$
+\Ensure Nontrivial factor of $N$
+\While{true}
+    \State Choose $a$ uniformly at random from $\{2,3,\dots,N-2\}$
+    \State $g \leftarrow \gcd(a,N)$
+    \If{$g > 1$}
+        \State \Return $g$
+    \EndIf
+    \State Use the quantum order-finding subroutine to obtain a candidate order $r$
+    \If{$r$ is odd}
+        \State continue
+    \EndIf
+    \If{$a^{r/2} \equiv -1 \pmod N$}
+        \State continue
+    \EndIf
+    \State $p \leftarrow \gcd(a^{r/2}-1,N)$
+    \State $q \leftarrow \gcd(a^{r/2}+1,N)$
+    \If{$1 < p < N$}
+        \State \Return $p$
+    \EndIf
+    \If{$1 < q < N$}
+        \State \Return $q$
+    \EndIf
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Failure modes and why repetition is allowed}
+
+There are several benign ways a run can fail:
 \begin{itemize}
-    \item Try to leave the preamble unchanged, only make changes to \texttt{main.tex} and  \texttt{references.bib}. Add images to the \texttt{images} folder. 
-    \item Share one (zipped) directory preserving the directory structure on Canvas. 
-    \item Prepare organized notes by elaborating on the broad items provided in different sections below based on the lecture material completing any missing details from lectures.
-    \item Feel free to modify structure and/or order of contents as you see fit; the below is just a guideline.
-\end{itemize} 
+    \item The random choice of $a$ may already share a nontrivial gcd with $N$. This is actually a success, not a failure.
+    \item The recovered order $r$ may be odd.
+    \item The order may be even but satisfy $a^{r/2} \equiv -1 \pmod N$.
+    \item The measurement may reveal a fraction $s/r$ that is not reduced, so the denominator reconstructed from continued fractions is smaller than $r$.
+\end{itemize}
+None of these cases is catastrophic. We simply choose a fresh random $a$ and repeat. The overall success probability per trial is bounded below by an inverse polynomial, so repeating polynomially many times yields high overall success probability \cite{NC10}.
 
+\subsection{Why this threatens RSA}
 
+RSA relies on the asymmetry between two tasks:
+\begin{itemize}
+    \item multiplying two large primes $p$ and $q$ to form $N=pq$, which is easy, and
+    \item recovering $p$ and $q$ from $N$, which appears classically hard.
+\end{itemize}
+Shor's algorithm destroys this asymmetry in principle. Once a sufficiently large fault-tolerant quantum computer exists, the factoring step can be reduced to order finding and solved in polynomial time. This is why integer-factorization-based public-key cryptography is not considered quantum-safe.
 
-\section{Shor}
+\subsection{Practical caveat}
 
-\kk{
-Today is on Shor. The quantum subroutine is essentially simon over $Z_n$, a draft of which is given above if you need it. Please scribe in detail the number theoretic preliminaries (i believe there's a note somewhere by Aditya), the quantum part, and classical post-processing.
-}
+The threat is theoretical but not merely academic. The algorithm is polynomial-time, but the constants hidden in fault-tolerant implementation are enormous. Breaking cryptographically relevant RSA key sizes would require large numbers of logical qubits together with full error correction, far beyond current hardware. Contemporary devices operate with only hundreds to low thousands of noisy physical qubits, which is nowhere near the scale needed for real RSA instances. Nevertheless, because cryptographic migrations take many years, the existence of Shor's algorithm is already driving the transition toward post-quantum cryptography.
+
+\subsection{Big picture}
+
+Shor's algorithm is the cleanest example of the ``Fourier sampling'' paradigm in quantum computing:
+\begin{enumerate}
+    \item encode a hidden algebraic structure into a periodic function,
+    \item evaluate that function in superposition,
+    \item use interference via the QFT to make the hidden frequencies observable,
+    \item reconstruct the desired classical object from those frequencies.
+\end{enumerate}
+The speedup does not come from reading out exponentially many values of $f$ in parallel. Measurement forbids that. Rather, it comes from arranging interference so that the \emph{global property we care about} --- the period --- becomes accessible using only polynomial resources.
 
 
 
