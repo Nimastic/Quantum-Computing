@@ -210,60 +210,101 @@
       <div class="card-body">
         <div class="def">
           <span class="def-title">Setup</span>
-          <p>Ancilla qubit in |−⟩ = (|0⟩−|1⟩)/√2. Oracle Q_f acts as:</p>
-          <div class="ml accent">Q_f|x⟩|y⟩ = |x⟩|y ⊕ f(x)⟩
-
-Q_f|x⟩|−⟩ = (−1)^f(x) |x⟩|−⟩</div>
+          <p>Ancilla qubit in \(\lvert - \rangle = (\lvert 0\rangle-\lvert 1\rangle)/\sqrt2\). Oracle \(Q_f\) acts as:</p>
+          <div class="ml accent">\[
+Q_f\lvert x\rangle\lvert y\rangle
+=
+\lvert x\rangle\lvert y\oplus f(x)\rangle
+\]
+\[
+Q_f\lvert x\rangle\lvert -\rangle
+=
+(-1)^{f(x)}\lvert x\rangle\lvert -\rangle
+\]</div>
           <p class="note">Phase "kicks back" onto control register. Ancilla unchanged.</p>
         </div>
         <hr>
         <div class="def">
           <span class="def-title">Two-case derivation</span>
-          <div class="ml accent">Case f(x)=0:
-  Q_f|x⟩|−⟩ = |x⟩|0⊕0⟩−|x⟩|1⊕0⟩ / √2
-             = |x⟩(|0⟩−|1⟩)/√2 = |x⟩|−⟩
-             = (−1)⁰|x⟩|−⟩ ✓
-
-Case f(x)=1:
-  Q_f|x⟩|−⟩ = |x⟩|0⊕1⟩−|x⟩|1⊕1⟩ / √2
-             = |x⟩(|1⟩−|0⟩)/√2 = −|x⟩|−⟩
-             = (−1)¹|x⟩|−⟩ ✓</div>
+          <div class="ml accent">Case \(f(x)=0\):
+\[
+Q_f\lvert x\rangle\lvert -\rangle
+=
+\lvert x\rangle\lvert -\rangle
+=
+(-1)^0\lvert x\rangle\lvert -\rangle
+\]
+Case \(f(x)=1\):
+\[
+Q_f\lvert x\rangle\lvert -\rangle
+=
+-\lvert x\rangle\lvert -\rangle
+=
+(-1)^1\lvert x\rangle\lvert -\rangle
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title">Oracle unitarity</span>
           <p>Q_f is self-inverse: Q_f² = I.</p>
-          <div class="ml accent">Q_f|x,y⟩ = |x, y⊕f(x)⟩  (XOR is its own inverse)
-Q_f(Q_f|x,y⟩) = |x, y⊕f(x)⊕f(x)⟩ = |x,y⟩
-→ Q_f is unitary (bijection on basis states)</div>
+          <div class="ml accent">\[
+Q_f\lvert x,y\rangle=\lvert x, y\oplus f(x)\rangle
+\]
+\[
+Q_f(Q_f\lvert x,y\rangle)
+=
+\lvert x, y\oplus f(x)\oplus f(x)\rangle
+=
+\lvert x,y\rangle
+\]
+\[
+\Rightarrow\quad Q_f^2=I
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title">Oracle types (distinct!)</span>
-          <div class="ml accent">Standard oracle:  Uf|x⟩|y⟩ = |x⟩|y⊕f(x)⟩
-Phase oracle:    Of|x⟩    = (−1)^f(x)|x⟩
-↑ no ancilla; f(x) written into sign directly</div>
+          <div class="ml accent">\[
+U_f\lvert x\rangle\lvert y\rangle
+=
+\lvert x\rangle\lvert y\oplus f(x)\rangle
+\]
+\[
+O_f\lvert x\rangle
+=
+(-1)^{f(x)}\lvert x\rangle
+\]</div>
           <p class="note">Phase kickback converts standard oracle + |−⟩ ancilla into phase oracle behaviour.</p>
         </div>
         <hr>
         <div class="def">
           <span class="def-title">Why it works</span>
-          <p>|−⟩ is eigenstate of X with eigenvalue −1. Flipping the ancilla when f(x)=1 multiplies state by −1.</p>
-          <div class="ml accent">|−⟩ = (|0⟩−|1⟩)/√2
-X|−⟩ = −|−⟩  →  eigenvalue −1</div>
+          <p>\(\lvert - \rangle\) is an eigenstate of \(X\) with eigenvalue \(-1\). Flipping the ancilla when \(f(x)=1\) multiplies the state by \(-1\).</p>
+          <div class="ml accent">\[
+\lvert -\rangle=\frac{\lvert 0\rangle-\lvert 1\rangle}{\sqrt2}
+\qquad
+X\lvert -\rangle=-\lvert -\rangle
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title">General eigenstate form</span>
-          <div class="ml accent">If U|u⟩ = e^(iφ)|u⟩ (eigenstate), then:
-(|0⟩+|1⟩)/√2 ⊗ |u⟩ →[ctrl-U]→ (|0⟩+e^(iφ)|1⟩)/√2 ⊗ |u⟩
-Phase e^(iφ) from target kicks back to control.</div>
-          <p class="note">Boolean case: U=X, |u⟩=|−⟩, e^(iφ)=−1 → the standard formula.</p>
+          <div class="ml accent">\[
+U\lvert u\rangle=e^{i\phi}\lvert u\rangle
+\]
+\[
+\frac{\lvert 0\rangle+\lvert 1\rangle}{\sqrt2}\otimes \lvert u\rangle
+\xrightarrow{\mathrm{ctrl}\text{-}U}
+\frac{\lvert 0\rangle+e^{i\phi}\lvert 1\rangle}{\sqrt2}\otimes \lvert u\rangle
+\]</div>
+          <p class="note">Boolean case: \(U=X\), \(\lvert u\rangle=\lvert -\rangle\), \(e^{i\phi}=-1\).</p>
         </div>
         <hr>
         <div class="def">
-          <span class="def-title">Preparing |−⟩</span>
-          <div class="ml accent">|0⟩ →[X]→ |1⟩ →[H]→ |−⟩</div>
+          <span class="def-title">Preparing \(\lvert - \rangle\)</span>
+          <div class="ml accent">\[
+\lvert 0\rangle \xrightarrow{X} \lvert 1\rangle \xrightarrow{H} \lvert -\rangle
+\]</div>
         </div>
         <hr>
         <div class="def">
@@ -278,39 +319,60 @@ Phase e^(iφ) from target kicks back to control.</div>
       <div class="card-body">
         <div class="def">
           <span class="def-title">Single qubit</span>
-          <div class="ml accent">H = (1/√2)[[1,1],[1,−1]]
-H|0⟩ = |+⟩,  H|1⟩ = |−⟩
-H|+⟩ = |0⟩,  H|−⟩ = |1⟩
-H² = I  (self-inverse)</div>
+          <div class="ml accent">\[
+H=\frac{1}{\sqrt2}
+\begin{bmatrix}
+1 &amp; 1\\
+1 &amp; -1
+\end{bmatrix}
+\]
+\[
+H\lvert 0\rangle=\lvert +\rangle,\quad
+H\lvert 1\rangle=\lvert -\rangle,\quad
+H^2=I
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title">n-qubit HWT</span>
-          <div class="ml accent">H^⊗n|x⟩ = (1/√2ⁿ) Σ_y (−1)^(x·y) |y⟩
-
-H^⊗n|0ⁿ⟩ = (1/√2ⁿ) Σ_x |x⟩  (uniform superpos.)
-</div>
+          <div class="ml accent">\[
+H^{\otimes n}\lvert x\rangle
+=
+\frac{1}{\sqrt{2^n}}\sum_y (-1)^{x\cdot y}\lvert y\rangle
+\]
+\[
+H^{\otimes n}\lvert 0^n\rangle
+=
+\frac{1}{\sqrt{2^n}}\sum_x \lvert x\rangle
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title">Key Properties</span>
-          <div class="ml accent">H^⊗n is unitary and self-inverse: (H^⊗n)² = I
-Group: Zⁿ₂  (bitwise XOR)
-Character: εₛ(x) = (−1)^(s·x)</div>
-          <p class="note">n-qubit HWT = Fourier transform over Zⁿ₂. Applying H⊗n twice returns to original state.</p>
+          <div class="ml accent">\[
+\left(H^{\otimes n}\right)^2=I
+\]
+\[
+\varepsilon_s(x)=(-1)^{s\cdot x}
+\qquad \text{over }(\mathbb Z_2)^n
+\]</div>
+          <p class="note">The n-qubit HWT is the Fourier transform over \((\mathbb Z_2)^n\).</p>
         </div>
         <hr>
         <div class="def">
-          <span class="def-title">Worked example: H⊗²|10⟩</span>
-          <div class="ml accent" style="font-size:8px">H⊗²|10⟩ = H|1⟩ ⊗ H|0⟩
-= |−⟩ ⊗ |+⟩
-= (1/√2)(|0⟩−|1⟩) ⊗ (1/√2)(|0⟩+|1⟩)
-= (1/2)(|00⟩+|01⟩−|10⟩−|11⟩)
-
-Shortcut: coeff of |yz⟩ = (−1)^(x·y) / √2ⁿ
-  x=10, y=10: (−1)^(1·1+0·0) = −1 ✓
-  x=10, y=01: (−1)^(1·0+0·1) = +1 ✓</div>
-          <p class="note">Dot product trick: amp(y) = (−1)^(x·y)/√2ⁿ where x·y = Σᵢ xᵢyᵢ mod 2</p>
+          <span class="def-title">Worked example: \(H^{\otimes 2}\lvert 10\rangle\)</span>
+          <div class="ml accent" style="font-size:8px">\[
+H^{\otimes 2}\lvert 10\rangle
+=
+H\lvert 1\rangle\otimes H\lvert 0\rangle
+=
+\lvert -\rangle\otimes \lvert +\rangle
+\]
+\[
+=
+\frac{1}{2}\left(\lvert 00\rangle+\lvert 01\rangle-\lvert 10\rangle-\lvert 11\rangle\right)
+\]</div>
+          <p class="note">Shortcut: \(\mathrm{amp}(y)=(-1)^{x\cdot y}/\sqrt{2^n}\) with dot product mod \(2\).</p>
         </div>
         <hr>
         <div class="def">
@@ -328,7 +390,7 @@ Shortcut: coeff of |yz⟩ = (−1)^(x·y) / √2ⁿ
     <div class="card">
       <div class="card-header red">Deutsch Algorithm</div>
       <div class="card-body">
-        <p><b>Task:</b> Is f:{0,1}→{0,1} constant or balanced? Uses <b>1 query</b>.</p>
+        <p><b>Task:</b> Is \(f:\{0,1\}\to\{0,1\}\) constant or balanced? Uses <b>1 query</b>.</p>
         <div class="circuit">|0⟩ ─H──────H─ measure
 |1⟩ ─H──Qf──── (discard)</div>
         <hr>
@@ -345,46 +407,79 @@ Shortcut: coeff of |yz⟩ = (−1)^(x·y) / √2ⁿ
         <hr>
         <div class="def">
           <span class="def-title red">State derivation</span>
-          <div class="ml red" style="font-size:8px">Start: |0⟩|1⟩
-→[H⊗H]→ |+⟩|−⟩ = (1/√2)(|0⟩+|1⟩)|−⟩
-→[Q_f]→ (1/√2)((−1)^f(0)|0⟩+(−1)^f(1)|1⟩)|−⟩
-→[H on 1st]→ ±|0⟩  if constant (f(0)=f(1))
-              ±|1⟩  if balanced (f(0)≠f(1))</div>
-          <p class="note">Phase kickback: Q_f|x⟩|−⟩=(−1)^f(x)|x⟩|−⟩. Ancilla |−⟩ unchanged.</p>
+          <div class="ml red" style="font-size:8px">\[
+\lvert 0\rangle\lvert 1\rangle
+\xrightarrow{H\otimes H}
+\lvert +\rangle\lvert -\rangle
+=
+\frac{1}{\sqrt2}\left(\lvert 0\rangle+\lvert 1\rangle\right)\lvert -\rangle
+\]
+\[
+\xrightarrow{Q_f}
+\frac{1}{\sqrt2}\left((-1)^{f(0)}\lvert 0\rangle+(-1)^{f(1)}\lvert 1\rangle\right)\lvert -\rangle
+\]
+\[
+\xrightarrow{H}
+\pm \lvert 0\rangle \text{ if } f(0)=f(1),\qquad
+\pm \lvert 1\rangle \text{ if } f(0)\neq f(1)
+\]</div>
+          <p class="note">Phase kickback: \(Q_f\lvert x\rangle\lvert -\rangle=(-1)^{f(x)}\lvert x\rangle\lvert -\rangle\).</p>
         </div>
-        <p style="margin-top:3px">Measure 1st qubit: <span style="font-family:var(--mono)">|0⟩ ↔ constant, |1⟩ ↔ balanced</span></p>
+        <p style="margin-top:3px">Measure 1st qubit: <span style="font-family:var(--mono)">\(\lvert 0\rangle \leftrightarrow\) constant, \(\lvert 1\rangle \leftrightarrow\) balanced</span></p>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header red">Deutsch-Jozsa</div>
       <div class="card-body">
-        <p><b>Task:</b> f:{0,1}ⁿ→{0,1}, constant or balanced? Uses <b>1 query</b>.</p>
+        <p><b>Task:</b> \(f:\{0,1\}^n\to\{0,1\}\), constant or balanced? Uses <b>1 query</b>.</p>
         <div class="circuit">|0ⁿ⟩ ─Hⁿ──────Hⁿ─ measure n qubits
 |1⟩  ─H───Qf────── (discard)</div>
         <hr>
         <div class="def">
           <span class="def-title red">Amplitude formula</span>
-          <div class="ml red">amp(z) = (1/2ⁿ) Σ_{x∈{0,1}ⁿ} (−1)^(f(x)+x·z)
-
-Derivation: |0ⁿ⟩|−⟩ →[Hⁿ]→ (1/√2ⁿ)Σ_x|x⟩|−⟩
-→[Q_f]→ (1/√2ⁿ)Σ_x(−1)^f(x)|x⟩|−⟩
-→[Hⁿ]→ Σ_z amp(z)|z⟩|−⟩</div>
+          <div class="ml red">\[
+\mathrm{amp}(z)
+=
+\frac{1}{2^n}\sum_{x\in\{0,1\}^n}(-1)^{f(x)+x\cdot z}
+\]
+\[
+\lvert 0^n\rangle\lvert -\rangle
+\xrightarrow{H^{\otimes n}}
+\frac{1}{\sqrt{2^n}}\sum_x \lvert x\rangle\lvert -\rangle
+\xrightarrow{Q_f}
+\frac{1}{\sqrt{2^n}}\sum_x (-1)^{f(x)}\lvert x\rangle\lvert -\rangle
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title red">Constant case (f(x)=c)</span>
-          <div class="ml red">amp(0ⁿ) = (1/2ⁿ) Σ_x (−1)^c · 1  [x·0ⁿ=0]
-= (−1)^c · (2ⁿ/2ⁿ) = ±1
-→ P(0ⁿ) = 1 (measure 0ⁿ with certainty)</div>
+          <div class="ml red">\[
+\mathrm{amp}(0^n)
+=
+\frac{1}{2^n}\sum_x (-1)^c
+=
+(-1)^c
+\]
+\[
+\Rightarrow\quad P(0^n)=1
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title red">Balanced case</span>
-          <div class="ml red">amp(0ⁿ) = (1/2ⁿ) Σ_x (−1)^f(x)
-= (1/2ⁿ)[Σ_{f=0}(+1) + Σ_{f=1}(−1)]
-= (1/2ⁿ)[2^(n−1) − 2^(n−1)] = 0
-→ P(0ⁿ) = 0 (never measure 0ⁿ)</div>
+          <div class="ml red">\[
+\mathrm{amp}(0^n)
+=
+\frac{1}{2^n}\sum_x (-1)^{f(x)}
+=
+\frac{1}{2^n}\left(2^{n-1}-2^{n-1}\right)
+=
+0
+\]
+\[
+\Rightarrow\quad P(0^n)=0
+\]</div>
         </div>
         <hr>
         <div class="def">
@@ -402,21 +497,34 @@ Derivation: |0ⁿ⟩|−⟩ →[Hⁿ]→ (1/√2ⁿ)Σ_x|x⟩|−⟩
     <div class="card">
       <div class="card-header red">Bernstein-Vazirani</div>
       <div class="card-body">
-        <p><b>Task:</b> f(x) = x·s, find secret s. Quantum uses <b>1 query</b> vs classical n.</p>
-        <p>Same circuit as DJ: apply Hⁿ → Qf → Hⁿ. Measuring gives |s⟩ with certainty.</p>
-        <div class="ml red">After Qf: (1/√2ⁿ) Σ_x (−1)^(x·s) |x⟩ = Hⁿ|s⟩
-Applying Hⁿ again (H²=I) recovers |s⟩</div>
+        <p><b>Task:</b> \(f(x)=x\cdot s\), find secret \(s\). Quantum uses <b>1 query</b> vs classical \(n\).</p>
+        <p>Same circuit as DJ: apply \(H^{\otimes n}\to Q_f\to H^{\otimes n}\). Measuring gives \(\lvert s\rangle\) with certainty.</p>
+        <div class="ml red">\[
+\frac{1}{\sqrt{2^n}}\sum_x (-1)^{x\cdot s}\lvert x\rangle
+=
+H^{\otimes n}\lvert s\rangle
+\]
+\[
+H^{\otimes n}H^{\otimes n}\lvert s\rangle=\lvert s\rangle
+\]</div>
         <hr>
         <div class="def">
           <span class="def-title red">Worked example: n=2, s=10</span>
-          <div class="ml red" style="font-size:8px">f(x) = x·10 → only 1st bit matters
-Signs: x=00→+, 01→+, 10→−, 11→−
-
-After H²|00⟩: (1/2)(|00⟩+|01⟩+|10⟩+|11⟩)
-After Qf:    (1/2)(|00⟩+|01⟩−|10⟩−|11⟩)
-            = H²|10⟩  ← sign pattern encodes s
-After H²:   |10⟩  → measure 10 = s ✓</div>
-          <p class="note">Sign rule: (−1)^(x·s). For s=10: only x with x₁=1 get minus sign.</p>
+          <div class="ml red" style="font-size:8px">\[
+f(x)=x\cdot 10
+\]
+\[
+H^{\otimes 2}\lvert 00\rangle
+=
+\frac{1}{2}\left(\lvert 00\rangle+\lvert 01\rangle+\lvert 10\rangle+\lvert 11\rangle\right)
+\]
+\[
+\xrightarrow{Q_f}
+\frac{1}{2}\left(\lvert 00\rangle+\lvert 01\rangle-\lvert 10\rangle-\lvert 11\rangle\right)
+=
+H^{\otimes 2}\lvert 10\rangle
+\]</div>
+          <p class="note">Sign rule: \((-1)^{x\cdot s}\). For \(s=10\), only inputs with first bit \(1\) get a minus sign.</p>
         </div>
       </div>
     </div>
@@ -462,16 +570,25 @@ QFT (N=8): ε₃(5) = e^(2πi·3·5/8) = e^(30πi/8)
       <div class="card-body">
         <div class="def">
           <span class="def-title green">Action on basis state</span>
-          <div class="ml green">QFT|j⟩ = (1/√N) Σₖ e^(2πijk/N) |k⟩</div>
+          <div class="ml green">\[
+\mathrm{QFT}\lvert j\rangle
+=
+\frac{1}{\sqrt N}\sum_k e^{2\pi ijk/N}\lvert k\rangle
+\]</div>
         </div>
         <div class="def" style="margin-top:3px">
           <span class="def-title green">Product / tensor form (N=2ⁿ)</span>
-          <div class="ml green" style="font-size:8px">QFT|j₁…jₙ⟩ =
-(1/√2ⁿ)(|0⟩+e^(2πi·0.jₙ)|1⟩)
-        ⊗(|0⟩+e^(2πi·0.jₙ₋₁jₙ)|1⟩)
-        ⊗ …
-        ⊗(|0⟩+e^(2πi·0.j₁j₂…jₙ)|1⟩)</div>
-          <p class="note">Binary fraction: 0.j₁…jₙ = j₁·2⁻¹+…+jₙ·2⁻ⁿ</p>
+          <div class="ml green" style="font-size:8px">\[
+\mathrm{QFT}\lvert j_1\ldots j_n\rangle
+=
+\frac{1}{\sqrt{2^n}}
+\bigl(\lvert 0\rangle+e^{2\pi i\,0.j_n}\lvert 1\rangle\bigr)
+\otimes
+\bigl(\lvert 0\rangle+e^{2\pi i\,0.j_{n-1}j_n}\lvert 1\rangle\bigr)
+\otimes \cdots \otimes
+\bigl(\lvert 0\rangle+e^{2\pi i\,0.j_1\ldots j_n}\lvert 1\rangle\bigr)
+\]</div>
+          <p class="note">Binary fraction: \(0.j_1\ldots j_n=j_1 2^{-1}+\cdots+j_n 2^{-n}\).</p>
           <p class="note"><b>Notable:</b> output is a <b>product state (unentangled)</b> for any basis input — each qubit only carries a phase, not correlations.</p>
         </div>
         <hr>
@@ -495,7 +612,9 @@ total: Σᵢ(n−i+1) = n(n+1)/2 = O(n²)</div>
         <hr>
         <div class="def">
           <span class="def-title green">Phase gate R_k</span>
-          <div class="ml green">Rₖ = diag(1, e^(2πi/2ᵏ))</div>
+          <div class="ml green">\[
+R_k=\operatorname{diag}\!\left(1,e^{2\pi i/2^k}\right)
+\]</div>
         </div>
       </div>
     </div>
@@ -527,8 +646,8 @@ characters: εξ(x) = e^(2πiξx)</div>
       <div class="card-body">
         <div class="def">
           <span class="def-title purple">Problem</span>
-          <p>Given f:{0,1}ⁿ→{0,1}ⁿ with f(x)=f(y) ⟺ x=y⊕s. Find s.</p>
-          <p class="note">Hidden period over group Z₂ⁿ (XOR). Hidden subgroup {0ⁿ,s} ≤ Z₂ⁿ. Two inputs equivalent iff same coset. s=0ⁿ: injective; else every output has exactly two preimages x and x⊕s.</p>
+          <p>Given \(f:\{0,1\}^n\to\{0,1\}^n\) with \(f(x)=f(y)\iff x=y\oplus s\). Find \(s\).</p>
+          <p class="note">Hidden subgroup \(H=\{0^n,s\}\le (\mathbb Z_2)^n\). If \(s=0^n\), the function is injective; otherwise each output has exactly two preimages \(x\) and \(x\oplus s\).</p>
           <p class="note">Classical randomized: Ω(2^(n/2)) queries (birthday paradox).</p>
         </div>
         <hr>
@@ -538,30 +657,42 @@ characters: εξ(x) = e^(2πiξx)</div>
         Of
 |0ⁿ⟩ ─────────── (ancilla)</div>
           <p style="margin-top:2px">After circuit:</p>
-          <div class="ml purple" style="font-size:8px">p(y) = 1/2^(n−1)  if y·s = 0 (mod 2)
-p(y) = 0          if y·s = 1 (mod 2)</div>
+          <div class="ml purple" style="font-size:8px">\[
+p(y)=2^{-(n-1)} \quad \text{if } y\cdot s=0 \pmod 2
+\]
+\[
+p(y)=0 \quad \text{if } y\cdot s=1 \pmod 2
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">State walkthrough</span>
-          <div class="ml purple" style="font-size:7.5px">|0ⁿ⟩|0ⁿ⟩ →[Hⁿ]→ (1/√2ⁿ) Σ_x |x⟩|0ⁿ⟩
-
-→[Of]→  (1/√2ⁿ) Σ_x |x⟩|f(x)⟩   (entangled)
-
-→[meas. 2nd]→  (1/√2)(|x₀⟩ + |x₀⊕s⟩)
-    ↑ pair state: two branches differ by exactly s
-
-→[Hⁿ]→  ampl. of |y⟩ ∝ (−1)^(x₀·y)·(1+(−1)^(s·y))
-    s·y=0 → factor=2 (amplitudes reinforce)
-    s·y=1 → factor=0 (destructive interference)</div>
+          <div class="ml purple" style="font-size:7.5px">\[
+\lvert 0^n\rangle\lvert 0^n\rangle
+\xrightarrow{H^{\otimes n}}
+\frac{1}{\sqrt{2^n}}\sum_x \lvert x\rangle\lvert 0^n\rangle
+\xrightarrow{O_f}
+\frac{1}{\sqrt{2^n}}\sum_x \lvert x\rangle\lvert f(x)\rangle
+\]
+\[
+\xrightarrow{\text{measure 2nd}}
+\frac{1}{\sqrt2}\left(\lvert x_0\rangle+\lvert x_0\oplus s\rangle\right)
+\]
+\[
+\xrightarrow{H^{\otimes n}}
+\mathrm{amp}(y)\propto (-1)^{x_0\cdot y}\left(1+(-1)^{s\cdot y}\right)
+\]</div>
           <p class="note">x₀ unknown/random — doesn't matter. Only the interference pattern encodes s.</p>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">Classical Postprocessing</span>
-          <p>Repeat n−1 times to get n−1 lin. indep. yᵢ. Gaussian elimination → solutions {0ⁿ, s'}. Check f(0ⁿ) vs f(s') to identify s.</p>
-          <div class="ml purple">P(n−1 LI strings) > 1/2
-After k runs: P(fail) &lt; e^(−k/2)</div>
+          <p>Repeat \(n-1\) times to get linearly independent \(y_i\). Gaussian elimination gives candidates \(\{0^n,s'\}\); compare \(f(0^n)\) and \(f(s')\).</p>
+          <div class="ml purple">\[
+P(\text{\(n-1\) LI strings}) &gt; \frac12,
+\qquad
+P(\mathrm{fail\ after\ }k\mathrm{\ runs}) &lt; e^{-k/2}
+\]</div>
         </div>
         <hr>
         <div class="def">
@@ -600,16 +731,19 @@ Verify: f(000) = f(101) ✓</div>
       <div class="card-body">
         <div class="def">
           <span class="def-title purple">Problem</span>
-          <p>Promise: ∃ hidden L|N s.t. f(x)=f(y) ⟺ x≡y (mod L). Find L. (N=2ⁿ)</p>
+          <p>Promise: \(\exists\) hidden \(L\mid N\) such that \(f(x)=f(y)\iff x\equiv y\pmod L\). Find \(L\). (\(N=2^n\))</p>
           <p class="note">Equivalent: f is constant on cosets {x, x+L, x+2L, ...} and different on different cosets.</p>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">Why assume L|N?</span>
-          <div class="ml purple" style="font-size:8px">L|N → clean subgroup H={0,L,2L,...}
-|H|=N/L, # cosets = L
-Example N=16, L=4:
-{0,4,8,12}, {1,5,9,13}, {2,6,10,14}, {3,7,11,15}</div>
+          <div class="ml purple" style="font-size:8px">\[
+H=\{0,L,2L,\ldots\},\qquad |H|=\frac{N}{L},\qquad \#\text{cosets}=L
+\]
+\[
+N=16,\ L=4:\quad
+\{0,4,8,12\},\ \{1,5,9,13\},\ \{2,6,10,14\},\ \{3,7,11,15\}
+\]</div>
           <p class="note">This makes the Fourier spikes exact: surviving outcomes are multiples of N/L.</p>
         </div>
         <hr>
@@ -623,34 +757,52 @@ Oracle: attach f(x), so equal outputs group x's into a period-L pattern
 2nd DFT_N: convert "repeat every L" into frequency spikes
 Measure: only y compatible with period L survive</div>
           <p style="margin-top:2px">After measurement:</p>
-          <div class="ml purple">p(y) = 1/L  if y = 0 mod (N/L)
-p(y) = 0    otherwise
-→ outcome is multiple of N/L
-⚠ You receive iN/L (the full value),
-  NOT i alone. Must divide N by gcd.</div>
+          <div class="ml purple">\[
+p(y)=\frac{1}{L}\quad \text{if } y\equiv 0 \pmod{N/L}
+\]
+\[
+p(y)=0\quad \text{otherwise}
+\]
+\[
+\Rightarrow\quad y=i\frac{N}{L}
+\]</div>
           <p class="note">Examples: N=16,L=4 → {0,4,8,12}. N=32,L=8 → {0,4,8,12,16,20,24,28}.</p>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">Why only these y survive</span>
-          <div class="ml purple" style="font-size:8px">Σ_{t=0}^{N/L−1} e^(2πiytL/N)
-= N/L  if y ≡ 0 (mod N/L)
-= 0    otherwise
-matching phases add; non-matching phases cancel</div>
+          <div class="ml purple" style="font-size:8px">\[
+\sum_{t=0}^{N/L-1} e^{2\pi iytL/N}
+=
+\begin{cases}
+N/L,&amp; y\equiv 0 \pmod{N/L}\\
+0,&amp; \text{otherwise}
+\end{cases}
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">Postprocessing</span>
-          <p>Two runs give iN/L and jN/L.</p>
-          <div class="ml purple">L̂ = N / gcd(iN/L, jN/L)
-Correct iff gcd(i,j) = 1</div>
+          <p>Two runs give \(iN/L\) and \(jN/L\).</p>
+          <div class="ml purple">\[
+\hat L=\frac{N}{\gcd(iN/L,jN/L)}
+\]
+\[
+\text{correct iff } \gcd(i,j)=1
+\]</div>
           <p class="note">More runs help because gcd strips away the random multipliers i,j,... If all samples share an extra factor, L̂ is too small.</p>
           <p style="margin-top:2px"><b>Success probability:</b></p>
-          <div class="ml purple">P(gcd(i,j)>1) ≤ Σ_p 1/p² ≤ 11/12
-→ P(gcd=1) ≥ 1/12
-
-k runs: P(gcd(i₁…iₖ)>1) = O(2^−k)
-→ P(success) ≥ 1 − O(2^−k)</div>
+          <div class="ml purple">\[
+P(\gcd(i,j)&gt;1)\le \sum_p \frac{1}{p^2}\le \frac{11}{12}
+\quad\Rightarrow\quad
+P(\gcd(i,j)=1)\ge \frac{1}{12}
+\]
+\[
+k\text{ runs}:\quad
+P(\gcd(i_1,\ldots,i_k)&gt;1)=O(2^{-k}),
+\qquad
+P(\mathrm{success})\ge 1-O(2^{-k})
+\]</div>
         </div>
       </div>
     </div>
@@ -822,16 +974,26 @@ Steps 1+2+3 → N_p(d) = φ(d) for ALL d
         <div class="def">
           <span class="def-title red">Problem</span>
           <p>Search for M marked items among N. f:[N]→{0,1}, f(x)=1 iff x is marked.</p>
-          <p class="note">Classical: Ω(N/M) queries. Grover: O(√(N/M)) → quadratic speedup.</p>
+          <p class="note">Classical: \(\Omega(N/M)\) queries. Grover: \(O(\sqrt{N/M})\).</p>
         </div>
         <hr>
         <div class="def">
           <span class="def-title red">Circuit</span>
           <div class="circuit" style="font-size:7.5px">|0ⁿ⟩ ─Hⁿ─[G]─[G]─···─[G]─ measure
 |0⟩  ─X──H─────────────── |−⟩ (ancilla)</div>
-          <p style="margin-top:2px">Grover operator G = H⊗ⁿ (2|0ⁿ⟩⟨0ⁿ|−I) H⊗ⁿ · Of</p>
-          <div class="ml red">Equivalently: G = (2|ψ⟩⟨ψ|−I) · Of
-where |ψ⟩ = H^⊗n|0ⁿ⟩ = uniform superpos.</div>
+          <p style="margin-top:2px">Grover operator:</p>
+          <div class="ml red">\[
+G
+=
+H^{\otimes n}\left(2\lvert 0^n\rangle\langle 0^n\rvert-I\right)H^{\otimes n}O_f
+\]
+\[
+G
+=
+\left(2\lvert \psi\rangle\langle \psi\rvert-I\right)O_f,
+\qquad
+\lvert\psi\rangle=H^{\otimes n}\lvert 0^n\rangle
+\]</div>
         </div>
         <hr>
         <div class="def">
@@ -852,11 +1014,21 @@ Too many rounds overshoot the target</div>
         <hr>
         <div class="def">
           <span class="def-title red">Define subspaces</span>
-          <div class="ml red">A = {x : f(x)=0},  B = {x : f(x)=1}
-|α⟩ = (1/√(N−M)) Σ_{x∈A} |x⟩
-|β⟩ = (1/√M)     Σ_{x∈B} |x⟩
-|ψ⟩ = √((N−M)/N)|α⟩ + √(M/N)|β⟩</div>
-          <p class="note">⟨α|β⟩ = 0 · G acts in the 2D real subspace spanned by |α⟩,|β⟩.</p>
+          <div class="ml red">\[
+A=\{x:f(x)=0\},\qquad B=\{x:f(x)=1\}
+\]
+\[
+\lvert \alpha\rangle=\frac{1}{\sqrt{N-M}}\sum_{x\in A}\lvert x\rangle,
+\qquad
+\lvert \beta\rangle=\frac{1}{\sqrt M}\sum_{x\in B}\lvert x\rangle
+\]
+\[
+\lvert \psi\rangle
+=
+\sqrt{\frac{N-M}{N}}\lvert \alpha\rangle
++\sqrt{\frac{M}{N}}\lvert \beta\rangle
+\]</div>
+          <p class="note">\(\langle \alpha\vert\beta\rangle=0\), so \(G\) acts in the 2D plane spanned by \(\lvert \alpha\rangle,\lvert \beta\rangle\).</p>
         </div>
       </div>
     </div>
@@ -872,31 +1044,48 @@ Too many rounds overshoot the target</div>
         <div class="def">
           <span class="def-title red">Two reflections = rotation</span>
           <p>Of = reflection about |α⟩ axis (flips sign of |β⟩ component)</p>
-          <div class="ml red">Of(a|α⟩+b|β⟩) = a|α⟩ − b|β⟩
-  = (2|α⟩⟨α|−I)(a|α⟩+b|β⟩)</div>
-          <p style="margin-top:2px">(2|ψ⟩⟨ψ|−I) = reflection about |ψ⟩ axis</p>
+          <div class="ml red">\[
+O_f(a\lvert \alpha\rangle+b\lvert \beta\rangle)
+=
+a\lvert \alpha\rangle-b\lvert \beta\rangle
+=
+\left(2\lvert \alpha\rangle\langle \alpha\rvert-I\right)(a\lvert \alpha\rangle+b\lvert \beta\rangle)
+\]</div>
+          <p style="margin-top:2px">\(\left(2\lvert \psi\rangle\langle \psi\rvert-I\right)\) is reflection about the \(\lvert \psi\rangle\) axis.</p>
           <p>Composition of two reflections in ℝ² = rotation.</p>
         </div>
         <hr>
         <div class="def">
           <span class="def-title red">G as rotation matrix</span>
           <p>Define angle θ via:</p>
-          <div class="ml red">cos(θ/2) = √((N−M)/N)  = a
-sin(θ/2) = √(M/N)      = b
-
-G = [[cosθ, −sinθ],
-     [sinθ,  cosθ]]  (in |α⟩,|β⟩ basis)
-
-G|α⟩ = cosθ|α⟩ + sinθ|β⟩
-G|β⟩ = −sinθ|α⟩ + cosθ|β⟩</div>
+          <div class="ml red">\[
+\cos(\theta/2)=\sqrt{\frac{N-M}{N}},
+\qquad
+\sin(\theta/2)=\sqrt{\frac{M}{N}}
+\]
+\[
+G=
+\begin{bmatrix}
+\cos\theta &amp; -\sin\theta\\
+\sin\theta &amp; \cos\theta
+\end{bmatrix}
+\quad \text{in the basis }(\lvert \alpha\rangle,\lvert \beta\rangle)
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title red">After k iterations</span>
-          <div class="ml red">Gᵏ|ψ⟩ = cos((2k+1)θ/2)|α⟩
-        + sin((2k+1)θ/2)|β⟩
-
-P(solution) = sin²((2k+1)θ/2)</div>
+          <div class="ml red">\[
+G^k\lvert \psi\rangle
+=
+\cos\!\left(\frac{(2k+1)\theta}{2}\right)\lvert \alpha\rangle
++\sin\!\left(\frac{(2k+1)\theta}{2}\right)\lvert \beta\rangle
+\]
+\[
+P(\text{solution})
+=
+\sin^2\!\left(\frac{(2k+1)\theta}{2}\right)
+\]</div>
           <p style="margin-top:2px">Maximise by setting (2k+1)θ/2 ≈ π/2:</p>
           <div class="ml red">k = ⌊π/(2θ) − 1/2⌋
 Error ≤ θ (at most one extra rotation)</div>
@@ -904,9 +1093,14 @@ Error ≤ θ (at most one extra rotation)</div>
         <hr>
         <div class="def">
           <span class="def-title red">Iteration count</span>
-          <div class="ml red">M ≤ N/2:  θ/2 ≥ sin(θ/2) = √(M/N)
-k ≤ π/(2θ) ≤ (π/4)√(N/M)
-→ k = O(√(N/M)) iterations</div>
+          <div class="ml red">\[
+\frac{\theta}{2}\ge \sin(\theta/2)=\sqrt{\frac{M}{N}}
+\]
+\[
+k\le \frac{\pi}{2\theta}\le \frac{\pi}{4}\sqrt{\frac{N}{M}}
+\qquad\Rightarrow\qquad
+k=O\!\left(\sqrt{\frac{N}{M}}\right)
+\]</div>
           <p class="note">If M ≥ N/2: double N with ancilla qubit, mark only when ancilla=|0⟩.</p>
           <p class="note">Amplitude amplified: sin²(θ/2) → sin²((2k+1)θ/2) ≈ 1</p>
         </div>
@@ -937,12 +1131,25 @@ Quantum finds period info; classical gcd turns it into factors</div>
         <div class="def">
           <span class="def-title purple">Reduction: Factoring → Period Finding</span>
           <p>Pick random a with gcd(a,N)=1. Define:</p>
-          <div class="ml purple">f(x) = aˣ mod N   (periodic with period r)
-aʳ ≡ 1 (mod N)  ← r = ord_N(a)</div>
+          <div class="ml purple">\[
+f(x)=a^x \bmod N
+\qquad\text{with period}\qquad
+a^r\equiv 1 \pmod N
+\]
+\[
+r=\operatorname{ord}_N(a)
+\]</div>
           <p style="margin-top:2px">If r is even and aʳ/² ≢ −1 (mod N):</p>
-          <div class="ml purple">aʳ − 1 ≡ 0 (mod N)
-→ (aʳ/²−1)(aʳ/²+1) ≡ 0 (mod N)
-→ gcd(aʳ/²±1, N) gives non-trivial factor</div>
+          <div class="ml purple">\[
+a^r-1\equiv 0 \pmod N
+\]
+\[
+\left(a^{r/2}-1\right)\left(a^{r/2}+1\right)\equiv 0 \pmod N
+\]
+\[
+\gcd(a^{r/2}\pm 1,N)
+\text{ gives a non-trivial factor}
+\]</div>
           <p class="note">Works with prob. ≥ 1/2 over random a. Repeat if r odd or aʳ/²≡−1.</p>
         </div>
         <hr>
@@ -950,32 +1157,48 @@ aʳ ≡ 1 (mod N)  ← r = ord_N(a)</div>
           <span class="def-title purple">Quantum Period Finding (core)</span>
           <div class="circuit" style="font-size:7.5px">|0ⁿ⟩ ─QFT──────────QFT⁻¹─ measure → r̃
 |0ⁿ⟩ ──────U_f─────────── (f register)</div>
-          <div class="ml purple">1. Init |0ⁿ⟩|0ⁿ⟩, apply QFT to 1st register
-2. Apply U_f: |x⟩|0⟩ → |x⟩|aˣ mod N⟩
-3. Measure 2nd register (collapses 1st to
-   uniform superpos. over {x₀, x₀+r, …})
-4. Apply QFT⁻¹ to 1st register
-5. Measure → multiple of N/r
-6. Use continued fractions to extract r</div>
+          <div class="ml purple">\[
+\lvert 0^n\rangle\lvert 0^n\rangle
+\xrightarrow{\mathrm{QFT}}
+\frac{1}{\sqrt N}\sum_x \lvert x\rangle\lvert 0\rangle
+\xrightarrow{U_f}
+\frac{1}{\sqrt N}\sum_x \lvert x\rangle\lvert a^x \bmod N\rangle
+\]
+\[
+\xrightarrow{\text{measure 2nd}}
+\sum_j \lvert x_0+jr\rangle
+\xrightarrow{\mathrm{QFT}^{-1}}
+\text{peaks at multiples of } N/r
+\]</div>
           <p class="note">Toy Simon-over-Z_N uses gcd on exact multiples of N/L. Full Shor uses continued fractions because the measured value is only related to r, not equal to r.</p>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">6-step story</span>
-          <div class="ml purple" style="font-size:8px">1. Pick random 1&lt;a&lt;N
-2. If gcd(a,N)&gt;1, done
-3. Quantum part recovers r = ord_N(a)
-4. If r odd or a^(r/2) ≡ −1, retry
-5. Compute gcd(a^(r/2)−1,N), gcd(a^(r/2)+1,N)
-6. Non-trivial gcd gives a factor</div>
+          <div class="ml purple" style="font-size:8px">\[
+1&lt;a&lt;N,\qquad
+\gcd(a,N)&gt;1 \Rightarrow \text{done}
+\]
+\[
+r=\operatorname{ord}_N(a),\qquad
+r\text{ even},\ a^{r/2}\not\equiv -1 \pmod N
+\]
+\[
+\gcd(a^{r/2}-1,N),\qquad \gcd(a^{r/2}+1,N)
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">Number theory prerequisites</span>
-          <div class="ml purple">gcd(a,N)=1   ↔  a ∈ Z*_N
-r = ord_N(a)   r | φ(N) = (p−1)(q−1)
-φ(N) = (p−1)(q−1)  for N=pq
-aᵠ⁽ᴺ⁾ ≡ 1 (mod N)   [Euler's theorem]</div>
+          <div class="ml purple">\[
+\gcd(a,N)=1 \iff a\in Z_N^*
+\]
+\[
+r=\operatorname{ord}_N(a),\qquad r\mid \varphi(N)=(p-1)(q-1)
+\]
+\[
+a^{\varphi(N)}\equiv 1 \pmod N
+\]</div>
         </div>
         <hr>
         <div class="def">
@@ -990,9 +1213,17 @@ QFT finds r; gcd(a^(r/2)±1,N) extracts factors</div>
         <div class="def">
           <span class="def-title purple">Why QFT extracts period</span>
           <p>After measuring f-register, 1st register is:</p>
-          <div class="ml purple">|φ⟩ ∝ Σ_{j} |x₀ + jr⟩   (uniform over coset)
-QFT → peaks at multiples of N/r
-Continued fractions: s/N ≈ k/r → find r</div>
+          <div class="ml purple">\[
+\lvert \phi\rangle \propto \sum_j \lvert x_0+jr\rangle
+\]
+\[
+\mathrm{QFT}\ \Rightarrow\ \text{peaks at multiples of } N/r
+\]
+\[
+\frac{s}{N}\approx \frac{k}{r}
+\quad\Rightarrow\quad
+\text{continued fractions recover } r
+\]</div>
         </div>
       </div>
     </div>
@@ -1034,12 +1265,18 @@ Continued fractions: s/N ≈ k/r → find r</div>
       <div class="card-body">
         <div class="def">
           <span class="def-title">Working with congruences</span>
-          <p>To verify a ≡ a' (mod M): write a = kM + a', take mod M on both sides → a ≡ a'.</p>
-          <div class="ml accent">Given: a ≡ a' (mod M), b ≡ b' (mod M)
-Write: a = kM + a', b = k'M + b'
-ab = (kM+a')(k'M+b')
-   = M(kk'M+kb'+k'a') + a'b'
-→ ab ≡ a'b' (mod M) ✓</div>
+          <p>To verify \(a\equiv a' \pmod M\): write \(a=kM+a'\), then reduce mod \(M\).</p>
+          <div class="ml accent">\[
+a\equiv a' \pmod M,\quad b\equiv b' \pmod M
+\]
+\[
+a=kM+a',\qquad b=k'M+b'
+\]
+\[
+ab=M(kk'M+kb'+k'a')+a'b'
+\Rightarrow
+ab\equiv a'b' \pmod M
+\]</div>
         </div>
       </div>
     </div>
@@ -1049,18 +1286,25 @@ ab = (kM+a')(k'M+b')
       <div class="card-body">
         <div class="def">
           <span class="def-title">Use Case 1: Solve ax + by = c</span>
-          <p>When c = k · gcd(a,b) for some integer k. Run EEA to get x₀, y₀ s.t. ax₀+by₀=gcd(a,b), then scale by k.</p>
-          <div class="ml accent">General solution: x = kx₀ + (b/d)·t
-              y = ky₀ − (a/d)·t
-for any integer t, d = gcd(a,b)</div>
+          <p>When \(c=k\gcd(a,b)\). Run EEA to get \(ax_0+by_0=\gcd(a,b)\), then scale by \(k\).</p>
+          <div class="ml accent">\[
+x=kx_0+\frac{b}{d}t,\qquad
+y=ky_0-\frac{a}{d}t,
+\qquad
+d=\gcd(a,b)
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title">Use Case 2: Find multiplicative inverse</span>
-          <p>Find x s.t. ax ≡ 1 (mod b). Requires gcd(a,b)=1.</p>
-          <div class="ml accent">Run EEA on (a, b) → get x, y s.t. ax + by = 1
-Take mod b: ax ≡ 1 (mod b)
-→ x mod b is the inverse of a</div>
+          <p>Find \(x\) such that \(ax\equiv 1\pmod b\). Requires \(\gcd(a,b)=1\).</p>
+          <div class="ml accent">\[
+ax+by=1
+\Rightarrow
+ax\equiv 1 \pmod b
+\Rightarrow
+x\bmod b = a^{-1}\pmod b
+\]</div>
           <p class="note">This is how Z*ₘ inverses are computed in practice.</p>
         </div>
       </div>
@@ -1070,11 +1314,16 @@ Take mod b: ax ≡ 1 (mod b)
       <div class="card-header blue">Z*ₘ Inverse — Proof via Bézout</div>
       <div class="card-body">
         <div class="def">
-          <p>For any a ∈ Z*ₘ, gcd(a,M)=1. Apply Bézout:</p>
-          <div class="ml accent">∃ x,y ∈ ℤ: ax + My = 1
-Take (mod M): ax ≡ 1 (mod M)
-→ (x mod M) is a's inverse in Z*ₘ</div>
-          <p style="margin-top:2px">Check x mod M also satisfies Bézout: replace x with x mod M = x − kM, then a(x−kM) + M(y+ka) = 1 ✓</p>
+          <p>For any \(a\in Z_M^*\), \(\gcd(a,M)=1\). Apply Bézout:</p>
+          <div class="ml accent">\[
+\exists x,y\in\mathbb Z:\quad ax+My=1
+\]
+\[
+ax\equiv 1 \pmod M
+\Rightarrow
+x\bmod M = a^{-1}\pmod M
+\]</div>
+          <p style="margin-top:2px">Replacing \(x\) by \(x-kM\) preserves the Bézout identity.</p>
         </div>
         <hr>
         <div class="def">
@@ -1101,25 +1350,35 @@ Take (mod M): ax ≡ 1 (mod M)
         <hr>
         <div class="def">
           <span class="def-title green">Key idea: multiplication by a is a permutation</span>
-          <div class="ml green">Consider: a·Z*ₘ = {ax₁, ax₂, …, axₖ}
-
-Claim: this is the same set as Z*ₘ (just reordered).
-
-Why? Because axᵢ ≡ axⱼ (mod M) iff xᵢ = xⱼ
-(a has an inverse → cancel a from both sides).
-So all axᵢ are distinct mod M → same set.</div>
+          <div class="ml green">\[
+a\cdot Z_M^*=\{ax_1,ax_2,\ldots,ax_k\}
+\]
+\[
+ax_i\equiv ax_j \pmod M
+\iff
+x_i=x_j
+\]
+\[
+\Rightarrow\quad a\cdot Z_M^*
+\text{ is just a permutation of }
+Z_M^*
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title green">Finish</span>
-          <div class="ml green">Product of {x₁,…,xₖ} ≡ product of {ax₁,…,axₖ}
-
-∏ xᵢ ≡ aᵏ · ∏ xᵢ  (mod M)
-
-Since ∏ xᵢ ∈ Z*ₘ → it has an inverse.
-Multiply both sides by (∏ xᵢ)⁻¹:
-
-1 ≡ aᵏ ≡ aᵠ⁽ᴹ⁾  (mod M) ✓</div>
+          <div class="ml green">\[
+\prod_i x_i
+\equiv
+\prod_i (ax_i)
+\equiv
+a^k\prod_i x_i
+\pmod M
+\]
+\[
+\Rightarrow\quad
+1\equiv a^k \equiv a^{\varphi(M)} \pmod M
+\]</div>
         </div>
       </div>
     </div>
@@ -1133,16 +1392,18 @@ Multiply both sides by (∏ xᵢ)⁻¹:
         </div>
         <div class="def">
           <span class="def-title green">Division algorithm trick</span>
-          <div class="ml green">By Euler: aᵠ⁽ᴹ⁾ ≡ 1 (mod M)
-Write φ(M) = q·r + s,  0 ≤ s &lt; r
-
-Then: aᵠ⁽ᴹ⁾ = a^(qr+s) = (aʳ)^q · aˢ
-           ≡ 1^q · aˢ ≡ aˢ ≡ 1 (mod M)
-
-But r is the SMALLEST positive integer
-with aʳ ≡ 1. Since 0 ≤ s &lt; r:
-s cannot be positive → s = 0
-→ r | φ(M) ✓</div>
+          <div class="ml green">\[
+a^{\varphi(M)}\equiv 1 \pmod M
+\]
+\[
+\varphi(M)=qr+s,\qquad 0\le s&lt;r
+\]
+\[
+a^{\varphi(M)}=a^{qr+s}=(a^r)^q a^s \equiv a^s \equiv 1 \pmod M
+\]
+\[
+\text{Minimality of }r \Rightarrow s=0 \Rightarrow r\mid \varphi(M)
+\]</div>
         </div>
         <hr>
         <div class="def">
@@ -1218,13 +1479,16 @@ For d = p−1: Nₚ(p−1) = φ(p−1) ≥ 1
       <div class="card-body">
         <div class="def">
           <p>Count integers in {1,…,pq−1} NOT coprime to pq. Since p,q prime, non-coprime = multiples of p or q.</p>
-          <div class="ml purple">Multiples of p in range: p, 2p, …, qp → q total
-Multiples of q in range: q, 2q, …, pq → p total
-But pq counted twice → subtract 1
-
-Not coprime: q + p − 1
-
-φ(pq) = pq − (p+q−1) = (p−1)(q−1) ✓</div>
+          <div class="ml purple">\[
+\#\{\text{multiples of }p\}=q,\qquad
+\#\{\text{multiples of }q\}=p
+\]
+\[
+\#\{\text{not coprime to }pq\}=p+q-1
+\]
+\[
+\varphi(pq)=pq-(p+q-1)=(p-1)(q-1)
+\]</div>
         </div>
       </div>
     </div>
@@ -1234,24 +1498,28 @@ Not coprime: q + p − 1
       <div class="card-body">
         <div class="def">
           <span class="def-title purple">Why period finding works</span>
-          <div class="ml purple">f(x) = aˣ mod N is periodic with period r
-r = ord_N(a), and r | φ(N) = (p−1)(q−1)
-
-aʳ ≡ 1 (mod N)
-→ (aʳ/²)² ≡ 1 (mod N)
-→ (aʳ/²−1)(aʳ/²+1) ≡ 0 (mod N=pq)
-
-N doesn't divide either factor alone (if r even,
-aʳ/² ≢ ±1) → gcd splits N:
-
-gcd(aʳ/²−1, N) = p or q  ✓</div>
+          <div class="ml purple">\[
+f(x)=a^x \bmod N,\qquad r=\operatorname{ord}_N(a),\qquad r\mid \varphi(N)
+\]
+\[
+a^r\equiv 1 \pmod N
+\Rightarrow
+\left(a^{r/2}-1\right)\left(a^{r/2}+1\right)\equiv 0 \pmod N
+\]
+\[
+\gcd(a^{r/2}-1,N)\in\{p,q\}
+\quad\text{when } r \text{ is even and } a^{r/2}\not\equiv \pm 1
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">When does this fail?</span>
-          <div class="ml purple">Fails if: r is odd, OR aʳ/² ≡ −1 (mod N)
-Fix: pick a new random a and retry.
-P(success per attempt) ≥ 1/2.</div>
+          <div class="ml purple">\[
+\text{Fail if } r \text{ is odd or } a^{r/2}\equiv -1 \pmod N
+\]
+\[
+P(\text{success per attempt})\ge \frac12
+\]</div>
         </div>
         <hr>
         <div class="def">
@@ -1306,18 +1574,27 @@ gcd(4+1,15)=gcd(5,15)=5
         <hr>
         <div class="def">
           <span class="def-title">Worked: gcd(101, 23)</span>
-          <div class="ml accent" style="font-size:8px">101 = 4(23) + 9
- 23 = 2(9)  + 5
-  9 = 1(5)  + 4
-  5 = 1(4)  + 1   ← gcd = 1
-  4 = 4(1)
-
-Back-sub: 1 = 5 − 1(4)
-            = 5 − 1(9−5) = 2(5) − 9
-            = 2(23−2·9) − 9 = 2(23) − 5(9)
-            = 2(23) − 5(101−4·23) = 22(23) − 5(101)
-So: 101(−5) + 23(22) = 1
-→ 23⁻¹ ≡ 22 (mod 101) ✓</div>
+          <div class="ml accent" style="font-size:8px">\[
+\begin{aligned}
+101 &amp;= 4(23)+9\\
+23 &amp;= 2(9)+5\\
+9 &amp;= 1(5)+4\\
+5 &amp;= 1(4)+1
+\end{aligned}
+\]
+\[
+\begin{aligned}
+1 &amp;= 5-1(4)\\
+  &amp;= 5-(9-5)=2(5)-9\\
+  &amp;= 2(23-2\cdot 9)-9\\
+  &amp;= 22(23)-5(101)
+\end{aligned}
+\]
+\[
+101(-5)+23(22)=1
+\qquad\Rightarrow\qquad
+23^{-1}\equiv 22 \pmod{101}
+\]</div>
         </div>
       </div>
     </div>
@@ -1348,21 +1625,36 @@ So: 101(−5) + 23(22) = 1
         <div class="def">
           <span class="def-title">Meaning</span>
           <p>Linear Diophantine equation = <span style="font-family:var(--mono)">ax + by = c</span> with integer unknowns.</p>
-          <div class="ml accent">int. solutions exist  ⟺  gcd(a,b) | c
-Find ax₀+by₀=gcd(a,b) by EEA,
-then scale by c/gcd(a,b)</div>
+          <div class="ml accent">\[
+\text{integer solutions exist}
+\iff
+\gcd(a,b)\mid c
+\]
+\[
+\text{Find } ax_0+by_0=\gcd(a,b),\ \text{then scale by } \frac{c}{\gcd(a,b)}
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title">Solve: 15x + 28y = 1</span>
           <p>gcd(15,28)=1 so solutions exist. Run EEA:</p>
-          <div class="ml accent" style="font-size:8px">28 = 1(15) + 13
-15 = 1(13) + 2
-13 = 6(2)  + 1
-Back-sub: 1 = 13 − 6·2
-            = 13 − 6(15−13) = 7(13) − 6(15)
-            = 7(28−15) − 6(15) = 7(28) − 13(15)
-x=−13, y=7  →  15(−13)+28(7) = −195+196=1 ✓</div>
+          <div class="ml accent" style="font-size:8px">\[
+\begin{aligned}
+28&amp;=1(15)+13\\
+15&amp;=1(13)+2\\
+13&amp;=6(2)+1
+\end{aligned}
+\]
+\[
+\begin{aligned}
+1&amp;=13-6\cdot 2\\
+ &amp;=13-6(15-13)\\
+ &amp;=7(28)-13(15)
+\end{aligned}
+\]
+\[
+x=-13,\quad y=7,\quad 15(-13)+28(7)=1
+\]</div>
           <p class="note">General soln: x=−13+28t, y=7−15t for any t∈Z</p>
         </div>
       </div>
@@ -1379,28 +1671,34 @@ x=−13, y=7  →  15(−13)+28(7) = −195+196=1 ✓</div>
         <div class="def">
           <span class="def-title green">Find 7⁻¹ mod 15</span>
           <p>Need: 7x ≡ 1 (mod 15). Run EEA on (7,15):</p>
-          <div class="ml green" style="font-size:8px">15 = 2(7) + 1
-→ 7(−2) + 15(1) = 1? No: 7(−2)=−14, 15(1)=15, sum=1 ✓
-Actually: 1 = 15 − 2(7)
-→ 7⁻¹ = −2 ≡ 13 (mod 15)
-Check: 7·13 = 91 = 6(15)+1 ≡ 1 (mod 15) ✓</div>
+          <div class="ml green" style="font-size:8px">\[
+1=15-2(7)
+\]
+\[
+7^{-1}\equiv -2 \equiv 13 \pmod{15}
+\]
+\[
+7\cdot 13 = 91 \equiv 1 \pmod{15}
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title green">Find 11⁻¹ mod 26</span>
-          <div class="ml green" style="font-size:8px">26 = 2(11) + 4
-11 = 2(4)  + 3
- 4 = 1(3)  + 1
-Back-sub: 1 = 4 − 3 = (26−2·11) − (11−2·4)
-            = 3(4) − 3(11) + 26 = 3(26−2·11)−3·11+26
-            = 4(26) − 9(11)
-→ 11⁻¹ = −9 ≡ 17 (mod 26)
-Check: 11·17 = 187 = 7(26)+5? No: 7·26=182, 187−182=5 ✗
-Recheck: 26·7=182; 187−182=5. Hmm.
-Actually 11·17=187, 187 mod 26 = 187−7·26=187−182=5. Let me redo:
-26=2·11+4; 11=2·4+3; 4=1·3+1
-1=4−3=4−(11−2·4)=3·4−11=3(26−2·11)−11=3·26−7·11
-→ 11⁻¹=−7≡19(mod 26). Check: 11·19=209=8·26+1 ✓</div>
+          <div class="ml green" style="font-size:8px">\[
+\begin{aligned}
+26&amp;=2(11)+4\\
+11&amp;=2(4)+3\\
+4&amp;=1(3)+1
+\end{aligned}
+\]
+\[
+1=4-3=4-(11-2\cdot 4)=3(26)-7(11)
+\]
+\[
+11^{-1}\equiv -7 \equiv 19 \pmod{26}
+\qquad
+11\cdot 19 = 209 \equiv 1 \pmod{26}
+\]</div>
         </div>
       </div>
     </div>
@@ -1410,19 +1708,27 @@ Actually 11·17=187, 187 mod 26 = 187−7·26=187−182=5. Let me redo:
       <div class="card-body">
         <div class="def">
           <span class="def-title green">φ(12)</span>
-          <div class="ml green">12 = 2²·3. Integers 1–12 NOT coprime to 12:
-multiples of 2: {2,4,6,8,10,12} → 6
-multiples of 3: {3,9} not already counted → 2
-Not coprime: 8 total
-φ(12) = 12 − 8 = 4
-Z*₁₂ = {1, 5, 7, 11}</div>
+          <div class="ml green">\[
+12=2^2\cdot 3
+\]
+\[
+\varphi(12)=12-8=4
+\]
+\[
+Z_{12}^*=\{1,5,7,11\}
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title green">φ(15)</span>
-          <div class="ml green">15 = 3·5 (distinct primes)
-φ(15) = (3−1)(5−1) = 2·4 = 8
-Z*₁₅ = {1,2,4,7,8,11,13,14}</div>
+          <div class="ml green">\[
+15=3\cdot 5
+\qquad
+\varphi(15)=(3-1)(5-1)=8
+\]
+\[
+Z_{15}^*=\{1,2,4,7,8,11,13,14\}
+\]</div>
         </div>
         <hr>
         <div class="def">
@@ -1442,34 +1748,50 @@ Z*₁₅ = {1,2,4,7,8,11,13,14}</div>
       <div class="card-body">
         <div class="def">
           <span class="def-title purple">ord₇(2)</span>
-          <div class="ml purple">2¹=2, 2²=4, 2³=1 (mod 7)
-→ ord₇(2) = 3
-Check: 3 | φ(7) = 6 ✓</div>
+          <div class="ml purple">\[
+2^1=2,\quad 2^2=4,\quad 2^3\equiv 1 \pmod 7
+\]
+\[
+\operatorname{ord}_7(2)=3,\qquad 3\mid \varphi(7)=6
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">ord₁₅(2)</span>
-          <div class="ml purple">2¹=2, 2²=4, 2³=8, 2⁴=1 (mod 15)
-→ ord₁₅(2) = 4
-Check: 4 | φ(15) = 8 ✓</div>
+          <div class="ml purple">\[
+2^1=2,\quad 2^2=4,\quad 2^3=8,\quad 2^4\equiv 1 \pmod{15}
+\]
+\[
+\operatorname{ord}_{15}(2)=4,\qquad 4\mid \varphi(15)=8
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">Generators of Z*₇</span>
-          <div class="ml purple">φ(7)=6. Need ord=6.
-Try a=3: 3¹=3, 3²=2, 3³=6, 3⁴=4, 3⁵=5, 3⁶=1
-→ ord₇(3) = 6 → 3 is a primitive root mod 7
-Z*₇ = {1,2,3,4,5,6} = ⟨3⟩ ✓</div>
+          <div class="ml purple">\[
+\varphi(7)=6
+\]
+\[
+3^1=3,\ 3^2=2,\ 3^3=6,\ 3^4=4,\ 3^5=5,\ 3^6\equiv 1 \pmod 7
+\]
+\[
+\operatorname{ord}_7(3)=6
+\qquad\Rightarrow\qquad
+Z_7^*=\langle 3\rangle
+\]</div>
         </div>
         <hr>
         <div class="def">
           <span class="def-title purple">Shor: period of 2ˣ mod 15</span>
-          <div class="ml purple">2⁰=1, 2¹=2, 2²=4, 2³=8, 2⁴=1 (mod 15)
-r = ord₁₅(2) = 4 (even ✓)
-2^(r/2) = 2² = 4 ≢ −1≡14 (mod 15) ✓
-gcd(4−1,15) = gcd(3,15) = 3
-gcd(4+1,15) = gcd(5,15) = 5
-→ factors: 3 and 5 ✓</div>
+          <div class="ml purple">\[
+2^0=1,\ 2^1=2,\ 2^2=4,\ 2^3=8,\ 2^4\equiv 1 \pmod{15}
+\]
+\[
+r=\operatorname{ord}_{15}(2)=4,\qquad 2^{r/2}=4\not\equiv -1 \pmod{15}
+\]
+\[
+\gcd(4-1,15)=3,\qquad \gcd(4+1,15)=5
+\]</div>
         </div>
       </div>
     </div>
